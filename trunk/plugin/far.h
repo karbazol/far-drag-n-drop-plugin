@@ -1,7 +1,7 @@
 /** @file far.h
  * The file contains declarations for Far API.
  *
- * $Id: far.h 75 2008-10-02 17:51:35Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FAR_H__

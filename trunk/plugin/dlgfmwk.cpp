@@ -2,7 +2,7 @@
  * @file dlgfmwk.cpp
  * Contains implementation of Dialogs Framework
  *
- *$Id: dlgfmwk.cpp 78 2008-11-01 16:57:30Z eleskine $
+ *$Id$
  */
 
 #include "dlgfmwk.h"

@@ -2,7 +2,7 @@
  * @file filelist.h
  * The file contains declarations of file list related classes.
  *
- * $Id: filelist.h 48 2008-05-11 14:50:10Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FILELIST_H__

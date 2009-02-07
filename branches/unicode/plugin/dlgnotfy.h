@@ -2,7 +2,7 @@
  * @file dlgnotfy.h
  * Contains declaration of CopyDialogNotify class.
  *
- * $Id: dlgnotfy.h 61 2008-05-11 15:47:03Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLGNOTFY_H__

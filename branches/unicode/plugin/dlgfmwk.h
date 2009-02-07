@@ -2,7 +2,7 @@
  * @file dlgfmwk.h
  * Contains declaration of RunningDialogs class.
  *
- * $Id: dlgfmwk.h 78 2008-11-01 16:57:30Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLGFMWK_H__

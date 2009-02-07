@@ -2,7 +2,7 @@
  * @file far.cpp
  * The file contains implementation of Far API.
  *
- * $Id: far.cpp 78 2008-11-01 16:57:30Z eleskine $
+ * $Id$
  */
 
 #include <shlwapi.h>

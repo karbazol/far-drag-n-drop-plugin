@@ -1,4 +1,4 @@
-// $Id: cpydlg.cpp 88 2009-01-09 15:20:59Z eleskine $
+// $Id$
 
 #include "cpydlg.h"
 #include "ddlng.h"

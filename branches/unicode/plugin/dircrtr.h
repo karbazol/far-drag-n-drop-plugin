@@ -2,7 +2,7 @@
  * @file dircrtr.h
  * The file contains declaration of DirectoryCreator class.
  *
- * $Id: dircrtr.h 71 2008-09-30 15:57:42Z eleskine $
+ * $Id$
  */
 #ifndef __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__
 #define __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__

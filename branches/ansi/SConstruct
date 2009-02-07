@@ -1,4 +1,4 @@
-# $Id: SConstruct 89 2009-01-09 15:22:38Z eleskine $
+# $Id$
 import os
 import copy
 import string

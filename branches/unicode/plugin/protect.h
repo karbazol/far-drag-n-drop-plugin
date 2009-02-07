@@ -2,7 +2,7 @@
  * @file protect.h
  * Contains declaration of MemProtect class.
  *
- * $Id: protect.h 49 2008-05-11 14:54:06Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__PROTECT_H__

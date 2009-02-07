@@ -2,7 +2,7 @@
  * @file cperrdlg.cpp
  * This file contains implementation of CopyErrorDialog class.
  *
- * $Id: cperrdlg.cpp 88 2009-01-09 15:20:59Z eleskine $
+ * $Id$
  */
 
 #include "cperrdlg.h"

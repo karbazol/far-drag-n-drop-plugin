@@ -2,7 +2,7 @@
  * @file modules.cpp
  * Contains implementation of modules walker classes.
  *
- * $Id: modules.cpp 68 2008-05-11 18:18:23Z eleskine $
+ * $Id$
  */
 
 #include "modules.hpp"

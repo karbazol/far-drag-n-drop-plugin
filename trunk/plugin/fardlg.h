@@ -1,4 +1,4 @@
-// $Id: fardlg.h 78 2008-11-01 16:57:30Z eleskine $
+// $Id$
 
 /**
  * @file fardlg.h

@@ -1,4 +1,4 @@
-// $Id: mystring.h 31 2008-04-23 17:39:31Z eleskine $
+// $Id$
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__MYSTRING_H__
 #define __KARBAZOL_DRAGNDROP_2_0__MYSTRING_H__

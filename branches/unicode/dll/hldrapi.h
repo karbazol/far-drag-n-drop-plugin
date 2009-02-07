@@ -2,7 +2,7 @@
  * @file hldrapi.h
  * Contains declaration of HolderApi class
  *
- * $Id: hldrapi.h 60 2008-05-11 15:26:59Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__HLDRAPI_H__

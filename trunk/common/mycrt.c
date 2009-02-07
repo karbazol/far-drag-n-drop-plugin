@@ -2,7 +2,7 @@
  * @file mycrt.c
  * The file contains a subset of crt routines used by the plugin.
  *
- * $Id: mycrt.c 64 2008-05-11 16:57:25Z eleskine $
+ * $Id$
  */
 
 #include <stdlib.h>

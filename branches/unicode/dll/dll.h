@@ -2,7 +2,7 @@
  * @file dll.h
  * Contains declaration of Dll class
  *
- * $Id: dll.h 78 2008-11-01 16:57:30Z eleskine $
+ * $Id$
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLL_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DLL_H__

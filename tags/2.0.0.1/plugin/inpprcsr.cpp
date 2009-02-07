@@ -1,7 +1,7 @@
 /**
  * @file The file contains implementation of InputProcessor class.
  *
- * $Id: inpprcsr.cpp 21 2008-03-30 15:39:30Z eleskine $
+ * $Id$
  */
 
 #include <windows.h>

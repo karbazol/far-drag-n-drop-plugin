@@ -2,7 +2,7 @@
  * @file filecopy.h
  * Contains declaration of FileCopier class.
  *
- * $Id: filecopy.h 78 2008-11-01 16:57:30Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FILECOPY_H__

@@ -1,4 +1,4 @@
-// $Id: cpydlg.h 88 2009-01-09 15:20:59Z eleskine $
+// $Id$
 
 /**
  * @file cpydlg.h

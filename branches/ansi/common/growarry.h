@@ -2,7 +2,7 @@
  * @file growarry.h
  * Contains declaration of GrowOnlyArray template class.
  * 
- * $Id: growarry.h 89 2009-01-09 15:22:38Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__GROWARRY_H__

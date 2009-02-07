@@ -2,7 +2,7 @@
  * @file enumfmt.h
  * Contains declaration of EnumFORMATETC class.
  *
- * $Id: enumfmt.h 57 2008-05-11 15:18:52Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__ENUMFMT_H__

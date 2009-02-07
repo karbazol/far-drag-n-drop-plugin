@@ -1,4 +1,4 @@
-// $Id: dircrtr.cpp 29 2008-04-21 11:00:40Z eleskine $
+// $Id$
 #include <windows.h>
 #include "dircrtr.h"
 

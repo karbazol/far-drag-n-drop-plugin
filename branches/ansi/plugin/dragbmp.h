@@ -2,7 +2,7 @@
  * @file dragbmp.h
  * The file contains declaration of DragBitmap class.
  *
- * $Id: dragbmp.h 44 2008-05-11 14:22:01Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP__DRAGBMP_H__

@@ -2,7 +2,7 @@
  * @file datacont.h
  * Contains declaration of DataContainer class.
  *
- * $Id: datacont.h 75 2008-10-02 17:51:35Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DATACONT_H__

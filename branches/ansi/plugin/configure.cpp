@@ -2,7 +2,7 @@
  * @file configure.cpp
  * The file contains implementation of Config class
  *
- * $Id: configure.cpp 75 2008-10-02 17:51:35Z eleskine $
+ * $Id$
  */
 
 #include "fardlg.h"

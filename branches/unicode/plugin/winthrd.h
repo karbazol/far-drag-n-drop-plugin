@@ -2,7 +2,7 @@
  * @file winthrd.h
  * Contains declaration of WinThread class
  *
- * $Id: winthrd.h 54 2008-05-11 15:09:59Z eleskine $
+ * $Id$
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__WINTHRD_H__
 #define __KARBAZOL_DRAGNDROP_2_0__WINTHRD_H__

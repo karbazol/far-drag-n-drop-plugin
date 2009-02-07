@@ -2,7 +2,7 @@
  * @file dll_utils.cpp
  * The file contains definations of utility classes and routines used by DLLs.
  *
- * $Id: dll_utils.cpp 77 2008-10-04 08:40:09Z eleskine $
+ * $Id$
  */
 
 #include <windows.h>

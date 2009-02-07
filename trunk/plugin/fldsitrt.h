@@ -2,7 +2,7 @@
  * @file fldsitrt.h
  * The file contains declaration of FileDescriptorIterator class
  *
- * $Id: fldsitrt.h 45 2008-05-11 14:25:23Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FLDSITRT_H__

@@ -1,4 +1,4 @@
-// $Id: filecopy.cpp 71 2008-09-30 15:57:42Z eleskine $
+// $Id$
 
 #include "filecopy.h"
 

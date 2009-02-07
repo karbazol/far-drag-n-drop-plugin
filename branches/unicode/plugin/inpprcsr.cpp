@@ -2,7 +2,7 @@
  * @file inpprcsr.cpp
  * The file contains implementation of InputProcessor class.
  *
- * $Id: inpprcsr.cpp 71 2008-09-30 15:57:42Z eleskine $
+ * $Id$
  */
 
 #include <windows.h>

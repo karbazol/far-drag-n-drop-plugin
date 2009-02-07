@@ -1,4 +1,4 @@
-// $Id: hdrpprcs.h 29 2008-04-21 11:00:40Z eleskine $
+// $Id$
 #ifndef __KARBAZOL_DRAGNDROP_2_0__HDRPPRCS_H__
 #define __KARBAZOL_DRAGNDROP_2_0__HDRPPRCS_H__
 

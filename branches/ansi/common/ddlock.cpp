@@ -1,4 +1,4 @@
-// $Id: ddlock.cpp 35 2008-05-05 15:36:02Z eleskine $
+// $Id$
 
 #include "ddlock.h"
 

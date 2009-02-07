@@ -2,7 +2,7 @@
  * @file ddlock.h
  * The file contains declaration of various locks and synchronization objects.
  *
- * $Id: ddlock.h 64 2008-05-11 16:57:25Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DDLOCK_H__

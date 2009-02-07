@@ -2,7 +2,7 @@
  * @file utils.h
  * Contains declarations of misc utils.
  * 
- * $Id: utils.h 66 2008-05-11 17:34:38Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__UTILS_H__

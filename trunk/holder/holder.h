@@ -2,7 +2,7 @@
  * @file holder.h
  * The file contains declaration of Holder class.
  *
- * $Id: holder.h 64 2008-05-11 16:57:25Z eleskine $
+ * $Id$
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__HOLDER_H__
 #define __KARBAZOL_DRAGNDROP_2_0__HOLDER_H__

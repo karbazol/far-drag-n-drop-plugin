@@ -2,7 +2,7 @@
  * @file: toolwnd.cpp
  * The file contains implementation of ToolWindow class.
  * 
- * $Id: toolwnd.cpp 78 2008-11-01 16:57:30Z eleskine $
+ * $Id$
  */
 
 #include "far.h"

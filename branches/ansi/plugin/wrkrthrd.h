@@ -2,7 +2,7 @@
  * @file wrkrthrd.h
  * Contains declaration of WorkerThread class.
  *
- * $Id: wrkrthrd.h 55 2008-05-11 15:13:22Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__WRKRTHRD_H__

@@ -2,7 +2,7 @@
  * @file dataobj.cpp
  * The contains implementation of DataObject class
  *
- * $Id: dataobj.cpp 78 2008-11-01 16:57:30Z eleskine $
+ * $Id$
  */
 
 #include <shlobj.h>

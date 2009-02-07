@@ -2,7 +2,7 @@
  * @file toolwnd.h
  * Contains declaration for ToolWindow class
  *
- * $Id: toolwnd.h 41 2008-05-11 13:57:27Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__TOOLWND_H__

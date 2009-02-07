@@ -1,4 +1,4 @@
-// $Id: cpydlg.h 26 2008-04-20 18:48:32Z eleskine $
+// $Id$
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__CPYDLG_H__
 #define __KARBAZOL_DRAGNDROP_2_0__CPYDLG_H__

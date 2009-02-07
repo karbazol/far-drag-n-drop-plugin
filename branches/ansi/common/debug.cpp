@@ -1,7 +1,7 @@
 /**
  * @file debug.cpp
  * The file contains routines for debug purposes.
- * $Id: debug.cpp 66 2008-05-11 17:34:38Z eleskine $
+ * $Id$
  */
 
 #include <windows.h>

@@ -2,7 +2,7 @@
  * @file mystring.cpp
  * Contains code for MyString classes
  *
- * $Id: mystring.cpp 75 2008-10-02 17:51:35Z eleskine $
+ * $Id$
  */
 
 #include <windows.h>

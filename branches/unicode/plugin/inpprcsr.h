@@ -2,7 +2,7 @@
  * @file inpprcsr.h
  * Contains declaration of InputProcessor class
  *
- * $Id: inpprcsr.h 71 2008-09-30 15:57:42Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__INPPRCSR_H__

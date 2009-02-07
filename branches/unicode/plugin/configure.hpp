@@ -2,7 +2,7 @@
  * @file configure.hpp
  * The file contains declaration of Config class.
  * 
- * $Id: configure.hpp 75 2008-10-02 17:51:35Z eleskine $
+ * $Id$
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__CONFIGURE_HPP__
 #define __KARBAZOL_DRAGNDROP_2_0__CONFIGURE_HPP__

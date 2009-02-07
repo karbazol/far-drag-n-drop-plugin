@@ -2,7 +2,7 @@
  * @file mainthrd.h
  * The file contains declaration of MainThread class
  *
- * $Id: mainthrd.h 78 2008-11-01 16:57:30Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__MAINTHRD_H_

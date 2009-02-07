@@ -2,7 +2,7 @@
  * The author disclaims copyright to this source code.
  * @file mainthrd.cpp
  *
- * $Id: mainthrd.cpp 88 2009-01-09 15:20:59Z eleskine $
+ * $Id$
  */
 
 #include "mainthrd.h"

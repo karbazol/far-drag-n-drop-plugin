@@ -1,4 +1,4 @@
-// $Id: dlgnotfy.cpp 78 2008-11-01 16:57:30Z eleskine $
+// $Id$
 
 #include "hdrpprcs.h"
 #include "cpydlg.h"

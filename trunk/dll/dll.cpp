@@ -2,7 +2,7 @@
  * @file dll.cpp
  * Contains implementation of Dll class
  *
- * $Id: dll.cpp 76 2008-10-04 07:21:38Z eleskine $
+ * $Id$
  */
 
 #include <windows.h>

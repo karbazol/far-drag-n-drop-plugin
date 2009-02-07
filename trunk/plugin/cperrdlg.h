@@ -5,7 +5,7 @@
  * @file cperrdlg.h
  * This file contains declaration of CopyErrorDialog class.
  *
- * $Id: cperrdlg.h 78 2008-11-01 16:57:30Z eleskine $
+ * $Id$
  */
 
 #include "fardlg.h"

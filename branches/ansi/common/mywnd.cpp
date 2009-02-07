@@ -2,7 +2,7 @@
  * @file mywnd.cpp
  * The file contains implementation of MyWindow class.
  *
- * $Id: mywnd.cpp 41 2008-05-11 13:57:27Z eleskine $
+ * $Id$
  */
 #include "mywnd.h"
 #include "utils.h"

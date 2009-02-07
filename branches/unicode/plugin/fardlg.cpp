@@ -3,7 +3,7 @@
  * @file fardlg.cpp
  * Contains implementation of FarDialog class.
  *
- * $Id: fardlg.cpp 88 2009-01-09 15:20:59Z eleskine $
+ * $Id$
  */
 
 #include "fardlg.h"

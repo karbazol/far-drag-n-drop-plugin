@@ -2,7 +2,7 @@
  * @file mystring.h
  * The file contains declaration of classes used to represent string data.
  *
- * $Id: mystring.h 77 2008-10-04 08:40:09Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__MYSTRING_H__

@@ -2,7 +2,7 @@
  * @file dropprcs.h
  * Contains declaration of DropProcessor class.
  * 
- * $Id: dropprcs.h 64 2008-05-11 16:57:25Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DROPPRCS_H__

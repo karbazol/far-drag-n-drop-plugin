@@ -2,7 +2,7 @@
  * @file myunknown.cpp
  * The file contains implementation for Unknown class.
  *
- * $Id: myunknown.cpp 41 2008-05-11 13:57:27Z eleskine $
+ * $Id$
  */
 
 #include "myunknown.h"
