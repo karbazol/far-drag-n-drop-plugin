@@ -1,9 +1,4 @@
-/**
- * @file mystring.h
- * The file contains declaration of classes used to represent string data.
- *
- * $Id: mystring.h 77 2008-10-04 08:40:09Z eleskine $
- */
+// $Id: mystring.h 31 2008-04-23 17:39:31Z eleskine $
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__MYSTRING_H__
 #define __KARBAZOL_DRAGNDROP_2_0__MYSTRING_H__
@@ -11,41 +6,29 @@
 #include <stddef.h>
 #include "utils.h"
 
-/**
- * Magic number used to mark memory regions used by MyString objects.
- */
 #define MYSTRING_COOKIE 0x4b43534b
 
-/**
- * Template class representing traits of string element.
- */
-template<class Type>
-struct MyStringTraits
+struct CharTraits
 {
-    typedef Type type;
-
-    /**
-     * Length of string.
-     *
-     * @return Number of elements in zero terminated array.
-     */
+    typedef char type;
     static size_t strlen(const type*);
-
-    /**
-     * Copies one string to another.
-     */
     static type* strcpy(type*, const type*);
     static int strcmp(const type* s1, const type* s2);
     static type* pathDelim;
-    static type* slash;
+};
+
+struct WideCharTraits
+{
+    typedef wchar_t type;
+    static size_t strlen(const type*);
+    static type* strcpy(type*, const type*);
+    static int strcmp(const type* s1, const type* s2);
+    static type* pathDelim;
 };
 
 void myStringLock();
 void myStringUnlock();
 
-/**
- * Utility class to wrap locking/unlocking of string inter-thread guard.
- */
 class lockString
 {
 public:
@@ -59,35 +42,11 @@ public:
     }
 };
 
-/**
- * Normalizes the path. Converts slashes to backslashes. Removes last backslash.
- */
-template<class StringType>
-void normalizePath(StringType& path)
-{
-    StringType::CharType* p = path;
-    if (p != 0)
-    {
-        for(;*p;p++)
-        {
-            if (*p == *StringType::Traits::slash)
-                *p = *StringType::Traits::pathDelim;
-        }
-        if (*--p == *StringType::Traits::pathDelim)
-            *p = 0;
-    }
-}
-
-
-/**
- * Main template class to represent string data
- */
-template<class Type, class Traits=MyStringTraits<Type> >
+template<class Traits>
 class MyString
 {
 public:
     typedef typename Traits::type CharType;
-    typedef typename Traits Traits;
 private:
     struct StringData
     {
@@ -106,9 +65,7 @@ private:
             return 0;
         __try
         {
-            StringData* res = reinterpret_cast<StringData*>(
-                    const_cast<char*>(
-                    reinterpret_cast<const char*>(s) - offsetof(StringData,data)));
+            StringData* res = reinterpret_cast<StringData*>((char*)s - offsetof(StringData,data));
             if (res->cookie == MYSTRING_COOKIE)
                 return res;
             else
@@ -223,13 +180,9 @@ public:
             lockString l;
             data = tryData(p);
             if (data)
-            {
                 data->refCount++;
-            }
             else
-            {
                 data = allocData(p);
-            }
         }
     }
     MyString(const MyString& s): data(s.data)
@@ -239,10 +192,8 @@ public:
             lockString l;
 
             if (data)
-            {
                 ASSERT(data->len <= data->allocated);
                 data->refCount++;
-            }
         }
     }
     MyString& operator=(const MyString& m)
@@ -273,13 +224,9 @@ public:
             {
                 data = tryData(s);
                 if (data)
-                {
                     data->refCount++;
-                }
                 else
-                {
                     data = allocData(s);
-                }
             }
         }
 
@@ -416,15 +363,8 @@ public:
     }
 };
 
-/**
- * Multibyte string
- */
-typedef MyString<char> MyStringA;
-
-/**
- * Unicode string
- */
-typedef MyString<wchar_t> MyStringW;
+typedef MyString<CharTraits> MyStringA;
+typedef MyString<WideCharTraits> MyStringW;
 
 bool splitAndAbsPath(const wchar_t* path, MyStringW& prefix, MyStringW& suffix);
 

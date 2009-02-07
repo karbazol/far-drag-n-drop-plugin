@@ -74,7 +74,7 @@ void WinThread::run()
 
     MainThread::instance()->winThreadStarted();
 
-    for (;;)
+    for(;;)
     {
         MSG msg;
         DWORD res;

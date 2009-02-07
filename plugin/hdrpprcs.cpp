@@ -1,4 +1,4 @@
-// $Id: hdrpprcs.cpp 71 2008-09-30 15:57:42Z eleskine $
+// $Id: hdrpprcs.cpp 29 2008-04-21 11:00:40Z eleskine $
 
 #include "hdrpprcs.h"
 #include "utils.h"
@@ -71,7 +71,7 @@ HRESULT HdropProcessor::farCopyHDrop(MyStringW& files)
 
 HRESULT HdropProcessor::processDir(const FileListEntry& e)
 {
-    if (!dir().ensureDirectory(e.subpath(), e.data().dwFileAttributes))
+    if (!dir().ensureDirectory(e.subpath()))
     {
         return HRESULT_FROM_WIN32(GetLastError());
     }
@@ -118,12 +118,6 @@ HRESULT HdropProcessor::shellCopyHDrop(MyStringW& files)
     return HRESULT_FROM_WIN32(GetLastError());
 }
 
-/**
- * @brief Converts HDROP into zero-terminated array of zero-terminated strings
- *
- * @param[out] s MyStringW object instance to hold array of strings
- * @param[in] hDrop Handle to files information
- */
 bool HdropProcessor::initStringInfo(MyStringW& s, HGLOBAL hDrop)
 {
     size_t size = GlobalSize(hDrop);

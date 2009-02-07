@@ -3,7 +3,7 @@
 
 #include "far.h"
 
-HRESULT createDataObject(PanelInfoW& info, IDataObject** dataObject);
+HRESULT createDataObject(struct PanelInfo& info, IDataObject** dataObject);
 
 #endif // __KARBAZOL__DRAGNDROP_2_0__DATAOBJ_H__
 

@@ -1,8 +1,7 @@
 /**
- * @file myunknown.cpp
- * The file contains implementation for Unknown class.
+ * @file The file contains implementation for Unknown class.
  *
- * $Id: myunknown.cpp 41 2008-05-11 13:57:27Z eleskine $
+ * $Id: myunknown.cpp 19 2008-03-23 13:01:09Z eleskine $
  */
 
 #include "myunknown.h"

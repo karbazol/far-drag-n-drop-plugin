@@ -1,10 +1,10 @@
-// $Id: ddlock.cpp 35 2008-05-05 15:36:02Z eleskine $
+// $Id: ddlock.cpp 26 2008-04-20 18:48:32Z eleskine $
 
 #include "ddlock.h"
 
-bool Lock::tryLock()
+bool Lock::tryEnter()
 {
-    lock();
+    enter();
     return true;
 }
 
@@ -18,19 +18,31 @@ CriticalSection::~CriticalSection()
     DeleteCriticalSection(&_lock);
 }
 
-void CriticalSection::lock()
+void CriticalSection::enter()
 {
     EnterCriticalSection(&_lock);
 }
 
-bool CriticalSection::tryLock()
+bool CriticalSection::tryEnter()
 {
     return !!TryEnterCriticalSection(&_lock);
 }
 
-void CriticalSection::unlock()
+void CriticalSection::leave()
 {
     LeaveCriticalSection(&_lock);
+}
+
+lockIt::lockIt(Lock* lock): _lock(lock)
+{
+    if (_lock)
+        _lock->enter();
+}
+
+lockIt::~lockIt()
+{
+    if (_lock)
+        _lock->leave();
 }
 
 // vim: set et ts=4 ai :

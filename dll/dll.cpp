@@ -1,10 +1,3 @@
-/**
- * @file dll.cpp
- * Contains implementation of Dll class
- *
- * $Id: dll.cpp 76 2008-10-04 07:21:38Z eleskine $
- */
-
 #include <windows.h>
 #include "dll.h"
 #include "utils.h"
@@ -22,18 +15,8 @@ private:
     PdllCallBack _func;
     void* _data;
 public:
-    /**
-     * Constructor
-     * @param[in] next Points to the next CallBackInfo object in the list
-     * @param[in] func Pointer to user function to be called by call() method.
-     * @param[in] data Pointer to be passed to the user functions
-     */
     CallBackInfo(CallBackInfo* next, PdllCallBack func, void* data): 
         _next(next), _func(func), _data(data){}
-
-    /**
-     * Calls user function
-     */
     CallBackInfo* call() const
     {
         if (!this)
@@ -44,10 +27,6 @@ public:
 
         return res;
     }
-
-    /**
-     * @return pointer to the next CallBackInfo object in the list
-     */
     inline CallBackInfo* next(){return _next;}
 };
 
@@ -90,7 +69,7 @@ Dll* Dll::instance()
 void Dll::endDll(void* dll)
 {
     if (dll)
-        delete reinterpret_cast<Dll*>(dll);
+        delete (Dll*)dll;
 }
 
 /**
@@ -101,7 +80,6 @@ void Dll::endDll(void* dll)
  */
 void Dll::registerThreadStartCallBack(PdllCallBack func, void* data)
 {
-    LOCKIT(_guard);
     _threadStart = new CallBackInfo(_threadStart, func, data);
 }
 
@@ -113,7 +91,6 @@ void Dll::registerThreadStartCallBack(PdllCallBack func, void* data)
  */
 void Dll::registerThreadEndCallBack(PdllCallBack func, void* data)
 {
-    LOCKIT(_guard);
     _threadEnd = new CallBackInfo(_threadEnd, func, data);
 }
 
@@ -125,7 +102,6 @@ void Dll::registerThreadEndCallBack(PdllCallBack func, void* data)
  */
 void Dll::registerProcessEndCallBack(PdllCallBack func, void* data)
 {
-    LOCKIT(_guard);
     _processEnd = new CallBackInfo(_processEnd, func, data);
 }
 
@@ -158,22 +134,6 @@ BOOL Dll::Main(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpvReserved*/)
     }
 }
 
-/**
- * @brief DLL entry point.
- *
- * The DllMain function is an optional entry point into a dynamic-link library
- * (DLL). If the function is used, it is called by the system when processes 
- * and threads are initialized and terminated, or upon calls to the 
- * LoadLibrary and FreeLibrary functions.
- *
- * @param[in] hinstDLL Handle to the DLL module. The value is the base 
- * address of the DLL. The HINSTANCE of a DLL is the same as the HMODULE of 
- * the DLL, so hinstDLL can be used in calls to functions that require a module handle.
- *
- * @param[in] fdwReason Indicates why the DLL entry-point function is being called.
- *
- * @param[in] lpvReserved Reserverd by M$
- */
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
     return Dll::Main(hinstDLL, fdwReason, lpvReserved);

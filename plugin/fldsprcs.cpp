@@ -28,9 +28,9 @@ HRESULT FileDescriptorProcessor::operator()(IDataObject* obj, DWORD*)
     return hr;
 }
 
-HRESULT FileDescriptorProcessor::handleDir(const wchar_t* name, DWORD attr)
+HRESULT FileDescriptorProcessor::handleDir(const wchar_t* name)
 {
-    if (dir().ensureDirectory(name, attr))
+    if (dir().ensureDirectory(name))
         return S_OK;
     return HRESULT_FROM_WIN32(GetLastError());
 }
@@ -43,7 +43,7 @@ HRESULT FileDescriptorProcessor::copyItem(IDataObject* obj, const wchar_t* name,
     if (desc->dwFlags & FD_ATTRIBUTES
         && desc->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
     {
-        return handleDir(name, desc->dwFileAttributes);
+        return handleDir(name);
     }
     
     TRACE("Copying %S file\n", name);
@@ -102,7 +102,7 @@ HRESULT FileDescriptorProcessor::handle(IStorage* stg, const wchar_t* name)
         if (hr == STG_E_FILEALREADYEXISTS)
         {
             // They give us a second chance
-            /** @todo Ask user what to do with existing file */
+            // @TODO Ask user what to do with existing file
             hr = StgCreateStorageEx(s, STGM_CREATE|STGM_READWRITE|STGM_SHARE_EXCLUSIVE,
                     STGFMT_DOCFILE, 0, NULL, 0, IID_IStorage, (void**)&stgOut);
             if (FAILED(hr))

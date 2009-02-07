@@ -1,7 +1,6 @@
 /**
- * @file debug.cpp
- * The file contains routines for debug purposes.
- * $Id: debug.cpp 66 2008-05-11 17:34:38Z eleskine $
+ * @file The file contains routines for debug purposes.
+ * $Id: debug.cpp 10 2008-03-10 17:04:26Z eleskine $
  */
 
 #include <windows.h>
@@ -13,12 +12,6 @@ static char debugProcessName[4096]={0};
 static char* processName=0;
 static char debugModuleName[4096]={0};
 static char* moduleName=0;
-
-/**
- * @brief Debug string buffers
- *
- * Utility structure used by DbgTrace function to store per-thread buffers.
- */
 struct DebugBuffs
 {
     char buff0[4096];
@@ -34,7 +27,7 @@ struct DebugBuffs
 
 static bool getModuleName(void* module, char* modulePath, size_t modulePathSize, char*& moduleFileName)
 {
-    if (GetModuleFileNameA(reinterpret_cast<HMODULE>(module), modulePath, modulePathSize))
+    if (GetModuleFileNameA((HMODULE)module, modulePath, modulePathSize))
     {
         moduleFileName = StrRChrA(modulePath, NULL, '\\');
         if (moduleFileName)
@@ -48,10 +41,6 @@ static bool getModuleName(void* module, char* modulePath, size_t modulePathSize,
 }
 
 static DWORD tlsBuffIdx = 0;
-
-/**
- * Initializes DbgTrace API
- */
 void InitDbgTrace()
 {
     tlsBuffIdx = TlsAlloc();
@@ -62,9 +51,9 @@ void InitDbgTrace()
         moduleName = "unknown";
 }
 
-static DebugBuffs* GetDbgThreadBuff()
+DebugBuffs* GetDbgThreadBuff()
 {
-    DebugBuffs* res = reinterpret_cast<DebugBuffs*>(TlsGetValue(tlsBuffIdx));
+    DebugBuffs* res = (DebugBuffs*)TlsGetValue(tlsBuffIdx);
     if (!res)
     {
         res = new DebugBuffs;
@@ -73,33 +62,20 @@ static DebugBuffs* GetDbgThreadBuff()
     return res;
 }
 
-/**
- * This function should be called just before the module it uses is about
- * to dettach from one thread.
- */
 void FreeDbgThreadBuff()
 {
-    DebugBuffs* p = reinterpret_cast<DebugBuffs*>(TlsGetValue(tlsBuffIdx));
+    DebugBuffs* p = (DebugBuffs*)TlsGetValue(tlsBuffIdx);
     if (p)
         delete GetDbgThreadBuff();
     TlsSetValue(tlsBuffIdx, 0);
 }
 
-/**
- * This function should be called just before the module it uses is about
- * to unload.
- */
 void FreeDbgTrace()
 {
     FreeDbgThreadBuff();
     TlsFree(tlsBuffIdx);
 }
 
-/**
- * Function outputs debug information using standard OutputDebugString
- * @param[in] lpszFormat Format specifying string to generate a string
- * using elipsis arguments
- */
 void DbgTrace(const char* lpszFormat,...)
 {
     va_list va;
@@ -133,9 +109,6 @@ void DbgTrace(const char* lpszFormat,...)
     }
 }
 
-/**
- * Assert macro support function
- */
 void DbgAssert(const char* pCondition,const char* pFileName, int iLine)
 {
     char szInfo[4096]; // 4096 is the max buffer wsprintf can accept
@@ -170,12 +143,6 @@ void DbgAssert(const char* pCondition,const char* pFileName, int iLine)
     }
 }
 
-/**
- * Dumps a specified error to debug output
- * @param[in] fileName Path to source file where the error occured
- * @param[in] line File line number where the error occured
- * @param[in] error The error number
- */
 void DumpError(const char* fileName, int line, unsigned int error)
 {
     char* msg=NULL;
@@ -198,11 +165,6 @@ void DumpError(const char* fileName, int line, unsigned int error)
 
 }
 
-/**
- * Dumps the last thread error
- * @param[in] fileName Path to source file where the error occured
- * @param[in] line File line number where the error occured
- */
 void DumpLastError(const char* fileName, int line)
 {
     DWORD error = GetLastError();
@@ -212,10 +174,6 @@ void DumpLastError(const char* fileName, int line)
     SetLastError(error);
 }
 
-/**
- * Dumps the clipboard format name to the debug output
- * @param[in] format Clipboard format number
- */
 void DumpClipboardFormat(unsigned int format)
 {
     static struct {unsigned int _format; const char* _name;}
@@ -263,9 +221,6 @@ void DumpClipboardFormat(unsigned int format)
     DbgTrace("%s", name);
 }
 
-/**
- * Dumps IID value to the debug output
- */
 void DumpIid(const char* fileName, int line, const char* function, const void* guid)
 {
     WCHAR* str;
@@ -280,9 +235,6 @@ void DumpIid(const char* fileName, int line, const char* function, const void* g
         CoTaskMemFree(str);
 }
 
-/**
- * Dumps Window information to the debug output
- */
 void DumpWindow(const char* /*fileName*/, int /*line*/, const char* /*function*/, const void* /*wnd*/)
 {
 

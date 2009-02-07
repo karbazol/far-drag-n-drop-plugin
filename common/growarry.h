@@ -1,10 +1,3 @@
-/**
- * @file growarry.h
- * Contains declaration of GrowOnlyArray template class.
- * 
- * $Id: growarry.h 67 2008-05-11 17:58:59Z eleskine $
- */
-
 #ifndef __KARBAZOL_DRAGNDROP_2_0__GROWARRY_H__
 #define __KARBAZOL_DRAGNDROP_2_0__GROWARRY_H__
 
@@ -96,9 +89,6 @@ public:
         return _count;
     }
 
-    /**
-     * Allows to modify a size of an array
-     */
     void size(size_t value)
     {
         while (value > size())

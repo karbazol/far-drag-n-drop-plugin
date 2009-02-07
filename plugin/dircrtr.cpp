@@ -1,4 +1,4 @@
-// $Id: dircrtr.cpp 78 2008-11-01 16:57:30Z eleskine $
+// $Id: dircrtr.cpp 29 2008-04-21 11:00:40Z eleskine $
 #include <windows.h>
 #include "dircrtr.h"
 
@@ -12,11 +12,11 @@ DirectoryCreator::DirectoryCreator(const wchar_t* dir): _root(dir)
     }
 }
 
-bool DirectoryCreator::ensureDirectory(const wchar_t* subdir, unsigned int attr) const
+bool DirectoryCreator::ensureDirectory(const wchar_t* subdir) const
 {
     if (checkDirectory(subdir))
         return true;
-    return createDirectory(subdir, attr);
+    return createDirectory(subdir);
 }
 
 bool DirectoryCreator::checkDirectory(const wchar_t* subdir) const
@@ -37,7 +37,7 @@ bool DirectoryCreator::checkDirectory(const wchar_t* subdir) const
     return true;
 }
 
-bool DirectoryCreator::createDirectory(const wchar_t* subdir, unsigned int attr) const
+bool DirectoryCreator::createDirectory(const wchar_t* subdir) const
 {
     MyStringW theDir = _root / subdir;
 
@@ -45,18 +45,6 @@ bool DirectoryCreator::createDirectory(const wchar_t* subdir, unsigned int attr)
 
     if (res)
     {
-#if defined(_DEBUG)
-        if (!
-#endif
-                SetFileAttributes(theDir, attr)
-#if defined(_DEBUG)
-           )
-        {
-            LASTERROR();
-        }
-#else
-        ;
-#endif
         return res;
     }
 
@@ -65,7 +53,6 @@ bool DirectoryCreator::createDirectory(const wchar_t* subdir, unsigned int attr)
 
 bool DirectoryCreator::createDirectoryRecursive(const wchar_t* /*subdir*/) const
 {
-    /** @todo Implement recursive creation of directories */
     SetLastError(ERROR_PATH_NOT_FOUND);
     return false;
 }

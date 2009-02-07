@@ -1,4 +1,4 @@
-// $Id: filecopy.cpp 71 2008-09-30 15:57:42Z eleskine $
+// $Id: filecopy.cpp 26 2008-04-20 18:48:32Z eleskine $
 
 #include "filecopy.h"
 
@@ -10,17 +10,10 @@ FileCopier::FileCopier(const wchar_t* src, const wchar_t* dest, FileCopyNotify* 
 
 bool FileCopier::doCopy()
 {
-    do
-    {
-        BOOL cancel = FALSE;
-        if (CopyFileEx(
+    BOOL cancel = FALSE;
+    return !!CopyFileEx(
             _src, _dest, reinterpret_cast<LPPROGRESS_ROUTINE>(&winCallBack),
-            this, &cancel, 0) || cancel)
-            return true;
-
-    } while (_notify && _notify->onFileError(_src, _dest, GetLastError()));
-
-    return false;
+            this, &cancel, 0);
 }
 
 DWORD FileCopier::winCallBack(LARGE_INTEGER /*totalSize*/, LARGE_INTEGER transferred,
@@ -36,4 +29,3 @@ DWORD FileCopier::winCallBack(LARGE_INTEGER /*totalSize*/, LARGE_INTEGER transfe
 }
 
 // vim: set et ts=4 ai :
-

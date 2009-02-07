@@ -1,10 +1,3 @@
-/**
- * The author disclaims copyright to this source code.
- * @file mainthrd.cpp
- *
- * $Id: mainthrd.cpp 78 2008-11-01 16:57:30Z eleskine $
- */
-
 #include "mainthrd.h"
 #include "dll.h"
 #include "utils.h"
@@ -51,7 +44,7 @@ void MainThread::kill(MainThread* p)
 }
 
 void* MainThread::handleMessage(unsigned int msg, void* param0, void* param1,
-        void* /*param2*/, void* /*param3*/)
+        void* param2, void* param3)
 {
     ASSERT(_threadId == GetCurrentThreadId());
     switch (msg)
@@ -62,7 +55,7 @@ void* MainThread::handleMessage(unsigned int msg, void* param0, void* param1,
     case MTM_GETDIRFROMPT:
         return (void*)onGetDirFromScreenPoint(*(POINT*)param0, *(MyStringW*)param1);
     case MTM_SENDDLGMSG:
-        return (void*)onSendDlgMessage(param0);
+        return (void*)onSendDlgMessage((HANDLE)param0, (int)param1, (int)param2, (long)param3);
     case MTM_CALLTHEOBJECT:
         return onCallIt(reinterpret_cast<Callable*>(param0));
     }
@@ -72,7 +65,7 @@ void* MainThread::handleMessage(unsigned int msg, void* param0, void* param1,
 void MainThread::postMessage(unsigned int msg, void* param0, void* param1,
         void* param2, void* param3)
 {
-    LOCKIT(_postGuard);
+    lockIt l(&_postGuard);
 
     Message m = {
         msg, param0, param1, param2, param3
@@ -89,7 +82,7 @@ void* MainThread::sendMessage(unsigned int msg, void* param0, void* param1,
     else
     {
 
-        LOCKIT(_sendGuard);
+        lockIt l(&_sendGuard);
 
         _msg._msg = msg;
         _msg._param0 = param0;
@@ -128,7 +121,7 @@ unsigned int MainThread::processMessage(bool wait, void** result)
 
 bool MainThread::popPostedMessage(MainThread::Message& m)
 {
-    LOCKIT(_postGuard);
+    lockIt l(&_postGuard);
     if (!_posted.size())
         return false;
 
@@ -167,10 +160,10 @@ void MainThread::onSetDragging(bool value)
 
 bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
 {
-    WindowInfoW wi;
+    struct WindowInfo wi;
     wi.Pos = -1;
 
-    FarGetWindowInfo(wi);
+    FarGetWindowInfo(&wi);
     if (wi.Type != WTYPE_PANELS)
         return false;
 
@@ -185,23 +178,23 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
     pt.x = pt.x * ci.srWindow.Right / rect.right;
     pt.y = pt.y * ci.srWindow.Bottom / rect.bottom;
 
-    PanelInfoW info;
-    if (FarGetShortPanelInfo(info))
+    PanelInfo info;
+    if (FarGetShortPanelInfo(&info))
     {
         if (pt.x > info.PanelRect.left && pt.x < info.PanelRect.right &&
             pt.y > info.PanelRect.top && pt.y < info.PanelRect.bottom)
         {
-            dir = info.CurDir;
+            dir = a2w(info.CurDir, CP_OEMCP);
             return true;
         }
     }
 
-    if (FarGetShortOtherPanelInfo(info))
+    if (FarGetShortOtherPanelInfo(&info))
     {
         if (pt.x > info.PanelRect.left && pt.x < info.PanelRect.right &&
             pt.y > info.PanelRect.top && pt.y < info.PanelRect.bottom)
         {
-            dir = info.CurDir;
+            dir = a2w(info.CurDir, CP_OEMCP);
             return true;
         }
     }
@@ -219,9 +212,9 @@ void* MainThread::onCallIt(Callable* p)
     return res;
 }
 
-long MainThread::onSendDlgMessage(void* msg)
+long MainThread::onSendDlgMessage(HANDLE h, int m, int p1, long p2)
 {
-    return RunningDialogs::instance()->processMessages(reinterpret_cast<RunningDialogs::Message*>(msg));
+    return RunningDialogs::instance()->processPostedMessage(h, m, p1, p2);
 }
 
 // vim: set et ts=4 ai :

@@ -1,21 +1,14 @@
 /**
- * @file dll.h
- * Contains declaration of Dll class
  *
- * $Id: dll.h 78 2008-11-01 16:57:30Z eleskine $
+ * $Id: dll.h 18 2008-03-15 15:40:17Z eleskine $
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLL_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DLL_H__
 
 #include <windows.h>
-#include "ddlock.h"
 
 class CallBackInfo;
 
-/**
- * Defines a prototype for user function to be called
- * by Dll instance.
- */
 typedef void (*PdllCallBack)(void* userData);
 
 /**
@@ -24,7 +17,6 @@ typedef void (*PdllCallBack)(void* userData);
 class Dll
 {
 private:
-    CriticalSection _guard;
     /**
      * Points to the linked list of routines to be called when a new
      * thread starts
@@ -40,13 +32,13 @@ private:
      * process is about to exit
      */
     CallBackInfo* _processEnd;
-    Dll():_guard(), _threadStart(0), _threadEnd(0), _processEnd(0){}
+    Dll(): _threadStart(0), _threadEnd(0), _processEnd(0){}
     ~Dll();
     static void endDll(void* me);
 
     void doCall(CallBackInfo* p);
-    inline void callThreadStart() {LOCKIT(_guard); doCall(_threadStart);}
-    inline void callThreadEnd() {LOCKIT(_guard); doCall(_threadEnd);}
+    inline void callThreadStart() {doCall(_threadStart);}
+    inline void callThreadEnd() {doCall(_threadEnd);}
     inline void callProcessEnd() {doCall(_processEnd);}
 
     void bye(CallBackInfo* p);

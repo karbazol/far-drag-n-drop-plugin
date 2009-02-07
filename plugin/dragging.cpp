@@ -51,14 +51,14 @@ bool Dragging::start()
     if (FAR_CONSOLE_FULLSCREEN == ConsoleMode(FAR_CONSOLE_GET_MODE))
         return false;
 
-    WindowInfoW wi;
+    struct WindowInfo wi;
     wi.Pos = -1;
 
-    if (!FarGetWindowInfo(wi) || wi.Type != WTYPE_PANELS)
+    if (!FarGetWindowInfo(&wi) || wi.Type != WTYPE_PANELS)
         return false;
 
-    PanelInfoW info;
-    if (!FarGetPanelInfo(info) || info.Plugin && !(info.Flags & PFLAGS_REALNAMES))
+    struct PanelInfo info;
+    if (!FarGetPanelInfo(&info) || info.Plugin && !(info.Flags & PFLAGS_REALNAMES))
         return false;
 
     if (!info.Visible)
@@ -72,11 +72,21 @@ bool Dragging::start()
     if (FAILED(createDataObject(info, &dataObj)))
         return false;
 
-    /** @todo Find a place to show pop-up menu */
     if (WinThread::instance()->startDragging(dataObj))
         _dragging = true;
 
     return _dragging;
+#if 0
+    /**
+    LPWSTR p = PanelItemToWidePath(info.CurDir, *info.SelectedItems);
+    if (p)
+    {
+        SysFreeString(p);
+    }
+    /**/
+
+    return false;
+#endif
 }
 
 // vim: set et ts=4 ai :

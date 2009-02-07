@@ -1,34 +1,12 @@
-/**
- * @file modules.cpp
- * Contains implementation of modules walker classes.
- *
- * $Id: modules.cpp 68 2008-05-11 18:18:23Z eleskine $
- */
-
 #include "modules.hpp"
 #include "protect.h"
 
-/**
- * @brief MemProtect wrappers
- *
- * Used to manage MemProtect instance during manipulation on 
- * module sections.
- */
 class CommonWalker
 {
 protected:
-    /**
-     * Base address of the module to walk through
-     */
     void* _module;
-    /**
-     * Module protecter
-     */
     MemProtect* _protect;
 public:
-    /**
-     * @param[in] module Base address of the module to walk through
-     */
     CommonWalker(void* module): _module(module), _protect(0){}
     ~CommonWalker()
     {
@@ -39,12 +17,6 @@ public:
     }
 };
 
-/**
- * @brief Used to walk imports of specified module.
- *
- * Class implements iterator on specified module's imports section.
- * Used to modify imports entries.
- */
 class ModuleImportsWalker : public CommonWalker, public ModuleWalker
 {
 protected:
@@ -105,59 +77,6 @@ public:
 ModuleWalker* ImportsWalker(void* module)
 {
     return new ModuleImportsWalker(module);
-}
-
-/**
- * @brief Patches specified module's imports section.
- *
- * The function walks all imports sections of the specified module
- * and replaces entries of specified function with user functions
- */
-bool patchModuleImports(void* module, PatchInfo* patches, size_t count)
-{
-    AutoWalker m(ImportsWalker(module));
-
-    do
-    {
-        size_t i;
-        for (i = 0; i < count; i++)
-        {
-            if (m->func() == patches[i].func || m->isName(patches[i].name))
-            {
-                patches[i].func = m->func();
-                m->func(patches[i].patch);
-                break;
-            }
-        }
-    } while (m->next());
-    
-    return true; 
-}
-
-/**
- * @brief Restores specified module's imports section.
- *
- * The function walks all imports sections of the specified module
- * and replaces entries of specified function with original functions
- */
-bool restoreModuleImports(void* module, PatchInfo* patches, size_t count)
-{
-    AutoWalker m(ImportsWalker(module));
-
-    do
-    {
-        size_t i;
-        for (i = 0; i < count; i++)
-        {
-            if (m->func() == patches[i].patch)
-            {
-                m->func(patches[i].func);
-                break;
-            }
-        }
-    } while (m->next());
-
-    return true;
 }
 
 // vim: set et ts=4 ai :

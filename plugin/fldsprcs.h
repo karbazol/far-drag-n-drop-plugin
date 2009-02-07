@@ -13,7 +13,7 @@ private:
     HRESULT copyItem(IDataObject* obj, const wchar_t* name, FILEDESCRIPTOR* desc, int index);
     HRESULT handle(IStorage* stg, const wchar_t* name);
     HRESULT handle(IStream* stm, const wchar_t* name);
-    HRESULT handleDir(const wchar_t* name, DWORD attr);
+    HRESULT handleDir(const wchar_t* name);
 public:
     HRESULT operator()(IDataObject*, DWORD*);
     static inline FormatProcessor* create(){return new FileDescriptorProcessor();}

@@ -1,8 +1,7 @@
 /**
- * @file: toolwnd.cpp
- * The file contains implementation of ToolWindow class.
+ * @file: The file contains implementation of ToolWindow class.
  * 
- * $Id: toolwnd.cpp 78 2008-11-01 16:57:30Z eleskine $
+ * $Id: toolwnd.cpp 29 2008-04-21 11:00:40Z eleskine $
  */
 
 #include "far.h"
@@ -73,6 +72,8 @@ LRESULT ToolWindow::handle(UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
         return onDblClick(msg, wParam, lParam);
+    //case WM_GETACTIVEDND:
+    //    return (LRESULT)onGetActiveFar();
     case WM_ISACTIVEDND:
         return onIsActiveFar();
     case WM_HLDR_ISDNDWND:
@@ -350,9 +351,6 @@ HRESULT ToolWindow::DragOver(DWORD keyState, POINTL pt, DWORD* effect)
         keyStateToEffect(keyState, *effect);
     }
 
-    /** @todo Check wheather the files are dragged over the panel
-     with the same path. Files should not be dropped on them selves. */
-
     if (_dropHelper)
     {
         _dropHelper->DragOver((POINT*)&pt, *effect);
@@ -403,7 +401,6 @@ HRESULT ToolWindow::Drop(IDataObject* obj, DWORD keyState, POINTL ptl, DWORD* ef
 
 void ToolWindow::keyStateToEffect(DWORD /*keyState*/, DWORD& /*effect*/)
 {
-    /** @todo Handle differrent scenarios: move/copy/link. */
 }
 
 // vim: set et ts=4 ai :

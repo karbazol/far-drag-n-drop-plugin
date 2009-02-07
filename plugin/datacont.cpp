@@ -1,7 +1,7 @@
 #include <shlobj.h>
 #include "shutils.h"
 #include "datacont.h"
-/**
+
 static void initStringInfoFromOemFileName(const wchar_t* dir, const char* fileName, MyStringW& s)
 {
     size_t buffSize = lstrlen(dir) + 2 + MAX_PATH; // length(filename) and backslash and NULL
@@ -34,27 +34,26 @@ static void initStringInfoFromOemFileName(const wchar_t* dir, const char* fileNa
     delete [] buff;
     
 }
-/**/
-DataContainer::DataContainer(const PanelInfoW& info): 
-    _dir(), _files(NULL), _count(info.SelectedItems.size()),
+
+DataContainer::DataContainer(const struct PanelInfo& info): 
+    _dir(), _files(NULL), _count(info.SelectedItemsNumber),
     _custom(0), _customCount(0), _customCapacity(0)
 {
-    _dir = info.CurDir;
+    _dir = a2w(info.CurDir, CP_OEMCP);
     if (_count > 0)
     {
         size_t i;
         _files = new MyStringW[_count];
         for (i = 0; i < _count; i++)
         {
-            /**
             if (*info.SelectedItems[i].FindData.cAlternateFileName)
             {
                 initStringInfoFromOemFileName(_dir, 
                         info.SelectedItems[i].FindData.cAlternateFileName, _files[i]);
             }
-            else/**/
+            else
             {
-                _files[i] = info.SelectedItems[i]->FindData.cFileName;
+                _files[i] = a2w(info.SelectedItems[i].FindData.cFileName, CP_OEMCP);
             }
         }
     }

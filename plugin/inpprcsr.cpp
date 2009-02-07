@@ -1,8 +1,7 @@
 /**
- * @file inpprcsr.cpp
- * The file contains implementation of InputProcessor class.
+ * @file The file contains implementation of InputProcessor class.
  *
- * $Id: inpprcsr.cpp 71 2008-09-30 15:57:42Z eleskine $
+ * $Id: inpprcsr.cpp 21 2008-03-30 15:39:30Z eleskine $
  */
 
 #include <windows.h>
@@ -129,9 +128,6 @@ DWORD InputProcessor::getBuffer(PINPUT_RECORD buffer, DWORD records, bool unicod
     return res;
 }
 
-/**
- * Mask of NOT pressed NumLock, ScrollLock and Caps lock
- */
 #define NOT_X_LOCK ~(NUMLOCK_ON|SCROLLLOCK_ON|CAPSLOCK_ON|ENHANCED_KEY)
 bool InputProcessor::enterGrabbing(INPUT_RECORD& record)
 {
@@ -282,6 +278,8 @@ bool InputProcessor::readFromSystem(HANDLE h, bool waitForInput)
         _buffSize += systemCount;
     }
 
+    processBuffer();
+
     return true;
 }
 
@@ -335,14 +333,10 @@ static BOOL ProcessDirectInput(HANDLE console, PINPUT_RECORD buffer,
     }
 }
 
-/**
- * The main loop entry function.
- */
-BOOL InputProcessor::ProcessConsoleInput(HANDLE console, PINPUT_RECORD buffer,
+BOOL ProcessConsoleInput(HANDLE console, PINPUT_RECORD buffer,
         DWORD buffLength, LPDWORD readCount,
         bool isUnicode, bool removeFromInput)
 {
-    // Process messages in asynchronous queue
     MainThread::instance()->processMessage(false);
 
     if (!Dragging::instance()->isReadyForDragging())
@@ -361,10 +355,6 @@ BOOL InputProcessor::ProcessConsoleInput(HANDLE console, PINPUT_RECORD buffer,
 
     if (!processor->readFromSystem(console, removeFromInput))
         return FALSE;
-
-    // Analyze the buffer contents and if it contains
-    // appropriate keyboard/mouse state start dragging
-    processor->processBuffer();
 
     if (processor->size())
     {

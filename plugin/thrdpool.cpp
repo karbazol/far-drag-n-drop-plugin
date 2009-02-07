@@ -28,7 +28,7 @@ HRESULT ThreadPool::newThread(IDataObject* obj, const wchar_t* destDir)
 
 void ThreadPool::shutDown()
 {
-    /** @todo Implement shutdown. All running threads should finish before the function returns */
+    // @TODO Implement shutdown. All running threads should finish before the function returns
 }
 
 // vim: set et ts=4 ai :

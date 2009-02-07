@@ -1,27 +1,9 @@
-/**
- * @file utils.h
- * Contains declarations of misc utils.
- * 
- * $Id: utils.h 66 2008-05-11 17:34:38Z eleskine $
- */
-
 #ifndef __KARBAZOL_DRAGNDROP_2_0__UTILS_H__
 #define __KARBAZOL_DRAGNDROP_2_0__UTILS_H__
 
-/**
- * Return length of staticly defined array
- */
-#define LENGTH(x) \
-    (sizeof(x)/sizeof(*x))
+#define LENGTH(x) (sizeof(x)/sizeof(*x))
 
-void* getModuleBaseAddress(void* moduleItem);
-/**
- * Returns base address of exectable from which it is called.
- */
-inline void* getMyModuleBaseAddress()
-{
-    return getModuleBaseAddress(&getMyModuleBaseAddress);
-}
+void* getMyModuleBaseAddress();
 void* getEveryOneDescriptor();
 void freeEveryOneDescriptor(void*);
 
@@ -35,44 +17,15 @@ void DumpLastError(const char* fileName, int Line);
 void DumpError(const char* fileName, int Line, unsigned int error);
 void DumpClipboardFormat(unsigned int format);
 void DumpIid(const char* fileName, int line, const char* function, const void* guid);
-
-/**
- * Dumps a specified string to the debug output. See DbgTrace for parameters.
- */
 #define TRACE DbgTrace
 #ifndef ASSERT
-
-/**
- * Plug-in's defination of assertion macro.
- */
-#define ASSERT(_x_) \
-    if (!(_x_))         \
+#define ASSERT(_x_) if (!(_x_))         \
         DbgAssert(#_x_,__FILE__,__LINE__)
 #endif
-
-/**
- * Macro to dump a thread last error
- */
-#define LASTERROR() \
-    DumpLastError(__FILE__, __LINE__)
-
-/**
- * Macro to dump an error                                                                
- */
-#define DUMPERROR(x) \
-    DumpError(__FILE__, __LINE__, x)
-
-/**
- * Macro to dump a clipboard value to debug output
- */
-#define TRACECBFMT \
-    DumpClipboardFormat
-
-/**
- * Macro to dump an interface id value to debug output
- */
-#define TRACEIID(x) \
-    DumpIid(__FILE__,__LINE__,__FUNCTION__,x)
+#define LASTERROR() DumpLastError(__FILE__, __LINE__)
+#define DUMPERROR(x) DumpError(__FILE__, __LINE__, x)
+#define TRACECBFMT DumpClipboardFormat
+#define TRACEIID(x) DumpIid(__FILE__,__LINE__,__FUNCTION__,x)
 #else
 #define InitDbgTrace __noop
 #define FreeDbgThreadBuff __noop
@@ -87,18 +40,10 @@ void DumpIid(const char* fileName, int line, const char* function, const void* g
 #define TRACEIID __noop
 #endif
 
-/**
- * Dumps "Not yet implemented" string to debug output
- */
-#define NYI() \
-    TRACE("[%s:%d:%s] Not yet implemented\n", __FILE__, __LINE__, __FUNCTION__)
+#define NYI() TRACE("[%s:%d:%s] Not yet implemented\n", __FILE__, __LINE__, __FUNCTION__)
+#define TRACE_FUNC() TRACE("[%s:%d:%s] Entered function\n", __FILE__, __LINE__, __FUNCTION__)
 
-/**
- * Dumps current function name to the debug output
- */
-#define TRACE_FUNC() \
-    TRACE("[%s:%d:%s] Entered function\n", __FILE__, __LINE__, __FUNCTION__)
-
+void normalizePath(wchar_t* path);
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__UTILS_H__
 // vim: set et ts=4 ai :

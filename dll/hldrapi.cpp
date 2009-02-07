@@ -26,7 +26,7 @@ static MyStringW getHolderFileName()
     MyStringW res;
     res.length(chars);
 
-    while (chars == GetModuleFileName(reinterpret_cast<HMODULE>(getMyModuleBaseAddress()), res, chars))
+    while (chars == GetModuleFileName((HMODULE)getMyModuleBaseAddress(), res, chars))
     {
         chars += MAX_PATH;
 
@@ -136,19 +136,28 @@ HWND HolderApi::window()
 
 LRESULT HolderApi::windowsCreated(HWND f, HWND dnd)
 {
+#if 1
     HWND hldr = window();
     if (hldr)
-        return SendMessage(hldr, WM_FARWINDOWSCREATED, 
-                reinterpret_cast<WPARAM>(f), reinterpret_cast<LPARAM>(dnd));
+        return SendMessage(hldr, WM_FARWINDOWSCREATED, (WPARAM)f, (LPARAM)dnd);
     return HOLDER_NOT;
+#else
+    _theHolder->registerDND(f, dnd);
+    return HOLDER_YES;
+#endif
 }
 
 LRESULT HolderApi::windowsDestroy(HWND dnd)
 {
+#if 1
     HWND hldr = window();
     if (hldr)
-        return SendMessage(hldr, WM_DNDWINDOWDESTROY, reinterpret_cast<WPARAM>(dnd), 0);
+        return SendMessage(hldr, WM_DNDWINDOWDESTROY, (WPARAM)dnd, 0);
     return HOLDER_NOT;
+#else
+    _theHolder->unregisterDND(dnd);
+    return HOLDER_YES;
+#endif
 }
 
 LRESULT HolderApi::setHook(bool value)
@@ -171,7 +180,7 @@ HWND HolderApi::isFarWindow(HWND hwnd)
     //
     for(HWND hParent; NULL != (hParent = GetParent(hwnd)); hwnd = hParent);
     
-    if (HOLDER_YES == SendMessage(hldr, WM_HLDR_ISFARWND, reinterpret_cast<WPARAM>(hwnd), 0))
+    if (HOLDER_YES == SendMessage(hldr, WM_HLDR_ISFARWND, (WPARAM)hwnd, 0))
         return hwnd;
 
     return NULL;
@@ -183,8 +192,7 @@ HWND HolderApi::getActiveDnd(HWND hFar)
     if (!res)
         return NULL;
 
-    return reinterpret_cast<HWND>(
-            SendMessage(res, WM_HLDR_GETDNDWND, reinterpret_cast<WPARAM>(hFar), 0));
+    return (HWND)SendMessage(res, WM_HLDR_GETDNDWND, (WPARAM)hFar, 0);
 }
 
 // vim: set et ts=4 ai :

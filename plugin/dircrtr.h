@@ -1,17 +1,9 @@
-/**
- * @file dircrtr.h
- * The file contains declaration of DirectoryCreator class.
- *
- * $Id: dircrtr.h 71 2008-09-30 15:57:42Z eleskine $
- */
+// $Id: dircrtr.h 29 2008-04-21 11:00:40Z eleskine $
 #ifndef __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__
 #define __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__
 
 #include "mystring.h"
 
-/**
- * Class to create directories
- */
 class DirectoryCreator
 {
 private:
@@ -25,7 +17,7 @@ public:
      * Tryes to create specified directory.
      * If the directory already exists the function fails.
      */
-    bool createDirectory(const wchar_t* subdir, unsigned int attr) const;
+    bool createDirectory(const wchar_t* subdir) const;
 
     /**
      * Checks whether specified subdir exists.
@@ -37,9 +29,9 @@ public:
      * If the directory already exists the functions does nothing
      * but succeeds.
      */
-    bool ensureDirectory(const wchar_t* subdir, unsigned int attr) const;
+    bool ensureDirectory(const wchar_t* subdir) const;
 
-    inline const MyStringW& root() const {return _root;}
+    const MyStringW& root() const {return _root;}
 };
 
 #endif // __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__

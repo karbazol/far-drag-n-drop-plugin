@@ -1,10 +1,3 @@
-/**
- * @file mainthrd.h
- * The file contains declaration of MainThread class
- *
- * $Id: mainthrd.h 78 2008-11-01 16:57:30Z eleskine $
- */
-
 #ifndef __KARBAZOL_DRAGNDROP_2_0__MAINTHRD_H_
 #define __KARBAZOL_DRAGNDROP_2_0__MAINTHRD_H_
 
@@ -15,47 +8,33 @@
 
 // Main thread message identifiers
 
-/**
- * setDragging(bool value)\n
- * param0 - boolean value
- */
+// setDragging(bool value)
+// param0 - boolean value
 #define MTM_SETDRAGGING 1
 
-/** Window thread started */
+// Window thread started
 #define MTM_WINTHRSTARTED 2
 
-/**
- *Get current directory of panel under cursor\n
- * param0 - POINT* of screen coordinates\n
- * param1 - pointer to MyStringW structure to receive dir\n
- * returns true on success otherwise false\n
- */
+// Get current directory of panel under cursor
+// param0 - POINT* of screen coordinates
+// param1 - pointer to MyStringW structure to receive dir
+// returns true on success otherwise false
 #define MTM_GETDIRFROMPT 3
 
-/**
- * Send message to a far dialog\n
- * param0 - HANDLE of the dialog\n
- * param1 - int Msg to be sent\n
- * param2 - int Param1 of the message\n
- * param3 - int Param2 of the message\n
- */
+// Send message to a far dialog
+// param0 - HANDLE of the dialog
+// param1 - int Msg to be sent
+// param2 - int Param1 of the message
+// param3 - int Param2 of the message
 #define MTM_SENDDLGMSG 4
 
-/**
- * Send callable object
- *  param0 - pointer to a Callable object instance
- */
+// Send callable object
+// param0 - pointer to a callable object instance
 #define MTM_CALLTHEOBJECT 5
 
-/**
- * Singleton. Represents a main thread of Far.
- */
 class MainThread
 {
 public:
-    /**
-     * Interface of callable object.
-     */
     class Callable
     {
     public:
@@ -70,9 +49,7 @@ private:
     HANDLE _eventMessage;
     HANDLE _eventProcessed;
 private:
-    /**
-     * Message to handle
-     */
+    // Message to handle
     struct Message
     {
         unsigned int _msg;
@@ -97,7 +74,7 @@ private:
     void onSetDragging(bool value);
     bool onGetDirFromScreenPoint(POINT&pt, MyStringW& dir);
     void* onCallIt(Callable* p);
-    long onSendDlgMessage(void* msg);
+    long onSendDlgMessage(HANDLE h, int m, int p1, long p2);
 public:
     static MainThread* instance();
     // returns last processed message id
@@ -109,13 +86,15 @@ public:
     {
         return sendMessage(MTM_GETDIRFROMPT, &pt, &dir)?true:false;
     }
-    inline long sendDlgMessage(void* msg)
+    inline long sendDlgMessage(HANDLE hDlg, int Msg, int Param1, long Param2)
     {
-        return reinterpret_cast<long>(sendMessage(MTM_SENDDLGMSG, msg));
+        return (long)sendMessage(MTM_SENDDLGMSG, hDlg, (void*)Msg,
+                (void*)Param1, (void*)Param2);
     }
-    inline void postDlgMessage()
+    inline void postDlgMessage(HANDLE hDlg, int Msg, int Param1, long Param2)
     {
-        postMessage(MTM_SENDDLGMSG, 0);
+        postMessage(MTM_SENDDLGMSG, hDlg, (void*)Msg,
+                (void*)Param1, (void*)Param2);
     }
     inline void* callIt(Callable* p){return sendMessage(MTM_CALLTHEOBJECT, p);}
     inline void callItAsync(Callable* p){postMessage(MTM_CALLTHEOBJECT, p);}

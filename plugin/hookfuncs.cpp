@@ -7,22 +7,22 @@
 
 BOOL WINAPI MyReadConsoleInputA(HANDLE h, PINPUT_RECORD b, DWORD l, LPDWORD r)
 {
-    return InputProcessor::ProcessConsoleInput(h, b, l, r, false, true);
+    return ProcessConsoleInput(h, b, l, r, false, true);
 }
 
 BOOL WINAPI MyReadConsoleInputW(HANDLE h, PINPUT_RECORD b, DWORD l, LPDWORD r)
 {
-    return InputProcessor::ProcessConsoleInput(h, b, l, r, true, true);
+    return ProcessConsoleInput(h, b, l, r, true, true);
 }
 
 BOOL WINAPI MyPeekConsoleInputA(HANDLE h, PINPUT_RECORD b, DWORD l, LPDWORD r)
 {
-    return InputProcessor::ProcessConsoleInput(h, b, l, r, false, false);
+    return ProcessConsoleInput(h, b, l, r, false, false);
 }
 
 BOOL WINAPI MyPeekConsoleInputW(HANDLE h, PINPUT_RECORD b, DWORD l, LPDWORD r)
 {
-    return InputProcessor::ProcessConsoleInput(h, b, l, r, true, false);
+    return ProcessConsoleInput(h, b, l, r, true, false);
 }
 
 BOOL WINAPI MyGetNumberOfConsoleInputEvents(
@@ -60,7 +60,11 @@ BOOL WINAPI MyFlushConsoleInputBuffer(HANDLE h)
     return FlushConsoleInputBuffer(h);
 }
 
-PatchInfo patches[] =
+static struct {
+    void* func;
+    void* patch;
+    const char* name;
+} patches[] =
 {
     {0, MyReadConsoleInputA,                "ReadConsoleInputA"             },
     {0, MyReadConsoleInputW,                "ReadConsoleInputW"             },
@@ -88,13 +92,44 @@ static void initPatches()
 bool patchImports()
 {
     initPatches();
+
+    AutoWalker m(ImportsWalker(GetModuleHandle(0)));
+    bool res = false;
+
+    do
+    {
+        size_t i;
+        for (i = 0; i < LENGTH(patches); i++)
+        {
+            if (m->func() == patches[i].func || m->isName(patches[i].name))
+            {
+                patches[i].func = m->func();
+                m->func(patches[i].patch);
+                res = true;
+                break;
+            }
+        }
+    } while (m->next());
     
-    return patchModuleImports(GetModuleHandle(0), patches, LENGTH(patches));
+    return res; 
 }
 
 void restoreImports()
 {
-    restoreModuleImports(GetModuleHandle(0), patches, LENGTH(patches));
+    AutoWalker m(ImportsWalker(GetModuleHandle(0)));
+
+    do
+    {
+        size_t i;
+        for (i = 0; i < LENGTH(patches); i++)
+        {
+            if (m->func() == patches[i].patch)
+            {
+                m->func(patches[i].func);
+                break;
+            }
+        }
+    } while (m->next());
 }
 
 // vim: set et ts=4 ai :

@@ -1,21 +1,9 @@
-/**
- * @file enumfmt.h
- * Contains declaration of EnumFORMATETC class.
- *
- * $Id: enumfmt.h 57 2008-05-11 15:18:52Z eleskine $
- */
-
 #ifndef __KARBAZOL_DRAGNDROP_2_0__ENUMFMT_H__
 #define __KARBAZOL_DRAGNDROP_2_0__ENUMFMT_H__
 
 #include "cstmdata.h"
 #include "myunknown.h"
 
-/**
- * @brief IEnumFORMATETC implementations
- *
- * Implements IEnumFORMATETC interface used during dragging operation.
- */
 class EnumFORMATETC: public Unknown, public IEnumFORMATETC
 {
 private:

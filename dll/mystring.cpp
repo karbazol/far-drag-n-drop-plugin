@@ -1,9 +1,4 @@
-/**
- * @file mystring.cpp
- * Contains code for MyString classes
- *
- * $Id: mystring.cpp 75 2008-10-02 17:51:35Z eleskine $
- */
+// $Id: mystring.cpp 31 2008-04-23 17:39:31Z eleskine $
 
 #include <windows.h>
 #include <shlwapi.h>
@@ -11,45 +6,39 @@
 #include "dll.h"
 #include "ddlock.h"
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-size_t MyStringTraits<char>::strlen(const MyStringTraits<char>::type* p)
+size_t CharTraits::strlen(const CharTraits::type* p)
 {
     return lstrlenA(p);
 }
 
-MyStringTraits<char>::type* MyStringTraits<char>::strcpy(MyStringTraits<char>::type* dest, const MyStringTraits<char>::type* src)
+CharTraits::type* CharTraits::strcpy(CharTraits::type* dest, const CharTraits::type* src)
 {
     return lstrcpyA(dest, src);
 }
 
-int MyStringTraits<char>::strcmp(const MyStringTraits<char>::type* s1, const MyStringTraits<char>::type* s2)
+int CharTraits::strcmp(const CharTraits::type* s1, const CharTraits::type* s2)
 {
     return lstrcmpA(s1, s2);
 }
 
-MyStringTraits<char>::type* MyStringTraits<char>::pathDelim = "\\";
-MyStringTraits<char>::type* MyStringTraits<char>::slash = "/";
+CharTraits::type* CharTraits::pathDelim = "\\";
 
-size_t MyStringTraits<wchar_t>::strlen(const MyStringTraits<wchar_t>::type* p)
+size_t WideCharTraits::strlen(const WideCharTraits::type* p)
 {
     return lstrlenW(p);
 }
 
-MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::strcpy(MyStringTraits<wchar_t>::type* dest, const MyStringTraits<wchar_t>::type* src)
+WideCharTraits::type* WideCharTraits::strcpy(WideCharTraits::type* dest, const WideCharTraits::type* src)
 {
     return lstrcpyW(dest, src);
 }
 
-MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::pathDelim = L"\\";
-MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::slash = L"/";
+WideCharTraits::type* WideCharTraits::pathDelim = L"\\";
 
-int MyStringTraits<wchar_t>::strcmp(const MyStringTraits<wchar_t>::type* s1, const MyStringTraits<wchar_t>::type* s2)
+int WideCharTraits::strcmp(const WideCharTraits::type* s1, const WideCharTraits::type* s2)
 {
     return lstrcmpW(s1, s2);
 }
-
-#endif
 
 /**
  * Gets the absolute path and splits it to path and basename.
@@ -87,12 +76,6 @@ bool splitAndAbsPath(const wchar_t* path, MyStringW& prefix, MyStringW& suffix)
     return true;
 }
 
-/**
- * Converts string from Unicode to Multibyte
- * @param[in] s Points to the source string.
- * @param[in] cp Specifies a code-page
- * @return MyStringA object representing converted string
- */
 MyStringA w2a(const wchar_t* s, int cp)
 {
     size_t size = WideCharToMultiByte(cp, 0, s, -1, 0, 0, NULL, NULL);
@@ -108,36 +91,21 @@ MyStringA w2a(const wchar_t* s, int cp)
     return res;
 }
 
-/**
- * Converts string from Multibyte to Unicode
- * @param[in] s Points to the source string.
- * @param[in] cp Specifies a code-page
- * @return MyStringW object representing converted string
- */
 MyStringW a2w(const char* s, int cp)
 {
+    size_t size = MultiByteToWideChar(cp, 0, s, -1, 0, 0);
+
     MyStringW res;
-
-    if (s)
+    if (size)
     {
-        size_t size = MultiByteToWideChar(cp, 0, s, -1, 0, 0);
+        res.length(size-1);
 
-        if (size)
-        {
-            res.length(size-1);
-
-            MultiByteToWideChar(cp, 0, s, -1, static_cast<wchar_t*>(res), size);
-        }
+        MultiByteToWideChar(cp, 0, s, -1, static_cast<wchar_t*>(res), size);
     }
 
     return res;
 }
 
-/**
- * @brief Strings critical section
- *
- * Singleton. Critical section used by MyString objects
- */
 class MyStringCS : public CriticalSection
 {
 private:
@@ -166,20 +134,14 @@ void MyStringCS::kill(MyStringCS* p)
     delete p;
 }
 
-/**
- * Acquires String critical section lock.
- */
 void myStringLock()
 {
-    MyStringCS::instance()->lock();
+    MyStringCS::instance()->enter();
 }
 
-/**
- * Releases String critical section lock.
- */
 void myStringUnlock()
 {
-    MyStringCS::instance()->unlock();
+    MyStringCS::instance()->leave();
 }
 
 // vim: set et ts=4 ai :

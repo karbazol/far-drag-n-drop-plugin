@@ -1,4 +1,4 @@
-# $Id: SConstruct 71 2008-09-30 15:57:42Z eleskine $
+# $Id: SConstruct 26 2008-04-20 18:48:32Z eleskine $
 import os
 import copy
 import string
@@ -80,7 +80,6 @@ if optsenv['debug'] :
     commonCppFlags  += ['/MTd']
     commonCppFlags  += ['/Z7']
     commonCppFlags  += ['/D_DEBUG']
-    commonCppFlags  += ['/Od']
 else:
     commonCppFlags  += ['/MT']
     commonCppFlags  += ['/DNDEBUG']
@@ -94,7 +93,7 @@ env.Tool('msvc')
 
 env.Append(CPPPATH=commonCppPath, CPATH=commonCppPath, CXXFLAGS=commonCppFlags, 
         CFLAGS=commonCppFlags, LINKFLAGS=commonLinkFlags, CTAGSSUFFIXES=ctagsSuffixes, 
-        CTAGS='ctags', CTAGSFLAGS='--c++-types=+xp --fields=+iaS --extra=+q', LIBPATH=outDir)
+        CTAGS='ctags', CTAGSFLAGS='--c++-types=+xp --fields=+S', LIBPATH=outDir)
 
 env['BUILDERS']['Tags'] = Builder(action='$CTAGS $CTAGSFLAGS $SOURCES', emitter=ctagsEmmiter)
 env['BUILDERS']['Lng'] = Builder(action='lng.generator.exe -oh ${TARGET.dir} -ol $OUTDIR $SOURCE')

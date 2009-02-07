@@ -1,20 +1,8 @@
-/**
- * @file hldrapi.h
- * Contains declaration of HolderApi class
- *
- * $Id: hldrapi.h 60 2008-05-11 15:26:59Z eleskine $
- */
-
 #ifndef __KARBAZOL_DRAGNDROP_2_0__HLDRAPI_H__
 #define __KARBAZOL_DRAGNDROP_2_0__HLDRAPI_H__
 
 #include "hldrdefs.h"
 
-/**
- * @brief Holder API
- *
- * Class provieds entry points for Holder API
- */
 class HolderApi
 {
 private:

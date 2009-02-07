@@ -1,10 +1,3 @@
-/**
- * @file toolwnd.h
- * Contains declaration for ToolWindow class
- *
- * $Id: toolwnd.h 41 2008-05-11 13:57:27Z eleskine $
- */
-
 #ifndef __KARBAZOL_DRAGNDROP_2_0__TOOLWND_H__
 #define __KARBAZOL_DRAGNDROP_2_0__TOOLWND_H__
 
@@ -13,9 +6,6 @@
 #include "myshptr.h"
 #include "myunknown.h"
 
-/**
- * This class represents main tool window used to drag and drop files.
- */
 class ToolWindow : public MyWindow, public Unknown, public IDropSource, public IDropTarget
 {
 private:

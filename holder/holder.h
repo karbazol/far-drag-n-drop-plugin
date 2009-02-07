@@ -1,23 +1,11 @@
-/**
- * @file holder.h
- * The file contains declaration of Holder class.
- *
- * $Id: holder.h 64 2008-05-11 16:57:25Z eleskine $
- */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__HOLDER_H__
 #define __KARBAZOL_DRAGNDROP_2_0__HOLDER_H__
 
 #include "hldrwnd.h"
 #include "faritem.h"
 
-/**
- * Array of FarItem objects
- */
 typedef GrowOnlyArray<FarItem> FarItems;
 
-/**
- * Represents an instance of the holder process
- */
 class Holder 
 {
 private:

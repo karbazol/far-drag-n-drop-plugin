@@ -1,209 +1,152 @@
 /**
- * @file configure.cpp
- * The file contains implementation of Config class
+ * @file The file contains implementation of Config class
  *
- * $Id: configure.cpp 75 2008-10-02 17:51:35Z eleskine $
+ * $Id: configure.cpp 21 2008-03-30 15:39:30Z eleskine $
  */
 
-#include "fardlg.h"
+#include "far.h"
 #include "ddlng.h"
 #include "utils.h"
 #include "configure.hpp"
 #include "dll.h"
 
-/**
- * @brief Configuration dialog items.
- * 
- * Represents configuration dialog items
- */
-struct ConfigDlgItems
+#define getItemId(structType,structItem) ((int)&((structType*)0)->structItem / sizeof(InitDialogItem))
+
+static long WINAPI ConfigDlgProc(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2)
 {
-    InitDialogItem configTitle;
-    InitDialogItem checkKeyToStartDrag;
-    InitDialogItem radioLeftCtl;
-    InitDialogItem radioLeftAlt;
-    InitDialogItem radioShift;
-    InitDialogItem radioRightCtl;
-    InitDialogItem radioRightAlt;
-    InitDialogItem sepPanels;
-    InitDialogItem checkEnableDrop;
-    InitDialogItem edtPixelsPassed;
-    InitDialogItem txtPixelsPassed0;
-    InitDialogItem txtPixelsPassed1;
-    InitDialogItem sepEditor;
-    InitDialogItem checkEnableDragEditor;
-    InitDialogItem chackEnableDropEditor;
-    InitDialogItem setButtons;
-
-    InitDialogItem btnOk;
-    InitDialogItem btnCancel;
-};
-
-/**
- * Utility macro used to determine id of dialog item
- */
-#define getMyItemId(i) getFarDlgItemId(ConfigDlgItems,i)
-
-/**
- * @brief Configuration dialog
- */
-class ConfigDlg: public FarDialog
-{
-public:
-    static ConfigDlgItems _items;
-    ConfigDlg(): FarDialog(){}
-    ~ConfigDlg(){}
-protected:
-    long handle(int msg, int param1, long param2)
+    switch(Msg)
     {
-        switch (msg)
+    case DN_BTNCLICK:
         {
-        case DN_BTNCLICK:
+            if(Param1 == 1)
             {
-                if (param1 == getMyItemId(checkKeyToStartDrag))
-                    enableUseKeyToStartDnd(param2?getKeyToStartDnd():0);
+                if(Param2
+                    && BSTATE_UNCHECKED == SendDlgMessage(hDlg, DM_GETCHECK, 2, 0)
+                    && BSTATE_UNCHECKED == SendDlgMessage(hDlg, DM_GETCHECK, 3, 0)
+                    && BSTATE_UNCHECKED == SendDlgMessage(hDlg, DM_GETCHECK, 4, 0)
+                    && BSTATE_UNCHECKED == SendDlgMessage(hDlg, DM_GETCHECK, 5, 0)
+                    && BSTATE_UNCHECKED == SendDlgMessage(hDlg, DM_GETCHECK, 6, 0)
+                    )
+                {
+                    SendDlgMessage(hDlg, DM_SETCHECK, 2, BSTATE_CHECKED);
+                }
+                SendDlgMessage(hDlg, DM_ENABLE, 2, Param2);
+                SendDlgMessage(hDlg, DM_ENABLE, 3, Param2);
+                SendDlgMessage(hDlg, DM_ENABLE, 4, Param2);
+                SendDlgMessage(hDlg, DM_ENABLE, 5, Param2);
+                SendDlgMessage(hDlg, DM_ENABLE, 6, Param2);
             }
-            break;
-        }
-        return FarDialog::handle(msg, param1, param2);
-    }
-
-    InitDialogItem* items()
-    {
-        return &_items.configTitle;
-    }
-
-    int itemsCount()
-    {
-        return sizeof(ConfigDlgItems)/sizeof(InitDialogItem);
-    }
-    int right()
-    {
-        return _items.configTitle.X2+4;
-    }
-    int bottom()
-    {
-        return _items.configTitle.Y2+2;
-    }
-
-    friend int WINAPI Configure(int);
-
-public:
-    void enableUseKeyToStartDnd(int value)
-    {
-        if (!value)
-        {
-            switchCheckBox(getMyItemId(checkKeyToStartDrag), BSTATE_UNCHECKED);
-            disable(getMyItemId(radioLeftCtl) );
-            disable(getMyItemId(radioLeftAlt) );
-            disable(getMyItemId(radioShift)   );
-            disable(getMyItemId(radioRightCtl));
-            disable(getMyItemId(radioRightAlt));
-        }
-        else
-        {
-            switchCheckBox(getMyItemId(checkKeyToStartDrag), BSTATE_CHECKED);
-            
-            int key;
-            switch (value)
-            {
-            case LEFT_CTRL_PRESSED:
-                key = getMyItemId(radioLeftCtl);
-                break;
-            case LEFT_ALT_PRESSED:
-                key = getMyItemId(radioLeftAlt);
-                break;
-            case SHIFT_PRESSED:
-                key = getMyItemId(radioShift);
-                break;
-            case RIGHT_CTRL_PRESSED:
-                key = getMyItemId(radioRightCtl);
-                break;
-            case RIGHT_ALT_PRESSED:
-                key = getMyItemId(radioRightAlt);
-                break;
-            default:
-                key = getMyItemId(radioLeftCtl);
-            }
-            
-            enable(key);
-            switchCheckBox(key, BSTATE_CHECKED);
-
-            int i;
-            for (i = getMyItemId(radioLeftCtl); i < key ; i++)
-            {
-                enable(i);
-                switchCheckBox(i, BSTATE_UNCHECKED);
-            }
-
-            for (i = key + 1; i <= getMyItemId(radioRightAlt); i++)
-            {
-                enable(i);
-                switchCheckBox(i, BSTATE_UNCHECKED);
-            }
-            
         }
     }
+    return DefDlgProc(hDlg, Msg, Param1, Param2);
+}
 
-    int getKeyToStartDnd()
-    {
-        if (!checked(getMyItemId(checkKeyToStartDrag)))
-            return 0;
-        else if (checked(getMyItemId(radioLeftCtl)))
-            return LEFT_CTRL_PRESSED;
-        else if (checked(getMyItemId(radioLeftAlt)))
-            return LEFT_ALT_PRESSED;
-        else if (checked(getMyItemId(radioShift)))
-            return SHIFT_PRESSED;
-        else if (checked(getMyItemId(radioRightCtl)))
-            return RIGHT_CTRL_PRESSED;
-        else if (checked(getMyItemId(radioRightAlt)))
-            return RIGHT_ALT_PRESSED;
-        else
-            return LEFT_CTRL_PRESSED;
-    }
-};
-
-ConfigDlgItems ConfigDlg::_items =
-{
-    /* 00 */{DI_DOUBLEBOX,3,1,46,15,0,0,0,0,(char*)MConfigTitle},
-    /* 01 */{DI_CHECKBOX,5,2,0,0,0,0,0,0,(char *)MUseKeyToStartDND},
-    /* 02 */{DI_RADIOBUTTON,5,3,0,0,0,0,(unsigned int)DIF_GROUP|DIF_DISABLE,0,(char *)MLeftCtl},
-    /* 03 */{DI_RADIOBUTTON,5,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MLeftAlt},
-    /* 04 */{DI_RADIOBUTTON,5,5,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MShift},
-    /* 05 */{DI_RADIOBUTTON,22,3,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MRightCtl},
-    /* 06 */{DI_RADIOBUTTON,22,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MRightAlt},
-    {DI_TEXT,5,6,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(char*)MPanels},
-        /* 08 */{DI_CHECKBOX,5,7,0,0,0,0,0,0,(char *)MEnableDrop},
-        /* 09 */{DI_EDIT,5,8,7,0,0,0,0,0,"0"},
-        /* 10 */{DI_TEXT,9,8,37,0,0,0,0,0,(char *)MPixelsPassed},
-        /* 11 */{DI_TEXT,9,9,37,0,0,0,0,0,(char *)MPixelsPassed2},
-    {DI_TEXT,5,10,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(char*)MEditor},
-    {DI_CHECKBOX,5,11,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MEnableDrag},
-    {DI_CHECKBOX,5,12,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MEnableDrop},
-
-    // ------- Buttons -------
-    {DI_TEXT,5,13,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,""},
-    {DI_BUTTON,0,14,0,0,0,0,(unsigned int)DIF_CENTERGROUP,1,(char *)MOK},
-    {DI_BUTTON,0,14,0,0,0,0,(unsigned int)DIF_CENTERGROUP,0,(char *)MCancel}
-};
-
-/**
- * Callback function called by Far to show the plug-in's configuration dialog.
- */
 int WINAPI Configure(int /*Number*/)
 {
-    ConfigDlg dlg;
+    static struct MyItems{
+        InitDialogItem configTitle;
+        InitDialogItem checkKeyToStartDrag;
+        InitDialogItem radioLeftCtl;
+        InitDialogItem radioLeftAlt;
+        InitDialogItem radioShift;
+        InitDialogItem radioRightCtl;
+        InitDialogItem radioRightAlt;
+        InitDialogItem sepPanels;
+        InitDialogItem checkEnableDrop;
+        InitDialogItem edtPixelsPassed;
+        InitDialogItem txtPixelsPassed0;
+        InitDialogItem txtPixelsPassed1;
+        InitDialogItem sepEditor;
+        InitDialogItem checkEnableDragEditor;
+        InitDialogItem chackEnableDropEditor;
+        InitDialogItem setButtons;
 
-    dlg.enableUseKeyToStartDnd(Config::instance()->checkKey());
-    dlg.switchCheckBox(getMyItemId(checkEnableDrop),
-            Config::instance()->allowDrop()?BSTATE_CHECKED:BSTATE_UNCHECKED);
+        InitDialogItem btnOk;
+        InitDialogItem btnCancel;
+    } Items =
+    {
+        /* 00 */{DI_DOUBLEBOX,3,1,46,15,0,0,0,0,(char*)MConfigTitle},
+        /* 01 */{DI_CHECKBOX,5,2,0,0,0,0,0,0,(char *)MUseKeyToStartDND},
+        /* 02 */{DI_RADIOBUTTON,5,3,0,0,0,0,(unsigned int)DIF_GROUP|DIF_DISABLE,0,(char *)MLeftCtl},
+        /* 03 */{DI_RADIOBUTTON,5,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MLeftAlt},
+        /* 04 */{DI_RADIOBUTTON,5,5,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MShift},
+        /* 05 */{DI_RADIOBUTTON,22,3,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MRightCtl},
+        /* 06 */{DI_RADIOBUTTON,22,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MRightAlt},
+        {DI_TEXT,5,6,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(char*)MPanels},
+            /* 08 */{DI_CHECKBOX,5,7,0,0,0,0,0,0,(char *)MEnableDrop},
+            /* 09 */{DI_EDIT,5,8,7,0,0,0,0,0,"0"},
+            /* 10 */{DI_TEXT,9,8,37,0,0,0,0,0,(char *)MPixelsPassed},
+            /* 11 */{DI_TEXT,9,9,37,0,0,0,0,0,(char *)MPixelsPassed2},
+        {DI_TEXT,5,10,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(char*)MEditor},
+        {DI_CHECKBOX,5,11,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MEnableDrag},
+        {DI_CHECKBOX,5,12,0,0,0,0,(unsigned int)DIF_DISABLE,0,(char *)MEnableDrop},
 
-    if (getMyItemId(btnOk) != dlg.show(true))
+        // ------- Buttons -------
+        {DI_TEXT,5,13,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,""},
+        {DI_BUTTON,0,14,0,0,0,0,(unsigned int)DIF_CENTERGROUP,1,(char *)MOK},
+        {DI_BUTTON,0,14,0,0,0,0,(unsigned int)DIF_CENTERGROUP,0,(char *)MCancel}
+    };
+
+    const size_t itemsCount = sizeof(Items)/sizeof(InitDialogItem);
+    struct FarDialogItem DialogItems[itemsCount];
+
+    InitDialogItems(&Items.configTitle, DialogItems, itemsCount);
+
+    int checkKey = Config::instance()->checkKey();
+
+    if(checkKey)
+    {
+        DialogItems[getItemId(MyItems,checkKeyToStartDrag)].Selected = 1;
+        if(checkKey == LEFT_CTRL_PRESSED)
+            DialogItems[getItemId(MyItems,radioLeftCtl)].Selected = 1;
+        else if(checkKey == LEFT_ALT_PRESSED)
+            DialogItems[getItemId(MyItems,radioLeftAlt)].Selected = 1;
+        else if(checkKey == SHIFT_PRESSED)
+            DialogItems[getItemId(MyItems,radioShift)].Selected = 1;
+        else if(checkKey == RIGHT_CTRL_PRESSED)
+            DialogItems[getItemId(MyItems,radioRightCtl)].Selected = 1;
+        else if(checkKey == RIGHT_ALT_PRESSED)
+            DialogItems[getItemId(MyItems,radioRightAlt)].Selected = 1;
+        else
+            DialogItems[getItemId(MyItems,checkKeyToStartDrag)].Selected = 0;
+
+        if(DialogItems[getItemId(MyItems,checkKeyToStartDrag)].Selected)
+        {
+            DialogItems[getItemId(MyItems,radioLeftCtl)].Flags &= ~DIF_DISABLE;
+            DialogItems[getItemId(MyItems,radioLeftAlt)].Flags &= ~DIF_DISABLE;
+            DialogItems[getItemId(MyItems,radioShift)].Flags &= ~DIF_DISABLE;
+            DialogItems[getItemId(MyItems,radioRightCtl)].Flags &= ~DIF_DISABLE;
+            DialogItems[getItemId(MyItems,radioRightAlt)].Flags &= ~DIF_DISABLE;
+        }
+    }
+
+    if(Config::instance()->allowDrop())
+        DialogItems[getItemId(MyItems,checkEnableDrop)].Selected = 1;
+
+    LONG_PTR nExitCode = DialogEx(-1, -1, DialogItems->X2 + 4, DialogItems->Y2 + 2,
+        "Config", DialogItems, itemsCount, 0, 0, ConfigDlgProc, 0);
+    if(nExitCode != getItemId(MyItems,btnOk))
         return FALSE;
 
-    Config::instance()->checkKey(dlg.getKeyToStartDnd());
-    Config::instance()->allowDrop(dlg.checked(getMyItemId(checkEnableDrop)));
+    if(DialogItems[getItemId(MyItems,checkKeyToStartDrag)].Selected)
+    {
+        if(DialogItems[getItemId(MyItems,radioLeftCtl)].Selected)
+            checkKey = LEFT_CTRL_PRESSED;
+        else if(DialogItems[getItemId(MyItems,radioLeftAlt)].Selected)
+            checkKey = LEFT_ALT_PRESSED;
+        else if(DialogItems[getItemId(MyItems,radioShift)].Selected)
+            checkKey = SHIFT_PRESSED;
+        else if(DialogItems[getItemId(MyItems,radioRightCtl)].Selected)
+            checkKey = RIGHT_CTRL_PRESSED;
+        else if(DialogItems[getItemId(MyItems,radioRightAlt)].Selected)
+            checkKey = RIGHT_ALT_PRESSED;
+    }
+    else
+        checkKey = 0;
+
+    Config::instance()->checkKey(checkKey);
+
+    Config::instance()->allowDrop(DialogItems[getItemId(MyItems,checkEnableDrop)].Selected?true:false);
 
     if(Config::instance()->allowDrop())
     {
@@ -224,9 +167,9 @@ Config::Config():_checkKey(0), _allowDrop(true), _shellCopy(true)
     _shellCopy = FarReadRegistry(_shellCopyName, _shellCopy)?true:false;
 }
 
-const wchar_t* Config::_allowDropName = L"AllowDrop";
-const wchar_t* Config::_checkKeyName = L"CheckKey";
-const wchar_t* Config::_shellCopyName = L"UseShellCopy";
+const char* Config::_allowDropName = "AllowDrop";
+const char* Config::_checkKeyName = "CheckKey";
+const char* Config::_shellCopyName = "UseShellCopy";
 
 Config* Config::instance()
 {
@@ -270,8 +213,6 @@ void Config::shellCopy(bool value)
     if (value != _shellCopy)
     {
         _shellCopy = value;
-
-        FarWriteRegistry(_shellCopyName, _shellCopy);
     }
 }
 

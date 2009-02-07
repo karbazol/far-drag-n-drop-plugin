@@ -1,4 +1,4 @@
-// $Id: cpydlg.cpp 78 2008-11-01 16:57:30Z eleskine $
+// $Id: cpydlg.cpp 26 2008-04-20 18:48:32Z eleskine $
 
 #include "cpydlg.h"
 #include "ddlng.h"
@@ -11,16 +11,16 @@ CopyDialog::CopyDialogItems CopyDialog::copyDialogItemsTemplate =
         /*  2 */{DI_TEXT,5, 3,44,0,0,0,0,0,""},
         /*  3 */{DI_TEXT,5, 4,44,0,0,0,0,0,(char*)MCopyingTo},
         /*  4 */{DI_TEXT,5, 5,44,0,0,0,0,0,""},
-        /*  5 */{DI_TEXT,5, 6,44,0,0,0,0,0,"같같같같같같같같같같같같같같같같같같같같"}, // u+2591 0xb0
+        /*  5 */{DI_TEXT,5, 6,44,0,0,0,0,0,"같같같같같같같같같같같같같같같같같같같같"},
         /*  6 */{DI_TEXT,5, 7,44,0,0,0,0,0,"Total size:"},
         /*  7 */{DI_TEXT,5, 8,44,0,0,0,0,0,"같같같같같같같같같같같같같같같같같같같같"},
-        /*  8 */{DI_TEXT,5, 9,44,0,0,0,0,0,"컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴"}, // u+2500 0xc4
+        /*  8 */{DI_TEXT,5, 9,44,0,0,0,0,0,"컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴"},
         /*  9 */{DI_TEXT,5,10,44,0,0,0,0,0,""},
-        /* 10 */{DI_TEXT,5,11,44,0,0,0,0,0,"컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴"}, // u+2500 0xc4
+        /* 10 */{DI_TEXT,5,11,44,0,0,0,0,0,"컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴"},
         /* 11 */{DI_TEXT,5,12,44,0,0,0,0,0,"Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"}
 };
 
-#define getMyItemId(structItem) getFarDlgItemId(CopyDialogItems,structItem)
+#define getItemId(structItem) ((int)&((CopyDialogItems*)0)->structItem / sizeof(InitDialogItem))
 #define NANOSECPERSEC 10000000
 
 CopyDialog::CopyDialog(): FarDialog(), _items(copyDialogItemsTemplate),
@@ -105,7 +105,7 @@ void CopyDialog::updateTotalSize()
 
     wsprintfA(totalSizeString, GetMsg(MTotalSize), sizeToString(totalSizeValue, _totalSize));
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblTotalSize),
+    postMessage(DM_SETTEXTPTR, getItemId(lblTotalSize), 
             (long)centerAndFill(totalSizeString, LENGTH(totalSizeString), '\xc4'));
 }
 
@@ -121,7 +121,7 @@ void CopyDialog::updateFilesProcessed()
 
     wsprintfA(filesProcessed, GetMsg(MFilesProcessed), processed, _filesToProcess);
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblFilesProcessed), (long)filesProcessed);
+    postMessage(DM_SETTEXTPTR, getItemId(lblFilesProcessed), (long)filesProcessed);
 }
 
 static int calcPercents(const __int64& value, const __int64& base, int len)
@@ -141,11 +141,11 @@ void CopyDialog::updatePercents()
     if (_fileListProcessed)
     {
         percents = calcPercents(_totalProcessedSize, _totalSize, 40);
-        updateProgressBar(percents, getMyItemId(progressTotal));
+        updateProgressBar(percents, getItemId(progressTotal));
     }
 
     percents = calcPercents(_currentProcessedSize, _currentSize, 40);
-    updateProgressBar(percents, getMyItemId(progressCurrent));
+    updateProgressBar(percents, getItemId(progressCurrent));
 }
 
 void CopyDialog::updateProgressBar(int value, int controlId)
@@ -188,13 +188,13 @@ void CopyDialog::updateTimesAndSpeed()
 
     char timeString[MAX_PATH];
 
-    wsprintfA(timeString,
+    wsprintfA(timeString, 
             GetMsg(MFileCopyingTimes), // "Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"
             spentTime.wHour, spentTime.wMinute, spentTime.wSecond,
             leftTime.wHour, leftTime.wMinute, leftTime.wSecond,
             _speed >> 10);
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblTimeInfo), (long)timeString);
+    postMessage(DM_SETTEXTPTR, getItemId(lblTimeInfo), (long)timeString); 
 }
 
 void CopyDialog::calcSpeed()
@@ -251,8 +251,8 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
         TruncPathStr(_srcFile, 40);
         TruncPathStr(_destFile, 40);
 
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (long)(char*)_srcFile);
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (long)(char*)_destFile);
+        postMessage(DM_SETTEXTPTR, getItemId(lblSrcFile), (long)(char*)_srcFile);
+        postMessage(DM_SETTEXTPTR, getItemId(lblDestFile), (long)(char*)_destFile);
 
         updateFilesProcessed();
         updatePercents();
@@ -269,12 +269,12 @@ bool CopyDialog::step(const __int64& step)
     {
         _currentProcessedSize += step;
         _totalProcessedSize += step;
-
+        
         calcSpeed();
 
         updateTimesAndSpeed();
         updatePercents();
-
+        
         return true;
     }
     return false;
@@ -300,9 +300,5 @@ int CopyDialog::bottom()
     return _items.frame.Y2+2;
 }
 
-DWORD CopyDialog::flags()
-{
-    return 0x10;
-}
-
 // vim: set et ts=4 ai :
+

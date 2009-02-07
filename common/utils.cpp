@@ -6,16 +6,13 @@
 #include <Aclapi.h>
 
 /**
- * Allows to determine a base address of module containing specified moduleItem.
- * @param[in] moduleItem points to a symbol in the module which base address
- * should be found.
- * @return Address of module containing moduleItem.
+ * Returns base address of exectable from which it is called.
  */
-void* getModuleBaseAddress(void* moduleItem)
+void* getMyModuleBaseAddress()
 {
     MEMORY_BASIC_INFORMATION info;
 
-    if (!VirtualQuery(moduleItem, &info, sizeof(info)))
+    if (!VirtualQuery(getMyModuleBaseAddress, &info, sizeof(info)))
         return 0;
 
     return info.AllocationBase;
@@ -90,6 +87,23 @@ void* getEveryOneDescriptor()
 void freeEveryOneDescriptor(void* p)
 {
     free(p);
+}
+
+/**
+ * Normalizes the path. Converts slashes to backslashes. Removes last backslash.
+ */
+void normalizePath(wchar_t* path)
+{
+    if (path)
+    {
+        for(;*path;path++)
+        {
+            if (*path == L'/')
+                *path = L'\\';
+        }
+        if (*--path == L'\\')
+            *path = L'\0';
+    }
 }
 
 // vim: set et ts=4 ai :

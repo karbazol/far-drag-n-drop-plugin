@@ -1,9 +1,8 @@
-// $Id: dlgnotfy.cpp 78 2008-11-01 16:57:30Z eleskine $
+// $Id: dlgnotfy.cpp 26 2008-04-20 18:48:32Z eleskine $
 
 #include "hdrpprcs.h"
 #include "cpydlg.h"
 #include "dlgnotfy.h"
-#include "cperrdlg.h"
 
 bool CopyDialogNotify::onNextEntry(const int /*reason*/, const FileListEntry& e)
 {
@@ -37,7 +36,6 @@ bool CopyDialogNotify::onFileExists(const wchar_t* src, const wchar_t* dest)
     src;
     dest;
 
-    /** @todo Ask user whether to overwrite files */
     return true;
 }
 
@@ -50,22 +48,6 @@ bool CopyDialogNotify::onFileStep(const __int64& step)
         return false;
 
     return true;
-}
-
-bool CopyDialogNotify::onFileError(const wchar_t* src, const wchar_t* dest, DWORD errorNumber)
-{
-    /** @todo Implement error check */
-    if (_dialog)
-    {
-        // give a _dialog a chance to appear
-        while (_dialog->sendMessage(DM_GETTEXTPTR, 0, 0) == 0)
-        {
-            Sleep(1);
-        }
-    }
-    CopyErrorDialog dlg;
-    dlg.show(src, dest, errorNumber);
-    return false;
 }
 
 // vim: set et ts=4 ai :

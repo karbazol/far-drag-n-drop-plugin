@@ -1,10 +1,3 @@
-/**
- * @file inpprcsr.h
- * Contains declaration of InputProcessor class
- *
- * $Id: inpprcsr.h 71 2008-09-30 15:57:42Z eleskine $
- */
-
 #ifndef __KARBAZOL_DRAGNDROP_2_0__INPPRCSR_H__
 #define __KARBAZOL_DRAGNDROP_2_0__INPPRCSR_H__
 
@@ -25,10 +18,6 @@ public:
      * Returns pointer to the InputProcessors's instance.
      */
     static InputProcessor* instance();
-
-    static BOOL ProcessConsoleInput(HANDLE console, PINPUT_RECORD buffer,
-        DWORD buffLength, LPDWORD readCount,
-        bool isUnicode, bool removeFromInput);
 
     bool readFromSystem(HANDLE h, bool waitForInput);
     /**
@@ -73,6 +62,10 @@ private:
     KEY_EVENT_RECORD _lastKey;
 
 };
+
+BOOL ProcessConsoleInput(HANDLE console, PINPUT_RECORD buffer,
+        DWORD buffLength, LPDWORD readCount,
+        bool isUnicode, bool removeFromInput);
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__INPPRCSR_H__
 // vim: set et ts=4 :

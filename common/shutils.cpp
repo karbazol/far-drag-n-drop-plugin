@@ -51,7 +51,7 @@ void CopyMedium(STGMEDIUM& dest, const STGMEDIUM& src, CLIPFORMAT cf)
         break;
     case TYMED_FILE:
         {
-            dest.lpszFileName = reinterpret_cast<LPOLESTR>(CoTaskMemAlloc((lstrlenW(dest.lpszFileName)+1)*sizeof(*dest.lpszFileName)));
+            dest.lpszFileName = (LPOLESTR)CoTaskMemAlloc((lstrlenW(dest.lpszFileName)+1)*sizeof(*dest.lpszFileName));
             lstrcpyW(dest.lpszFileName, src.lpszFileName);
         }
         break;
@@ -75,15 +75,15 @@ void CopyMedium(STGMEDIUM& dest, const STGMEDIUM& src, CLIPFORMAT cf)
     dest.pUnkForRelease = src.pUnkForRelease;
 }
 
-#define DEFINE_CBD_FMT(x)                               \
-CLIPFORMAT get_##x()                                    \
-{                                                       \
-    static CLIPFORMAT res = static_cast<CLIPFORMAT>(0); \
-    if (!res)                                           \
-        res = static_cast<CLIPFORMAT>(                  \
-            RegisterClipboardFormat(CFSTR_##x));        \
-    return res;                                         \
-}                                                       \
+#define DEFINE_CBD_FMT(x)                           \
+CLIPFORMAT get_##x()                                \
+{                                                   \
+    static CLIPFORMAT res = (CLIPFORMAT)0;          \
+    if (!res)                                       \
+        res = (CLIPFORMAT)                          \
+            RegisterClipboardFormat(CFSTR_##x);     \
+    return res;                                     \
+}                                                   \
 
 DEFINE_CBD_FMT(DRAGCONTEXT)
 DEFINE_CBD_FMT(DRAGIMAGEBITS)

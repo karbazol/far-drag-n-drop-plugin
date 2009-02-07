@@ -1,10 +1,3 @@
-/**
- * @file fldsitrt.h
- * The file contains declaration of FileDescriptorIterator class
- *
- * $Id: fldsitrt.h 45 2008-05-11 14:25:23Z eleskine $
- */
-
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FLDSITRT_H__
 #define __KARBAZOL_DRAGNDROP_2_0__FLDSITRT_H__
 
@@ -12,9 +5,6 @@
 #include <shlobj.h>
 #include "mystring.h"
 
-/**
- * Class to iterate through CF_FILEDESCRIPTOR data.
- */
 class FileDescriptorIterator
 {
 private:

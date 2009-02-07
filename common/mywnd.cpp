@@ -1,8 +1,7 @@
 /**
- * @file mywnd.cpp
- * The file contains implementation of MyWindow class.
+ * @file The file contains implementation of MyWindow class.
  *
- * $Id: mywnd.cpp 41 2008-05-11 13:57:27Z eleskine $
+ * $Id: mywnd.cpp 15 2008-03-10 18:07:40Z eleskine $
  */
 #include "mywnd.h"
 #include "utils.h"
@@ -41,7 +40,7 @@ bool MyWindow::initClass(WNDCLASSEX& cls)
 #ifndef _DEBUG
     cls.hbrBackground = NULL;
 #else
-    cls.hbrBackground = reinterpret_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
+    cls.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 #endif
     cls.lpszMenuName = NULL;
     cls.lpszClassName = getClassName();

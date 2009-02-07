@@ -1,9 +1,4 @@
-// $Id: cpydlg.h 78 2008-11-01 16:57:30Z eleskine $
-
-/**
- * @file cpydlg.h
- * Contains declaration of CopyDialog class
- */
+// $Id: cpydlg.h 26 2008-04-20 18:48:32Z eleskine $
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__CPYDLG_H__
 #define __KARBAZOL_DRAGNDROP_2_0__CPYDLG_H__
@@ -11,9 +6,6 @@
 #include "fardlg.h"
 #include "mystring.h"
 
-/**
- * Implements Far-based copy progress dialog.
- */
 class CopyDialog : public FarDialog
 {
 private:
@@ -25,9 +17,9 @@ private:
         InitDialogItem lblSrcFile;
         InitDialogItem label1;
         InitDialogItem lblDestFile;
-        InitDialogItem progressCurrent;
-        InitDialogItem lblTotalSize;
         InitDialogItem progressTotal;
+        InitDialogItem lblTotalSize;
+        InitDialogItem progressCurrent;
         InitDialogItem label3;
         InitDialogItem lblFilesProcessed;
         InitDialogItem label4;
@@ -59,7 +51,6 @@ protected:
     int itemsCount();
     int right();
     int bottom();
-    DWORD flags();
 protected:
     bool onInit();
     bool onClose(int id);

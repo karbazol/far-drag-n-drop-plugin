@@ -1,19 +1,8 @@
-/**
- * @file filelist.cpp
- * Contains implementation of FileList class.
- * 
- * $Id: filelist.cpp 78 2008-11-01 16:57:30Z eleskine $
- */
+// $Id: filelist.cpp 29 2008-04-21 11:00:40Z eleskine $
 
 #include "filelist.h"
 #include "utils.h"
 
-/**
- * @brief Container for file list entries.
- *
- * Utility class used by FileList objects to hold
- * FileListEntry objects.
- */
 class FileListEntryContainer
 {
 private:
@@ -29,7 +18,7 @@ public:
         if (insertAfter)
             insertAfter->_next = this;
     }
-    FileListEntryContainer* deleteIt()                                      
+    FileListEntryContainer* deleteIt()
     {
         FileListEntryContainer* next;
 
@@ -121,21 +110,15 @@ FileList::FileList(const wchar_t* files, FileListNotify* fn): _notify(fn),
     _haveEntries = CreateEvent(NULL, FALSE, FALSE, NULL);
     _stopThread = CreateEvent(NULL, FALSE, FALSE, NULL);
 
-#if 1
     DWORD dwThrdId;
     _threadEnd = CreateThread(NULL, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(&runMe),
             this, 0, &dwThrdId);
-#else
-    runMe(this);
-#endif
 }
 
 FileList::~FileList()
 {
-#if 1
     SignalObjectAndWait(_stopThread, _threadEnd, INFINITE, FALSE);
     CloseHandle(_threadEnd);
-#endif
     CloseHandle(_haveEntries);
     CloseHandle(_stopThread);
 
@@ -167,7 +150,7 @@ bool FileList::appendEntry(const FileListEntry& e)
         return false;
 
     {
-        LOCKIT(_entriesGuard);
+        lockIt l(&_entriesGuard);
 
         _tail = new FileListEntryContainer(e, _tail);
         if (!_head)
@@ -254,7 +237,7 @@ bool FileList::next(FileListEntry& e)
     HANDLE events[] = {_threadEnd, _haveEntries};
     WaitForMultipleObjects(LENGTH(events), events, FALSE, INFINITE);
 
-    LOCKIT(_entriesGuard);
+    lockIt l(&_entriesGuard);
 
     if (_head)
     {

@@ -1,24 +1,20 @@
 /**
- * @file configure.hpp
- * The file contains declaration of Config class.
+ * @file The file contains declaration of Config class.
  * 
- * $Id: configure.hpp 75 2008-10-02 17:51:35Z eleskine $
+ * $Id: configure.hpp 21 2008-03-30 15:39:30Z eleskine $
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__CONFIGURE_HPP__
 #define __KARBAZOL_DRAGNDROP_2_0__CONFIGURE_HPP__
 
 #include <windows.h>
 
-/**
- * The class is used to manipulate with configuration settings
- */
 class Config
 {
 private:
     // Registry manipulation stuff
-    static const wchar_t* _allowDropName;
-    static const wchar_t* _checkKeyName;
-    static const wchar_t* _shellCopyName;
+    static const char* _allowDropName;
+    static const char* _checkKeyName;
+    static const char* _shellCopyName;
 private:
     DWORD _checkKey;
     bool _allowDrop;

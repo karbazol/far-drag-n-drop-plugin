@@ -12,7 +12,6 @@ DragBitmap::DragBitmap():_bmp(NULL)
     {
         RECT rect = {0};
 
-        /** @todo Draw file names during dragging instead of 'Hello world' */
         if (DrawText(dc, L"Hello world!", -1, &rect, DT_CALCRECT))
         {
             _bmp = CreateCompatibleBitmap(desktop, rect.right, rect.bottom);

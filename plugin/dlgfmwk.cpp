@@ -1,9 +1,4 @@
-/**
- * @file dlgfmwk.cpp
- * Contains implementation of Dialogs Framework
- *
- *$Id: dlgfmwk.cpp 78 2008-11-01 16:57:30Z eleskine $
- */
+// $Id: dlgfmwk.cpp 26 2008-04-20 18:48:32Z eleskine $
 
 #include "dlgfmwk.h"
 #include "dll.h"
@@ -11,13 +6,6 @@
 #include "growarry.h"
 #include "mainthrd.h"
 
-long SendDlgMessage(HANDLE hDlg, int Msg, int Param1, long Param2);
-
-/**
- * @brief Dialog entry
- *
- * Dialog entry object used by Dialogs Framework
- */
 class DialogEntry
 {
 private:
@@ -37,18 +25,16 @@ private:
         }
     };
     typedef GrowOnlyArray<ControlTextMessage> ControlTexts;
-    typedef GrowOnlyArray<RunningDialogs::Message> Messages;
 
     DialogEntry* _next;
     FarDialog* _dlg;
     CriticalSection _lock;
     ControlTexts _texts;
-    Messages _messages;
-    DialogEntry():_next(0),_dlg(0),_lock(),_texts(),_messages()
+    DialogEntry():_next(0),_dlg(0),_lock(),_texts()
     {
     }
     DialogEntry(DialogEntry* head, FarDialog* dlg):
-        _next(head), _dlg(dlg),_lock(),_texts(),_messages()
+        _next(head), _dlg(dlg),_lock(),_texts()
     {
     }
     typedef bool (DialogEntry::*cmpDlg_t)(void* p) const;
@@ -82,9 +68,7 @@ private:
         return res;
     }
     // Disable direct deletion
-    ~DialogEntry()
-    {
-    }
+    ~DialogEntry(){}
 public:
     DialogEntry* newEntry(FarDialog* dlg)
     {
@@ -152,57 +136,14 @@ public:
 
         return res;
     }
-    RunningDialogs::Message& addMessage(HANDLE h, int msg, int p1, long p2)
-    {
-        RunningDialogs::Message m;
-        m.h = h;
-        m.message = msg;
-        m.param1 = p1;
-        m.param2 = p2;
-
-        return _messages.append(m);
-    }
-    inline Messages messages(){return _messages;}
 };
 
-class ActiveDialog
-{
-private:
-    ActiveDialog* _next;
-    FarDialog* _dlg;
-    ActiveDialog(ActiveDialog* next, FarDialog* dlg): _next(next), _dlg(dlg){}
-    ~ActiveDialog(){}
-public:
-    ActiveDialog* push(FarDialog* dlg)
-    {
-        return new ActiveDialog(this, dlg);
-    }
-    ActiveDialog* pop()
-    {
-        if (!this)
-            return 0;
-
-        ActiveDialog* res = _next;
-
-        delete this;
-
-        return res;
-    }
-    void deleteAll()
-    {
-        for (ActiveDialog* d = this; d != 0; d = d->pop());
-    }
-
-    inline FarDialog* dialog() const {return _dlg;}
-};
-
-RunningDialogs::RunningDialogs():_activeDialog(0),_head(0), _dialogsLock()
+RunningDialogs::RunningDialogs():_head(0), _dialogsLock()
 {
 }
 
 RunningDialogs::~RunningDialogs()
 {
-    _activeDialog->deleteAll();
     _head->deleteAll();
 }
 
@@ -227,38 +168,38 @@ RunningDialogs* RunningDialogs::instance()
 
 void RunningDialogs::registerDialog(FarDialog* dlg)
 {
-    LOCKIT(_dialogsLock);
+    lockIt l(&_dialogsLock);
     _head = _head->newEntry(dlg);
 }
 
 bool RunningDialogs::lockDialog(FarDialog* dlg)
 {
-    LOCKIT(_dialogsLock);
+    lockIt l(&_dialogsLock);
     DialogEntry* e = _head->find(dlg);
     if (!e)
         return false;
 
-    e->lock().lock();
+    e->lock().enter();
 
     return true;
 }
 
 void RunningDialogs::unlockDialog(FarDialog* dlg)
 {
-    LOCKIT(_dialogsLock);
+    lockIt l(&_dialogsLock);
     DialogEntry* e = _head->find(dlg);
 
     if (!e)
         return;
 
-    e->lock().unlock();
+    e->lock().leave();
 }
 
-FarDialog* RunningDialogs::getDialog(HANDLE handle)
+FarDialog* RunningDialogs::getDialog(void* handle)
 {
-    LOCKIT(_dialogsLock);
+    lockIt l(&_dialogsLock);
 
-    DialogEntry* res = _head->find(handle);
+    DialogEntry* res = _head->find(reinterpret_cast<HANDLE>(handle));
     if (!res)
     {
         return 0;
@@ -268,7 +209,7 @@ FarDialog* RunningDialogs::getDialog(HANDLE handle)
 
 void RunningDialogs::unregisterDialog(FarDialog* dlg)
 {
-    LOCKIT(_dialogsLock);
+    lockIt l(&_dialogsLock);
 
     DialogEntry* p;
     DialogEntry* e = _head->find(dlg, &p);
@@ -277,15 +218,11 @@ void RunningDialogs::unregisterDialog(FarDialog* dlg)
 
     if (e == _head)
         _head = p;
-
-    TRACE("RunningDialogs::unregisterDialog called for %p\n", dlg);
 }
 
 long RunningDialogs::sendSafeMessage(HANDLE handle,
         int msg, int param0, long param1)
 {
-    LOCKIT(_dialogsLock);
-
     FarDialog* d = getDialog(handle);
     if (!d)
         return 0;
@@ -296,7 +233,7 @@ long RunningDialogs::sendSafeMessage(HANDLE handle,
 void RunningDialogs::postMessage(FarDialog* dlg,
         int msg, int param0, long param1)
 {
-    LOCKIT(_dialogsLock);
+    lockIt l(&_dialogsLock);
 
     DialogEntry* e = _head->find(dlg);
     if (!e)
@@ -305,37 +242,17 @@ void RunningDialogs::postMessage(FarDialog* dlg,
     switch (msg)
     {
     case DM_SETTEXTPTR:
-        e->setControlText(param0, (const char*)param1) && dlg->hwnd();
+        if (!e->setControlText(param0, (const char*)param1) && dlg->hwnd())
+            MainThread::instance()->postDlgMessage(dlg->hwnd(), msg, param0, param1);
         break;
     default:
-        e->addMessage(dlg->hwnd(), msg, param0, param1);
-        break;
+        MainThread::instance()->postDlgMessage(dlg->hwnd(), msg, param0, param1);
     }
-
-    MainThread::instance()->postDlgMessage();
 }
 
-long RunningDialogs::sendMessage(FarDialog* dlg, int msg, int param0, long param1)
+void RunningDialogs::postMyMessages(FarDialog* dlg)
 {
-    Message m;
-    {
-        LOCKIT(_dialogsLock);
-        if (!_activeDialog || (dlg != _activeDialog->dialog()))
-            return 0;
-        m.h = dlg->hwnd();
-        m.message = msg;
-        m.param1 = param0;
-        m.param2 = param1;
-    }
-    return MainThread::instance()->sendDlgMessage(&m);
-}
-
-void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
-{
-    LOCKIT(_dialogsLock);
-
-    if ((!_activeDialog) || (_activeDialog->dialog() != dlg))
-        return;
+    lockIt l(&_dialogsLock);
 
     DialogEntry* e = _head->find(dlg);
     if (!e || !dlg->hwnd())
@@ -349,24 +266,16 @@ void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
         if (e->getControlText(i, s))
         {
             char* str = s;
-            //e->setControlText(i, s);
-            SendDlgMessage(dlg->hwnd(), DM_SETTEXTPTR, i, (long)str);
+            e->setControlText(i, s);
+            MainThread::instance()->postDlgMessage(dlg->hwnd(), DM_SETTEXTPTR, i, (long)str);
         }
-    }
-
-    for (i = 0; i < (int)e->messages().size(); i++)
-    {
-        Message& m = e->messages()[i];
-
-        if (m.message != DM_SETTEXTPTR)
-            SendDlgMessage(m.h, m.message, m.param1, m.param2);
     }
 }
 
 long RunningDialogs::processPostedSetText(HANDLE dlg,
         int id, const char* s)
 {
-    LOCKIT(_dialogsLock);
+    lockIt l(&_dialogsLock);
 
     DialogEntry* e = _head->find(dlg);
 
@@ -384,8 +293,6 @@ long RunningDialogs::processPostedSetText(HANDLE dlg,
 long RunningDialogs::processPostedMessage(HANDLE dlg,
         int msg, int param0, long param1)
 {
-    LOCKIT(_dialogsLock);
-
     switch (msg)
     {
     case DM_SETTEXTPTR:
@@ -394,50 +301,6 @@ long RunningDialogs::processPostedMessage(HANDLE dlg,
     default:
         return sendSafeMessage(dlg, msg, param0, param1);
     }
-}
-
-void RunningDialogs::notifyDialog(FarDialog* dlg, bool shown)
-{
-    LOCKIT(_dialogsLock);
-
-    if (shown)
-    {
-        _activeDialog = _activeDialog->push(dlg);
-        processPostedDlgMessages(dlg);
-    }
-    else
-    {
-        ASSERT(_activeDialog && _activeDialog->dialog() == dlg);
-        processPostedDlgMessages(dlg);
-        /** @todo discard all queued messages for the dialog */
-
-        _activeDialog = _activeDialog->pop();
-        if (_activeDialog)
-        {
-            processPostedDlgMessages(_activeDialog->dialog());
-        }
-    }
-}
-
-long RunningDialogs::processMessages(Message* msg)
-{
-    LOCKIT(_dialogsLock);
-
-    if (msg)
-    {
-        if (!_activeDialog || _activeDialog->dialog()->hwnd() != msg->h)
-            return 0;
-
-        return SendDlgMessage(msg->h, msg->message, msg->param1, msg->param2);
-    }
-    else
-    {
-        if (_activeDialog)
-        {
-            processPostedDlgMessages(_activeDialog->dialog());
-        }
-    }
-    return -1;
 }
 
 // vim: set et ts=4 ai :

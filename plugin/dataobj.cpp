@@ -1,10 +1,3 @@
-/**
- * @file dataobj.cpp
- * The contains implementation of DataObject class
- *
- * $Id: dataobj.cpp 78 2008-11-01 16:57:30Z eleskine $
- */
-
 #include <shlobj.h>
 #include <guiddef.h>
 #include "utils.h"
@@ -14,9 +7,6 @@
 #include "datacont.h"
 #include "shutils.h"
 
-/**
- * Custom data object used during dragging operation.
- */
 class DataObject : public Unknown, public IDataObject, public IAsyncOperation
 {
 private:
@@ -25,7 +15,7 @@ private:
     BOOL _operating;
     HRESULT QueryGetCustomData(FORMATETC* fmt);
 public:
-    DataObject(const PanelInfoW& info): _data(info), _async(VARIANT_TRUE),
+    DataObject(const struct PanelInfo& info): _data(info), _async(VARIANT_TRUE),
     _operating(VARIANT_FALSE){}
     
     DEFINE_UNKNOWN
@@ -125,10 +115,7 @@ public:
     }
 };
 
-/**
- * Creates DataObject from plug-in's panel info structure
- */
-HRESULT createDataObject(PanelInfoW& info, IDataObject** dataObject)
+HRESULT createDataObject(struct PanelInfo& info, IDataObject** dataObject)
 {
     HRESULT res = S_OK;
 
@@ -239,7 +226,6 @@ HRESULT DataObject::QueryGetData(
         return DV_E_TYMED;
     else if(pformatetcIn->cfFormat == CF_HDROP)
         return S_OK;
-    /** @todo Implement support for CF_SHELLIDLIST */
 #if 0
     else if(pformatetcIn->cfFormat == CF_SHELLIDLIST)
         return S_OK;
@@ -338,6 +324,5 @@ HRESULT WINAPI DataObject::SetData (
 
     return S_OK;
 }
-
 // vim: set et ts=4 ai :
 

@@ -1,9 +1,4 @@
-/**
- * @file filelist.h
- * The file contains declarations of file list related classes.
- *
- * $Id: filelist.h 48 2008-05-11 14:50:10Z eleskine $
- */
+// $Id: filelist.h 26 2008-04-20 18:48:32Z eleskine $
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FILELIST_H__
 #define __KARBAZOL_DRAGNDROP_2_0__FILELIST_H__
@@ -12,11 +7,6 @@
 #include "mystring.h"
 #include "ddlock.h"
 
-/**
- * @brief File list entry.
- *
- * Represents a file list entry used by FileList objects.
- */
 class FileListEntry
 {
 private:
@@ -35,12 +25,6 @@ public:
     inline const WIN32_FIND_DATA& data() const {return _data;}
 };
 
-/**
- * @brief File list notification interface
- *
- * Declares interface of notifiable object which
- * receives notifications from a FileList object.
- */
 struct FileListNotify
 {
     virtual bool onNextEntry(const int reason, const FileListEntry& e) = 0;
@@ -49,11 +33,6 @@ struct FileListNotify
 
 class FileListEntryContainer;
 
-/**
- * @brief Files list.
- *
- * Represents a list of files.
- */
 class FileList
 {
 private:

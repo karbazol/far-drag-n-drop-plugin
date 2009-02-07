@@ -2,14 +2,13 @@
  * @file mycrt.c
  * The file contains a subset of crt routines used by the plugin.
  *
- * $Id: mycrt.c 64 2008-05-11 16:57:25Z eleskine $
+ * $Id: mycrt.c 19 2008-03-23 13:01:09Z eleskine $
  */
 
 #include <stdlib.h>
 #include <windows.h>
 
 #ifndef _DEBUG
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 __declspec(noalias) __declspec(restrict) void* malloc(size_t size)
 {
@@ -61,7 +60,6 @@ void * __cdecl memmove (
     return ret;
 }
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // _DEBUG
 
 // vim: set et ts=4 ai :

@@ -1,10 +1,3 @@
-/**
- * @file wrkrthrd.h
- * Contains declaration of WorkerThread class.
- *
- * $Id: wrkrthrd.h 55 2008-05-11 15:13:22Z eleskine $
- */
-
 #ifndef __KARBAZOL_DRAGNDROP_2_0__WRKRTHRD_H__
 #define __KARBAZOL_DRAGNDROP_2_0__WRKRTHRD_H__
 
@@ -12,12 +5,6 @@
 #include "mystring.h"
 #include "myshptr.h"
 
-/**
- * @brief Worker thread object.
- *
- * Implements a worker thread object used by ThreadPool to perform various 
- * asynchronous actions.
- */
 class WorkerThread
 {
 private:
