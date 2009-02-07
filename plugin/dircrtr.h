@@ -1,4 +1,4 @@
-// $Id: dircrtr.h 29 2008-04-21 11:00:40Z eleskine $
+// $Id$
 #ifndef __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__
 #define __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__
 

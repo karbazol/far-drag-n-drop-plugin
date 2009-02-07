@@ -1,4 +1,4 @@
-// $Id: mystring.cpp 31 2008-04-23 17:39:31Z eleskine $
+// $Id$
 
 #include <windows.h>
 #include <shlwapi.h>

@@ -1,4 +1,4 @@
-// $Id: filelist.cpp 29 2008-04-21 11:00:40Z eleskine $
+// $Id$
 
 #include "filelist.h"
 #include "utils.h"

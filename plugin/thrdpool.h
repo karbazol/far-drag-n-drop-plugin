@@ -1,7 +1,7 @@
 /**
  * @file: The file contains declaration for ThreadPool class.
  *
- * $Id: thrdpool.h 18 2008-03-15 15:40:17Z eleskine $
+ * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__THRDPOOL_H__

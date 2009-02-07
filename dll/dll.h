@@ -1,6 +1,6 @@
 /**
  *
- * $Id: dll.h 18 2008-03-15 15:40:17Z eleskine $
+ * $Id$
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLL_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DLL_H__

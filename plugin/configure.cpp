@@ -1,7 +1,7 @@
 /**
  * @file The file contains implementation of Config class
  *
- * $Id: configure.cpp 21 2008-03-30 15:39:30Z eleskine $
+ * $Id$
  */
 
 #include "far.h"
