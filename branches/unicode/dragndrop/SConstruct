@@ -137,6 +137,19 @@ commonObj = getObjects("common")
 
 pluginObj = getObjects("plugin")
 
+#determine build number
+import subprocess
+import xml.dom.minidom as xml
+
+try:
+    p = subprocess.Popen('svn info --xml .', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p.wait()
+    d = xml.parse(p.stdout)
+    buildstr = d.getElementsByTagName('entry')[0].getAttribute('revision')  
+    env.Append(RCFLAGS=['-DBUILDNUMBER=%s' % buildstr, r'-DBUILDSTRING=\"%s\"' % buildstr])
+except:
+    print "Faild to setup RCFLAGS"
+
 pluginRes = env.RES(target=os.path.join(outDir, 'plugin.res'), source=os.path.join('plugin', 'plugin.rc'))
 
 holderObj = getObjects("holder")
