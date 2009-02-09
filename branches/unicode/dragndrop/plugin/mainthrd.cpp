@@ -186,23 +186,25 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
     pt.y = pt.y * ci.srWindow.Bottom / rect.bottom;
 
     PanelInfoW info;
-//    if (FarGetShortPanelInfo(info))
-    if (FarGetPanelInfo(info))
+    if (FarGetShortPanelInfo(info))
     {
         if (pt.x > info.PanelRect.left && pt.x < info.PanelRect.right &&
             pt.y > info.PanelRect.top && pt.y < info.PanelRect.bottom)
         {
+            if (!FarGetPanelInfo(info))
+                return false;
             dir = info.CurDir;
             return true;
         }
     }
 
-//    if (FarGetShortOtherPanelInfo(info))
-    if (FarGetOtherPanelInfo(info))
+    if (FarGetShortOtherPanelInfo(info))
     {
         if (pt.x > info.PanelRect.left && pt.x < info.PanelRect.right &&
             pt.y > info.PanelRect.top && pt.y < info.PanelRect.bottom)
         {
+            if (!FarGetOtherPanelInfo(info))
+                return false;
             dir = info.CurDir;
             return true;
         }

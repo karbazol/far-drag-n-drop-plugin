@@ -10,17 +10,17 @@
 
 CopyErrorDialog::CopyErrorDialogItems CopyErrorDialog::itemsTemplate =
 {
-    {DI_DOUBLEBOX,3,1,34,8,0,0,0,0,(wchar_t *)MError},
+    {DI_DOUBLEBOX,3,1,34,8,0,0,0,0,(wchar_t*)MError},
     {DI_TEXT,5,2,32,0,0,0,DIF_CENTERGROUP,0,L""},
-    {DI_TEXT,5,3,32,0,0,0,DIF_CENTERGROUP,0,(wchar_t *)MCopyError},
+    {DI_TEXT,5,3,32,0,0,0,DIF_CENTERGROUP,0,(wchar_t*)MCopyError},
     {DI_TEXT,5,4,32,0,0,0,DIF_CENTERGROUP,0,L""},
-    {DI_TEXT,5,5,32,0,0,0,DIF_CENTERGROUP,0,(wchar_t *)MCopyingTo},
+    {DI_TEXT,5,5,32,0,0,0,DIF_CENTERGROUP,0,(wchar_t*)MCopyingTo},
     {DI_TEXT,5,6,32,0,0,0,DIF_CENTERGROUP,0,L""},
     // -- buttons --
-    {DI_BUTTON,0,7,0,0,0,0,DIF_CENTERGROUP|DIF_NOBRACKETS,0,(wchar_t *)MRetry},
-    {DI_BUTTON,0,7,0,0,0,0,DIF_CENTERGROUP|DIF_NOBRACKETS,0,(wchar_t *)MSkip},
-    {DI_BUTTON,0,7,0,0,0,0,DIF_CENTERGROUP|DIF_NOBRACKETS,0,(wchar_t *)MSkipall},
-    {DI_BUTTON,0,7,0,0,0,0,DIF_CENTERGROUP|DIF_NOBRACKETS,0,(wchar_t *)MCancel}
+    {DI_BUTTON,0,7,0,0,0,0,DIF_CENTERGROUP|DIF_NOBRACKETS,0,(wchar_t*)MRetry},
+    {DI_BUTTON,0,7,0,0,0,0,DIF_CENTERGROUP|DIF_NOBRACKETS,0,(wchar_t*)MSkip},
+    {DI_BUTTON,0,7,0,0,0,0,DIF_CENTERGROUP|DIF_NOBRACKETS,0,(wchar_t*)MSkipall},
+    {DI_BUTTON,0,7,0,0,0,0,DIF_CENTERGROUP|DIF_NOBRACKETS,0,(wchar_t*)MCancel}
 };
 
 InitDialogItem* CopyErrorDialog::items()

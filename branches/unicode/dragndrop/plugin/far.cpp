@@ -123,6 +123,10 @@ void WINAPI GetPluginInfoW(struct PluginInfo *Info)
     Info->PluginConfigStringsNumber = LENGTH(ConfigStrings);
 }
 
+int WINAPI ConfigureW(int Number)
+{
+    return doConfigure(Number);
+}
 /**
  * Far's default dialog procedure
  */

@@ -38,6 +38,8 @@ public:
     void shellCopy(bool value);
 };
 
+int doConfigure(int);
+
 #endif // __KARBAZOL_DRAGNDROP_2_0__CONFIGURE_HPP__
 // vim: set et ts=4 ai :
 

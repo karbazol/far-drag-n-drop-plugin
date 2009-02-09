@@ -86,7 +86,7 @@ protected:
         return _items.configTitle.Y2+2;
     }
 
-    friend int WINAPI ConfigureW(int);
+    friend int doConfigure(int);
 
 public:
     void enableUseKeyToStartDnd(int value)
@@ -166,19 +166,19 @@ public:
 
 ConfigDlgItems ConfigDlg::_items =
 {
-    /* 00 */{DI_DOUBLEBOX,3,1,46,15,0,0,0,0,(wchar_t *)MConfigTitle},
+    /* 00 */{DI_DOUBLEBOX,3,1,46,15,0,0,0,0,(wchar_t*)MConfigTitle},
     /* 01 */{DI_CHECKBOX,5,2,0,0,0,0,0,0,(wchar_t *)MUseKeyToStartDND},
     /* 02 */{DI_RADIOBUTTON,5,3,0,0,0,0,(unsigned int)DIF_GROUP|DIF_DISABLE,0,(wchar_t *)MLeftCtl},
     /* 03 */{DI_RADIOBUTTON,5,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MLeftAlt},
     /* 04 */{DI_RADIOBUTTON,5,5,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MShift},
     /* 05 */{DI_RADIOBUTTON,22,3,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MRightCtl},
     /* 06 */{DI_RADIOBUTTON,22,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MRightAlt},
-    {DI_TEXT,5,6,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t *)MPanels},
+    {DI_TEXT,5,6,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MPanels},
         /* 08 */{DI_CHECKBOX,5,7,0,0,0,0,0,0,(wchar_t *)MEnableDrop},
         /* 09 */{DI_EDIT,5,8,7,0,0,0,0,0,L"0"},
         /* 10 */{DI_TEXT,9,8,37,0,0,0,0,0,(wchar_t *)MPixelsPassed},
         /* 11 */{DI_TEXT,9,9,37,0,0,0,0,0,(wchar_t *)MPixelsPassed2},
-    {DI_TEXT,5,10,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t *)MEditor},
+    {DI_TEXT,5,10,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MEditor},
     {DI_CHECKBOX,5,11,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MEnableDrag},
     {DI_CHECKBOX,5,12,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MEnableDrop},
 
@@ -191,7 +191,7 @@ ConfigDlgItems ConfigDlg::_items =
 /**
  * Callback function called by Far to show the plug-in's configuration dialog.
  */
-int WINAPI ConfigureW(int /*Number*/)
+int doConfigure(int /*Number*/)
 {
     ConfigDlg dlg;
 
