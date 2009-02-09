@@ -73,7 +73,8 @@ commonCppFlags += ['/D_WIN32_WINNT=0x0500'] # Be compatible to Windows 2000
 commonCppFlags += ['/D_FAR_USE_FARFINDDATA']
 commonCppFlags += ['/D_UNICODE', '/DUNICODE'] # Use unicode versions of functions by default
 
-commonLinkFlags  = ['/INCREMENTAL:NO', '/DEBUG', '/OPT:REF']
+commonLinkFlags  = [
+'/INCREMENTAL:NO', '/DEBUG', '/OPT:REF']
 
 
 if optsenv['debug'] :
@@ -135,7 +136,7 @@ commonDllObj = getObjects("dll")
 
 commonObj = getObjects("common")
 
-pluginObj = getObjects("plugin")
+pluginObj = getObjects("plugin") + getObjects(os.path.join("plugin", "unicode"))
 
 #determine build number
 import subprocess
