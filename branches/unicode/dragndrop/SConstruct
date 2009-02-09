@@ -166,7 +166,7 @@ pluginLinkFlags = commonLinkFlags
 if not optsenv['debug']:
     pluginLinkFlags += ['/entry:DllMain']
 
-plugin = env.SharedLibrary(source=pluginObj+commonObj+commonDllObj+['plugin\drgndrop.def']+[pluginRes], 
+plugin = env.SharedLibrary(source=pluginObj+commonObj+commonDllObj+['plugin\\unicode\\drgndrop_u.def']+[pluginRes], 
         target=os.path.join(outDir, 'drgndrop'), 
         LINKFLAGS=pluginLinkFlags, LIBS=libs)
 
