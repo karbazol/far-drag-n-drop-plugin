@@ -7,7 +7,6 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FAR_H__
 #define __KARBAZOL_DRAGNDROP_2_0__FAR_H__
 
-#include <windows.h>
 #pragma warning(push, 3)
 #include "plugin.hpp"
 #pragma warning(pop)
