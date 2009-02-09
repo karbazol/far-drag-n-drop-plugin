@@ -136,7 +136,7 @@ commonDllObj = getObjects("dll")
 
 commonObj = getObjects("common")
 
-pluginObj = getObjects("plugin")
+pluginObj = getObjects("plugin") + getObjects(os.path.join("plugin", "ansi"))
 
 #determine build number
 import subprocess
