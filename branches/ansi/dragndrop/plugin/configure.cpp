@@ -86,7 +86,7 @@ protected:
         return _items.configTitle.Y2+2;
     }
 
-    friend int WINAPI Configure(int);
+    friend int doConfigure(int);
 
 public:
     void enableUseKeyToStartDnd(int value)
@@ -191,7 +191,7 @@ ConfigDlgItems ConfigDlg::_items =
 /**
  * Callback function called by Far to show the plug-in's configuration dialog.
  */
-int WINAPI Configure(int /*Number*/)
+int doConfigure(int /*Number*/)
 {
     ConfigDlg dlg;
 

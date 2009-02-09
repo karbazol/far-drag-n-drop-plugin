@@ -123,6 +123,10 @@ void WINAPI GetPluginInfo(struct PluginInfo *Info)
     Info->PluginConfigStringsNumber = LENGTH(ConfigStrings);
 }
 
+int WINAPI Configure(int Number)
+{
+    return doConfigure(Number);
+}
 /**
  * Far's default dialog procedure
  */
@@ -408,10 +412,32 @@ bool FarGetShortPanelInfo(PanelInfoW& piw)
     copy(piw, pi);
     return true;
 }
+
+/**
+ * Gets Panel info from the Far.
+ */
+bool FarGetOtherPanelInfo(struct PanelInfo* pi)
+{
+    if (theFar.Control)
+        return theFar.Control(INVALID_HANDLE_VALUE, FCTL_GETANOTHERPANELINFO, pi)?true:false;
+    return false;
+}
+
+bool FarGetOtherPanelInfo(PanelInfoW& pw)
+{
+    PanelInfo pi;
+    if (!FarGetOtherPanelInfo(&pi))
+        return false;
+
+    copy(pw, pi);
+
+    return true;
+}
+
 /**
  * Gets a short info of inactive panel from the Far.
  */
-bool FarGetShortOtherPanelInfo(struct PanelInfo* pi)
+static bool FarGetShortOtherPanelInfo(struct PanelInfo* pi)
 {
     if (theFar.Control)
         return theFar.Control(INVALID_HANDLE_VALUE, FCTL_GETANOTHERPANELSHORTINFO, pi)?true:false;

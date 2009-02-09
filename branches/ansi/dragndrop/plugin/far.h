@@ -89,6 +89,7 @@ int ConsoleMode(int param);
 bool FarGetWindowInfo(WindowInfoW& wip);
 bool FarGetPanelInfo(PanelInfoW& p);
 bool FarGetShortPanelInfo(PanelInfoW& piw);
+bool FarGetOtherPanelInfo(PanelInfoW& p);
 bool FarGetShortOtherPanelInfo(PanelInfoW& piw);
 HWND GetFarWindow();
 char* TruncPathStr(char* s, int maxLen);

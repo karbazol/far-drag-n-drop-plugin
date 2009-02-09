@@ -1,4 +1,4 @@
-D:\WORK\FAR\DragnDrop_2.0\dragndrop.vcproj// $Id$
+// $Id$
 
 #include "cpydlg.h"
 #include "ddlng.h"

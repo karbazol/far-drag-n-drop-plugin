@@ -290,6 +290,7 @@ void InputProcessor::processBuffer()
     if (_userSize)
         return;
 
+    /** See ToolWindow::prepareForDragging for refernce. */
     for (;_userSize < _buffSize; _userSize++)
     {
         if (checkEvent(_buffer[_userSize])||

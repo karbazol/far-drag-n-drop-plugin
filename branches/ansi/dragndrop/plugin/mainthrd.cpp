@@ -191,6 +191,8 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
         if (pt.x > info.PanelRect.left && pt.x < info.PanelRect.right &&
             pt.y > info.PanelRect.top && pt.y < info.PanelRect.bottom)
         {
+            if (!FarGetPanelInfo(info))
+                return false;
             dir = info.CurDir;
             return true;
         }
@@ -201,6 +203,8 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
         if (pt.x > info.PanelRect.left && pt.x < info.PanelRect.right &&
             pt.y > info.PanelRect.top && pt.y < info.PanelRect.bottom)
         {
+            if (!FarGetOtherPanelInfo(info))
+                return false;
             dir = info.CurDir;
             return true;
         }
