@@ -1,4 +1,4 @@
-// $Id$
+D:\WORK\FAR\DragnDrop_2.0\dragndrop.vcproj// $Id$
 
 #include "cpydlg.h"
 #include "ddlng.h"
@@ -93,7 +93,7 @@ static wchar_t* centerAndFill(wchar_t* buff, size_t size /*of buff including NUL
     if (pos2 < size-1)
         buff[pos2++] = filler;
 
-    buff[pos2] = '\0';
+    buff[pos2] = L'\0';
 
     return buff;
 }
