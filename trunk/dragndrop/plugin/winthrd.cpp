@@ -93,12 +93,17 @@ void WinThread::run()
     OleUninitialize();
 }
 
+/**
+ * The functions sends a message to the tool window.
+ */
 bool WinThread::startDragging(IDataObject* data)
 {
     if (HolderApi::instance()->isLeftButtonDown())
         mouse_event(MOUSEEVENTF_LEFTUP,  0, 0, 0, NULL);
     if (HolderApi::instance()->isRightButtonDown())
         mouse_event(MOUSEEVENTF_RIGHTUP,  0, 0, 0, NULL);
+
+    /** See ToolWindow::prepareForDragging for refernce. */
     if (_window.sendMessage(WM_PREPAREFORDRAGGING, 0, (LPARAM)data))
     {
         //mouse_event(MOUSEEVENTF_LEFTDOWN,  0, 0, 0, NULL);

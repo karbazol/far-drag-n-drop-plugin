@@ -37,7 +37,7 @@ private:
     RunningDialogs();
     ~RunningDialogs();
     static void kill(RunningDialogs* p);
-    long processPostedSetText(HANDLE dlg, int id, const char* s);
+    long processPostedSetText(HANDLE dlg, int id, const wchar_t* s);
     void processPostedDlgMessages(FarDialog* dlg);
     FarDialog* getDialog(HANDLE handle);
     long processPostedMessage(HANDLE dlg, int msg, int param0, long param1);

@@ -23,7 +23,7 @@ struct InitDialogItem
     int Selected;
     unsigned int Flags;
     int DefaultButton;
-    char *Data;
+    wchar_t *Data;
 };
 
 class DialogShower;
@@ -38,13 +38,16 @@ private:
     bool volatile _running;
     static long WINAPI dlgProc(HANDLE dlg, int msg, int param1, long param2);
     int doShow();
+    int run(void*& farItems);
+    void restoreItems(void* farItems);
+    void freeItems(void* farItems);
 protected:
     virtual long handle(int msg, int param1, long param2);
     virtual int left();
     virtual int top();
     virtual int right();
     virtual int bottom();
-    virtual const char* help();
+    virtual const wchar_t* help();
     virtual InitDialogItem* items();
     virtual DWORD flags();
 protected:

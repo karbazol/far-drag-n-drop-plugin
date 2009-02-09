@@ -118,11 +118,15 @@ void WINAPI GetPluginInfo(struct PluginInfo *Info)
     Info->Flags = PF_PRELOAD;
 
     static const char* ConfigStrings[1];
-    ConfigStrings[0] = GetMsg(MConfigMenu);
+    ConfigStrings[0] = theFar.GetMsg(theFar.ModuleNumber, MConfigMenu);
     Info->PluginConfigStrings = ConfigStrings;
     Info->PluginConfigStringsNumber = LENGTH(ConfigStrings);
 }
 
+int WINAPI Configure(int Number)
+{
+    return doConfigure(Number);
+}
 /**
  * Far's default dialog procedure
  */
@@ -156,17 +160,54 @@ int DialogEx(int X1, int Y1, int X2, int Y2,
 
 // Far standard functions
 
+struct MessageInfo
+{
+    MyStringW wMessage;
+    const char* aMessage;
+    MessageInfo(): wMessage(), aMessage(0){}
+};
+
+typedef GrowOnlyArray<MessageInfo> Messages;
+
+static void killMessages(Messages* p)
+{
+    delete p;
+}
+
+static Messages& messages()
+{
+    static Messages* m = 0;
+    if (!m)
+    {
+        m = new Messages;
+
+        Dll::instance()->registerProcessEndCallBack(
+                reinterpret_cast<PdllCallBack>(&killMessages), m);
+    }
+
+    return *m;
+}
+
 /**
  * Reads a message from the plug-in's language file
  */
-const char* GetMsg(int MsgId)
+const wchar_t* GetMsg(int MsgId)
 {
+    if (static_cast<unsigned int>(MsgId) >= messages().size())
+    {
+        messages().size(MsgId+1);
+    }
     if (theFar.GetMsg)
     {
-        return theFar.GetMsg(theFar.ModuleNumber, MsgId);
+        const char* p = theFar.GetMsg(theFar.ModuleNumber, MsgId);
+        if (messages()[MsgId].aMessage != p)
+        {
+            messages()[MsgId].aMessage = p;
+            messages()[MsgId].wMessage = a2w(p, CP_OEMCP);
+        }
     }
 
-    return 0;
+    return messages()[MsgId].wMessage;
 }
 
 /**
@@ -175,7 +216,23 @@ const char* GetMsg(int MsgId)
 long SendDlgMessage(HANDLE hDlg, int Msg, int Param1, long Param2)
 {
     if (theFar.SendDlgMessage)
+    {
+        MyStringA tmp;
+        char* tmpP;
+        switch (Msg)
+        {
+        case DM_SETTEXTPTR:
+            {
+                tmp = w2a(reinterpret_cast<wchar_t*>(Param2), CP_OEMCP);
+                tmpP = tmp;
+                Param2 = reinterpret_cast<long>(static_cast<char*>(tmpP));
+            }
+            break;
+        default:
+            break;
+        }
         return theFar.SendDlgMessage(hDlg, Msg, Param1, Param2);
+    }
 
     return -1;
 }
@@ -355,10 +412,32 @@ bool FarGetShortPanelInfo(PanelInfoW& piw)
     copy(piw, pi);
     return true;
 }
+
+/**
+ * Gets Panel info from the Far.
+ */
+bool FarGetOtherPanelInfo(struct PanelInfo* pi)
+{
+    if (theFar.Control)
+        return theFar.Control(INVALID_HANDLE_VALUE, FCTL_GETANOTHERPANELINFO, pi)?true:false;
+    return false;
+}
+
+bool FarGetOtherPanelInfo(PanelInfoW& pw)
+{
+    PanelInfo pi;
+    if (!FarGetOtherPanelInfo(&pi))
+        return false;
+
+    copy(pw, pi);
+
+    return true;
+}
+
 /**
  * Gets a short info of inactive panel from the Far.
  */
-bool FarGetShortOtherPanelInfo(struct PanelInfo* pi)
+static bool FarGetShortOtherPanelInfo(struct PanelInfo* pi)
 {
     if (theFar.Control)
         return theFar.Control(INVALID_HANDLE_VALUE, FCTL_GETANOTHERPANELSHORTINFO, pi)?true:false;
@@ -461,9 +540,9 @@ size_t FarReadRegistry(const wchar_t* name, DWORD type, void* value, size_t size
 /**
  * Reads data from the registry
  */
-DWORD FarReadRegistry(const wchar_t* name, DWORD default)
+DWORD FarReadRegistry(const wchar_t* name, DWORD defaultValue)
 {
-    DWORD res = default;
+    DWORD res = defaultValue;
 
     FarReadRegistry(name, REG_DWORD, &res, sizeof(res));
 
@@ -473,19 +552,19 @@ DWORD FarReadRegistry(const wchar_t* name, DWORD default)
 /**
  * Truncates a string.
  */
-char* TruncPathStr(char* s, int maxLen)
+MyStringA& TruncPathStr(MyStringA& s, int maxLen)
 {
     if (!theFar.FSF->TruncPathStr)
         return s;
 
-    return theFar.FSF->TruncPathStr(s, maxLen);
+    return s = theFar.FSF->TruncPathStr(s, maxLen);
 }
 
 MyStringW& TruncPathStr(MyStringW& s, int maxLen)
 {
     MyStringA sA = w2a(s, CP_OEMCP);
 
-    return s= a2w(TruncPathStr(sA, maxLen), CP_OEMCP);
+    return s = a2w(TruncPathStr(sA, maxLen), CP_OEMCP);
 }
 
 // vim: set et ts=4 ai :

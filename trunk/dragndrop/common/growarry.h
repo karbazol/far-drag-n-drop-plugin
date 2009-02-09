@@ -103,6 +103,12 @@ public:
     {
         while (value > size())
             grow();
+        size_t i;
+        for (i = value; i < size(); i++)
+        {
+            _values[i] = T();
+        }
+        _count = value;
     }
 
     /**
@@ -142,7 +148,7 @@ public:
     /**
      * Deletes all elements form the container.
      */
-    inline void clear(){_count = 0;}
+    inline void clear(){size(0);}
 
     /**
      * Appends new element to the container.

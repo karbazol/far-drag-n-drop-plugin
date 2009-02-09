@@ -73,7 +73,8 @@ commonCppFlags += ['/D_WIN32_WINNT=0x0500'] # Be compatible to Windows 2000
 commonCppFlags += ['/D_FAR_USE_FARFINDDATA']
 commonCppFlags += ['/D_UNICODE', '/DUNICODE'] # Use unicode versions of functions by default
 
-commonLinkFlags  = ['/WX', '/INCREMENTAL:NO', '/DEBUG', '/OPT:REF']
+commonLinkFlags  = [
+'/INCREMENTAL:NO', '/DEBUG', '/OPT:REF']
 
 
 if optsenv['debug'] :
@@ -90,6 +91,7 @@ else:
 
 env = Environment(options=opts, ENV=osenv, tools=['default', 'packaging']) 
 
+env['MSVS_VERSION'] = '7.1'
 env.Tool('msvc')
 
 env.Append(CPPPATH=commonCppPath, CPATH=commonCppPath, CXXFLAGS=commonCppFlags, 
@@ -134,7 +136,20 @@ commonDllObj = getObjects("dll")
 
 commonObj = getObjects("common")
 
-pluginObj = getObjects("plugin")
+pluginObj = getObjects("plugin") + getObjects(os.path.join("plugin", "ansi"))
+
+#determine build number
+import subprocess
+import xml.dom.minidom as xml
+
+try:
+    p = subprocess.Popen('svn info --xml .', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p.wait()
+    d = xml.parse(p.stdout)
+    buildstr = d.getElementsByTagName('entry')[0].getAttribute('revision')  
+    env.Append(RCFLAGS=['-DBUILDNUMBER=%s' % buildstr, r'-DBUILDSTRING=\"%s\"' % buildstr])
+except:
+    print "Faild to setup RCFLAGS"
 
 pluginRes = env.RES(target=os.path.join(outDir, 'plugin.res'), source=os.path.join('plugin', 'plugin.rc'))
 
@@ -151,7 +166,7 @@ pluginLinkFlags = commonLinkFlags
 if not optsenv['debug']:
     pluginLinkFlags += ['/entry:DllMain']
 
-plugin = env.SharedLibrary(source=pluginObj+commonObj+commonDllObj+['plugin\drgndrop.def']+[pluginRes], 
+plugin = env.SharedLibrary(source=pluginObj+commonObj+commonDllObj+['plugin\\ansi\\drgndrop_a.def']+[pluginRes], 
         target=os.path.join(outDir, 'drgndrop'), 
         LINKFLAGS=pluginLinkFlags, LIBS=libs)
 

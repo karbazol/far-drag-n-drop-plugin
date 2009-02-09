@@ -80,7 +80,7 @@ struct WindowInfoW
 
 // Standard Far Functions
 
-const char* GetMsg(int MsgId);
+const wchar_t* GetMsg(int MsgId);
 
 /**
  * Returns TRUE if the far.exe is running in console mode otherwise FALSE
@@ -88,10 +88,11 @@ const char* GetMsg(int MsgId);
 int ConsoleMode(int param);
 bool FarGetWindowInfo(WindowInfoW& wip);
 bool FarGetPanelInfo(PanelInfoW& p);
+bool FarGetOtherPanelInfo(PanelInfoW& p);
 bool FarGetShortPanelInfo(PanelInfoW& piw);
 bool FarGetShortOtherPanelInfo(PanelInfoW& piw);
 HWND GetFarWindow();
-char* TruncPathStr(char* s, int maxLen);
+MyStringA& TruncPathStr(MyStringA& s, int maxLen);
 MyStringW& TruncPathStr(MyStringW& s, int maxLen);
 
 
@@ -99,7 +100,7 @@ extern BOOL (*IsActiveFar)();
 
 // Registry access functions
 bool FarWriteRegistry(const wchar_t* name, const DWORD value);
-DWORD FarReadRegistry(const wchar_t* name, DWORD default=0);
+DWORD FarReadRegistry(const wchar_t* name, DWORD defaultValue=0);
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__FAR_H__
 // vim: set et ts=4 ai :
