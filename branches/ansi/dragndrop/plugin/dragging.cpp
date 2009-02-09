@@ -41,15 +41,30 @@ void Dragging::shutDown()
     WinThread::instance()->stop();
 }
 
+/**
+ * @brief Start dragging.
+ *
+ * The function checks the follwing conditions and decides
+ * whether to start dragging.
+ */
 bool Dragging::start()
 {
     TRACE("Should we start dragging?\n");
 
     if (_dragging)
+    {
+        /** Dragging can be only performed only if it is not already going */
         return false;
+    }
 
     if (FAR_CONSOLE_FULLSCREEN == ConsoleMode(FAR_CONSOLE_GET_MODE))
+    {
+        /**
+         * We cannot start dragging when Far is running in hardware console mode.
+         * (Beginning from Windows Vista such mode is not supported).
+         */
         return false;
+    }
 
     WindowInfoW wi;
     wi.Pos = -1;

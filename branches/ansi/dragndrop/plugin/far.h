@@ -80,7 +80,7 @@ struct WindowInfoW
 
 // Standard Far Functions
 
-const char* GetMsg(int MsgId);
+const wchar_t* GetMsg(int MsgId);
 
 /**
  * Returns TRUE if the far.exe is running in console mode otherwise FALSE

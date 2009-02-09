@@ -24,7 +24,7 @@ private:
     struct ControlTextMessage
     {
         bool queued;
-        MyStringA text;
+        MyStringW text;
         ControlTextMessage(): queued(false), text(){}
         ControlTextMessage(const ControlTextMessage& m): 
             queued(m.queued), text(m.text){}
@@ -128,7 +128,7 @@ public:
         }
     }
 
-    bool setControlText(int id, const char* s)
+    bool setControlText(int id, const wchar_t* s)
     {
         if (!_texts.size())
             _texts.size(_dlg->itemsCount());
@@ -140,7 +140,7 @@ public:
         return res;
     }
 
-    bool getControlText(int id, MyStringA& s)
+    bool getControlText(int id, MyStringW& s)
     {
         if (!_texts.size())
             _texts.size(_dlg->itemsCount());
@@ -305,7 +305,7 @@ void RunningDialogs::postMessage(FarDialog* dlg,
     switch (msg)
     {
     case DM_SETTEXTPTR:
-        e->setControlText(param0, (const char*)param1) && dlg->hwnd();
+        e->setControlText(param0, (const wchar_t*)param1) && dlg->hwnd();
         break;
     default:
         e->addMessage(dlg->hwnd(), msg, param0, param1);
@@ -344,11 +344,11 @@ void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
     int i;
     for (i = 0; i < dlg->itemsCount(); i++)
     {
-        MyStringA s;
+        MyStringW s;
 
         if (e->getControlText(i, s))
         {
-            char* str = s;
+            wchar_t* str = s;
             //e->setControlText(i, s);
             SendDlgMessage(dlg->hwnd(), DM_SETTEXTPTR, i, (long)str);
         }
@@ -364,7 +364,7 @@ void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
 }
 
 long RunningDialogs::processPostedSetText(HANDLE dlg,
-        int id, const char* s)
+        int id, const wchar_t* s)
 {
     LOCKIT(_dialogsLock);
 
@@ -374,7 +374,7 @@ long RunningDialogs::processPostedSetText(HANDLE dlg,
         return sendSafeMessage(dlg, DM_SETTEXTPTR, id, (long)s);
     else
     {
-        MyStringA str;
+        MyStringW str;
         if (e->getControlText(id, str))
             s = str;
         return sendSafeMessage(dlg, DM_SETTEXTPTR, id, (long)s);
@@ -389,7 +389,7 @@ long RunningDialogs::processPostedMessage(HANDLE dlg,
     switch (msg)
     {
     case DM_SETTEXTPTR:
-        return processPostedSetText(dlg, param0, (const char*)param1);
+        return processPostedSetText(dlg, param0, (const wchar_t*)param1);
         break;
     default:
         return sendSafeMessage(dlg, msg, param0, param1);

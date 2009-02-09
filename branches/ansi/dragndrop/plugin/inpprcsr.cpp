@@ -289,6 +289,7 @@ void InputProcessor::processBuffer()
 {
     if (_userSize)
         return;
+
     for (;_userSize < _buffSize; _userSize++)
     {
         if (checkEvent(_buffer[_userSize])||
@@ -363,7 +364,7 @@ BOOL InputProcessor::ProcessConsoleInput(HANDLE console, PINPUT_RECORD buffer,
         return FALSE;
 
     // Analyze the buffer contents and if it contains
-    // appropriate keyboard/mouse state start dragging
+    // appropriate keyboard/mouse states sequence start dragging
     processor->processBuffer();
 
     if (processor->size())

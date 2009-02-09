@@ -42,9 +42,11 @@ static void InitDialogItems(
         PItem->Flags=PInit->Flags;
         PItem->DefaultButton=PInit->DefaultButton;
         if ((unsigned int)PInit->Data < 2000)
-            lstrcpynA(PItem->Data,GetMsg((int)PInit->Data), LENGTH(PItem->Data));
+            WideCharToMultiByte(CP_OEMCP, 0, GetMsg((int)PInit->Data), -1, PItem->Data, 
+                    LENGTH(PItem->Data), 0, 0);
         else
-            lstrcpynA(PItem->Data,PInit->Data,LENGTH(PItem->Data));
+            WideCharToMultiByte(CP_OEMCP, 0, PInit->Data, -1, PItem->Data, 
+                    LENGTH(PItem->Data), 0, 0);
     }
 }
 
@@ -182,7 +184,9 @@ int FarDialog::doShow()
     FarDialogItem* theItems = new FarDialogItem[count];
     InitDialogItems(items(), theItems, count);
 
-    int res = DialogEx(left(), top(), right(), bottom(), help(), theItems, count, 0,
+    MyStringA helpTopic = w2a(help(), CP_OEMCP);
+
+    int res = DialogEx(left(), top(), right(), bottom(), helpTopic, theItems, count, 0,
                 flags(), &dlgProc, (long)this);
 
     /** @todo After the dialog has been shown copy flags and other stuff to the static items */
@@ -256,7 +260,7 @@ int FarDialog::bottom()
     return 0;
 }
 
-const char* FarDialog::help()
+const wchar_t* FarDialog::help()
 {
     return 0;
 }

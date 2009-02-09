@@ -23,7 +23,7 @@ struct InitDialogItem
     int Selected;
     unsigned int Flags;
     int DefaultButton;
-    char *Data;
+    wchar_t *Data;
 };
 
 class DialogShower;
@@ -44,7 +44,7 @@ protected:
     virtual int top();
     virtual int right();
     virtual int bottom();
-    virtual const char* help();
+    virtual const wchar_t* help();
     virtual InitDialogItem* items();
     virtual DWORD flags();
 protected:
