@@ -552,19 +552,19 @@ DWORD FarReadRegistry(const wchar_t* name, DWORD defaultValue)
 /**
  * Truncates a string.
  */
-char* TruncPathStr(char* s, int maxLen)
+MyStringA& TruncPathStr(MyStringA& s, int maxLen)
 {
     if (!theFar.FSF->TruncPathStr)
         return s;
 
-    return theFar.FSF->TruncPathStr(s, maxLen);
+    return s = theFar.FSF->TruncPathStr(s, maxLen);
 }
 
 MyStringW& TruncPathStr(MyStringW& s, int maxLen)
 {
     MyStringA sA = w2a(s, CP_OEMCP);
 
-    return s= a2w(TruncPathStr(sA, maxLen), CP_OEMCP);
+    return s = a2w(TruncPathStr(sA, maxLen), CP_OEMCP);
 }
 
 // vim: set et ts=4 ai :

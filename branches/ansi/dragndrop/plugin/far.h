@@ -88,11 +88,11 @@ const wchar_t* GetMsg(int MsgId);
 int ConsoleMode(int param);
 bool FarGetWindowInfo(WindowInfoW& wip);
 bool FarGetPanelInfo(PanelInfoW& p);
-bool FarGetShortPanelInfo(PanelInfoW& piw);
 bool FarGetOtherPanelInfo(PanelInfoW& p);
+bool FarGetShortPanelInfo(PanelInfoW& piw);
 bool FarGetShortOtherPanelInfo(PanelInfoW& piw);
 HWND GetFarWindow();
-char* TruncPathStr(char* s, int maxLen);
+MyStringA& TruncPathStr(MyStringA& s, int maxLen);
 MyStringW& TruncPathStr(MyStringW& s, int maxLen);
 
 
