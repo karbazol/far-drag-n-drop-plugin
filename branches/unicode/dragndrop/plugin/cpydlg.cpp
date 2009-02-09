@@ -6,17 +6,17 @@
 
 CopyDialog::CopyDialogItems CopyDialog::copyDialogItemsTemplate =
 {
-        /*  0 */{DI_DOUBLEBOX,3,1,46,13,0,0,0,0,(wchar_t *)MCopy},
-        /*  1 */{DI_TEXT,5, 2,44,0,0,0,0,0,(wchar_t *)MCopyingTheFile},
+        /*  0 */{DI_DOUBLEBOX,3,1,46,13,0,0,0,0,(wchar_t*)MCopy},
+        /*  1 */{DI_TEXT,5, 2,44,0,0,0,0,0,(wchar_t*)MCopyingTheFile},
         /*  2 */{DI_TEXT,5, 3,44,0,0,0,0,0,L""},
-        /*  3 */{DI_TEXT,5, 4,44,0,0,0,0,0,(wchar_t *)MCopyingTo},
+        /*  3 */{DI_TEXT,5, 4,44,0,0,0,0,0,(wchar_t*)MCopyingTo},
         /*  4 */{DI_TEXT,5, 5,44,0,0,0,0,0,L""},
-        /*  5 */{DI_TEXT,5, 6,44,0,0,0,0,0,L"같같같같같같같같같같같같같같같같같같같같"}, // u+2591 0xb0
+        /*  5 */{DI_TEXT,5, 6,44,0,0,0,0,0,L"\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591"}, // u+2591 0xb0
         /*  6 */{DI_TEXT,5, 7,44,0,0,0,0,0,L"Total size:"},
-        /*  7 */{DI_TEXT,5, 8,44,0,0,0,0,0,L"같같같같같같같같같같같같같같같같같같같같"},
-        /*  8 */{DI_TEXT,5, 9,44,0,0,0,0,0,L"컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴"}, // u+2500 0xc4
+        /*  7 */{DI_TEXT,5, 8,44,0,0,0,0,0,L"\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591"},
+        /*  8 */{DI_TEXT,5, 9,44,0,0,0,0,0,L"\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500"}, // u+2500 0xc4
         /*  9 */{DI_TEXT,5,10,44,0,0,0,0,0,L""},
-        /* 10 */{DI_TEXT,5,11,44,0,0,0,0,0,L"컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴"}, // u+2500 0xc4
+        /* 10 */{DI_TEXT,5,11,44,0,0,0,0,0,L"\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500"}, // u+2500 0xc4
         /* 11 */{DI_TEXT,5,12,44,0,0,0,0,0,L"Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"}
 };
 
@@ -28,7 +28,7 @@ CopyDialog::CopyDialog(): FarDialog(), _items(copyDialogItemsTemplate),
     _currentSize(0), _srcFile(), _destFile(), _filesToProcess(0),
     _filesProcessed(-1), _fileListProcessed(false), _speed(0)
 {
-    wsprintfW(szFilesProcessed, GetMsg(MFilesProcessed), 0, 0);
+    wsprintf(szFilesProcessed, GetMsg(MFilesProcessed), 0, 0);
 
     _items.lblFilesProcessed.Data = szFilesProcessed;
 
@@ -52,7 +52,7 @@ bool CopyDialog::onClose(int id)
 
 static wchar_t* sizeToString(wchar_t* buff, const __int64& value)
 {
-    wsprintfW(buff, L"%I64d", value);
+    wsprintf(buff, L"%I64d", value);
 
     size_t len = lstrlen(buff);
     size_t mod = len % 3;
@@ -62,8 +62,8 @@ static wchar_t* sizeToString(wchar_t* buff, const __int64& value)
     {
         if (mod)
         {
-            memmove(buff + mod + 1, buff + mod, len - mod + 2);
-            buff[mod] = ',';
+            memmove(&buff[mod + 1], &buff[mod], (len - mod + 2)*sizeof(*buff));
+            buff[mod] = L',';
             len++;
             mod++;
         }
@@ -78,10 +78,10 @@ static wchar_t* sizeToString(wchar_t* buff, const __int64& value)
 static wchar_t* centerAndFill(wchar_t* buff, size_t size /*of buff including NULL treminator*/,
         wchar_t filler)
 {
-    size_t len = lstrlenW(buff) / sizeof(*buff);
+    size_t len = lstrlen(buff);
     size_t pos = (size - 1 - len) / 2;
 
-    memmove(buff + pos, buff, len);
+    memmove(&buff[pos], buff, len*sizeof(*buff));
 
     size_t i;
     size_t pos2 = pos + len;
@@ -103,10 +103,10 @@ void CopyDialog::updateTotalSize()
     wchar_t totalSizeValue[41];
     wchar_t totalSizeString[41];
 
-    wsprintfW(totalSizeString, GetMsg(MTotalSize), sizeToString(totalSizeValue, _totalSize));
+    wsprintf(totalSizeString, GetMsg(MTotalSize), sizeToString(totalSizeValue, _totalSize));
 
     postMessage(DM_SETTEXTPTR, getMyItemId(lblTotalSize),
-            (long)centerAndFill(totalSizeString, LENGTH(totalSizeString), L'\xc4'));
+            (long)centerAndFill(totalSizeString, LENGTH(totalSizeString), L'\x2500'));
 }
 
 void CopyDialog::updateFilesProcessed()
@@ -119,7 +119,7 @@ void CopyDialog::updateFilesProcessed()
     else
         processed = _filesProcessed;
 
-    wsprintfW(filesProcessed, GetMsg(MFilesProcessed), processed, _filesToProcess);
+    wsprintf(filesProcessed, GetMsg(MFilesProcessed), processed, _filesToProcess);
 
     postMessage(DM_SETTEXTPTR, getMyItemId(lblFilesProcessed), (long)filesProcessed);
 }
@@ -150,18 +150,18 @@ void CopyDialog::updatePercents()
 
 void CopyDialog::updateProgressBar(int value, int controlId)
 {
-    char stringValue[41];
+    wchar_t stringValue[41];
 
     int i = value - 1;
     int j = value;
     while (i >= 0 || j < LENGTH(stringValue)-1)
     {
         if (i >=0)
-            stringValue[i--] = '\xdb';
+            stringValue[i--] = L'\x2588';
         if (j < LENGTH(stringValue)-1)
-            stringValue[j++] = '\xb0';
+            stringValue[j++] = L'\x2591';
     }
-    stringValue[j] = '\0';
+    stringValue[j] = L'\0';
 
     postMessage(DM_SETTEXTPTR, controlId, (long)stringValue);
 }
@@ -188,7 +188,7 @@ void CopyDialog::updateTimesAndSpeed()
 
     wchar_t timeString[MAX_PATH];
 
-    wsprintfW(timeString,
+    wsprintf(timeString,
             GetMsg(MFileCopyingTimes), // "Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"
             spentTime.wHour, spentTime.wMinute, spentTime.wSecond,
             leftTime.wHour, leftTime.wMinute, leftTime.wSecond,
@@ -241,8 +241,8 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
     if (running())
     {
         _filesProcessed++;
-        _srcFile = w2a(src, CP_OEMCP);
-        _destFile = w2a(dest, CP_OEMCP);
+        _srcFile = src;
+        _destFile = dest;
 
         _totalProcessedSize += (_currentSize - _currentProcessedSize);
         _currentProcessedSize = 0;
@@ -251,8 +251,8 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
         TruncPathStr(_srcFile, 40);
         TruncPathStr(_destFile, 40);
 
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (long)(char*)_srcFile);
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (long)(char*)_destFile);
+        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (long)(wchar_t*)_srcFile);
+        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (long)(wchar_t*)_destFile);
 
         updateFilesProcessed();
         updatePercents();
