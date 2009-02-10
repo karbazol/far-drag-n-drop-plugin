@@ -1,17 +1,25 @@
-# $Id$
+# $Id: SConstruct 27 2009-02-09 14:46:48Z karbazol $
 import os
 import copy
 import string
 from SCons.Util import is_List
 
-opts = Options(None, ARGUMENTS)
-opts.Add(BoolOption('debug', 'enable debug build', 'no'))
-opts.Add('plugdir', 'directory where to store the plugin', 'c:\\faru\\plugins\\drgndrop')
+opts = Variables(None, ARGUMENTS)
+opts.Add(BoolVariable('debug', 'enable debug build', 'no'))
+opts.Add(BoolVariable('unicode', 'build unicode version of the plugin', 'no'))
+opts.Add('plugdir', 'directory where to store the plugin', 'c:\\fardebug\\plugins\\drgndrop')
 optsenv = Environment(options=opts)
 Help(opts.GenerateHelpText(optsenv))
 
 osenv = os.environ.copy()
 osenv['PATH'] = osenv['PATH'] + ';' + os.path.abspath('tools')
+
+if optsenv['unicode']:
+    chardir = 'unicode'
+    suffix = '_u'
+else:
+    chardir = 'ansi'
+    suffix = '_a'
 
 if optsenv['debug']:
     outDir = 'dbin'
@@ -59,7 +67,7 @@ def ctagsEmmiter(target, source, env):
 
 ctagsSuffixes=['.cpp', '.h', '.hpp']
 
-commonCppPath  = [os.path.join("..", "common_u")]
+commonCppPath  = [os.path.join("..", "common"+suffix)]
 commonCppPath += ["common"]
 commonCppPath += ["hook"]
 commonCppPath += ["holder"]
@@ -136,7 +144,7 @@ commonDllObj = getObjects("dll")
 
 commonObj = getObjects("common")
 
-pluginObj = getObjects("plugin") + getObjects(os.path.join("plugin", "unicode"))
+pluginObj = getObjects("plugin") + getObjects(os.path.join("plugin", chardir))
 
 #determine build number
 import subprocess
@@ -166,7 +174,8 @@ pluginLinkFlags = commonLinkFlags
 if not optsenv['debug']:
     pluginLinkFlags += ['/entry:DllMain']
 
-plugin = env.SharedLibrary(source=pluginObj+commonObj+commonDllObj+['plugin\\unicode\\drgndrop_u.def']+[pluginRes], 
+plugin = env.SharedLibrary(source=pluginObj+commonObj+commonDllObj+ \
+        [os.path.join('plugin', chardir, 'drgndrop'+suffix+'.def')]+[pluginRes], 
         target=os.path.join(outDir, 'drgndrop'), 
         LINKFLAGS=pluginLinkFlags, LIBS=libs)
 
