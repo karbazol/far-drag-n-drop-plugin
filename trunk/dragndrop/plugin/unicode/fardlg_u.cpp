@@ -1,14 +1,15 @@
 /**
- * @file plugin/ansi/fardlg_a.cpp
+ * @file plugin/unicode/fardlg_u.cpp
  *
  * $Id$
  */
 
 #include "fardlg.h"
 
-int DialogEx(int X1, int Y1, int X2, int Y2,
-  const char *HelpTopic, struct FarDialogItem *Item, int ItemsNumber,
+HANDLE DialogInit(int X1, int Y1, int X2, int Y2,
+  const wchar_t *HelpTopic, struct FarDialogItem *Item, int ItemsNumber,
   DWORD Reserved, DWORD Flags, FARWINDOWPROC DlgProc, long Param=NULL);
+int DialogRun(HANDLE hdlg);
 
 /**
  * This function converts a vector of InitDialogItem objects to vector of FarDialogItem objects
@@ -35,11 +36,15 @@ static void InitDialogItems(
         PItem->Flags=PInit->Flags;
         PItem->DefaultButton=PInit->DefaultButton;
         if ((unsigned int)PInit->Data < 2000)
-            WideCharToMultiByte(CP_OEMCP, 0, GetMsg((int)PInit->Data), -1, PItem->Data, 
-                    LENGTH(PItem->Data), 0, 0);
+        {
+           PItem->PtrData = GetMsg((int)PInit->Data);
+        }
         else
-            WideCharToMultiByte(CP_OEMCP, 0, PInit->Data, -1, PItem->Data, 
-                    LENGTH(PItem->Data), 0, 0);
+        {
+            PItem->PtrData = PInit->Data;
+        }
+        
+        PItem->MaxLen = lstrlen(PItem->PtrData);
     }
 }
 
@@ -73,10 +78,10 @@ int FarDialog::run(void*& farItems)
     farItems = theItems;
     InitDialogItems(items(), theItems, count);
 
-    MyStringA helpTopic = w2a(help(), CP_OEMCP);
+    _hwnd = DialogInit(left(), top(), right(), bottom(), help(), theItems, count, 0,
+            flags(), &dlgProc, (long)this);
 
-    return DialogEx(left(), top(), right(), bottom(), helpTopic, theItems, count, 0,
-                flags(), &dlgProc, (long)this);
+    return DialogRun(_hwnd);
 }
 
 void FarDialog::restoreItems(void* farItems)
