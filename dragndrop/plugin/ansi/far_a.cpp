@@ -285,10 +285,20 @@ bool FarGetWindowInfo(WindowInfoW& wip)
 /**
  * Gets Panel info from the Far.
  */
-bool FarGetPanelInfo(struct PanelInfo* pi)
+static bool FarGetPanelInfo(struct PanelInfo* pi, bool active, bool full)
 {
+    int command;
+    if (active)
+    {
+        command = full?FCTL_GETPANELINFO:FCTL_GETPANELSHORTINFO;
+    }
+    else
+    {
+        command = full?FCTL_GETANOTHERPANELINFO:FCTL_GETANOTHERPANELSHORTINFO;
+    }
+
     if (theFar.Control)
-        return theFar.Control(INVALID_HANDLE_VALUE, FCTL_GETPANELINFO, pi)?true:false;
+        return theFar.Control(INVALID_HANDLE_VALUE, command, pi)?true:false;
     return false;
 }
 
@@ -348,44 +358,19 @@ static PanelInfoW& copy(PanelInfoW& pw, const PanelInfo& pi)
     pw.Focus = pi.Focus;
     pw.ViewMode = pi.ViewMode;
 
-    pw.ColumnTypes = a2w(pi.ColumnTypes, CP_OEMCP);
-    pw.ColumnWidths = a2w(pi.ColumnWidths, CP_OEMCP);
-    pw.CurDir = a2w(pi.CurDir, CP_OEMCP);
-
     pw.ShortNames = pi.ShortNames;
     pw.SortMode = pi.SortMode;
 
     pw.Flags = pi.Flags;
     pw.Reserved = pi.Reserved;
 
-    if (pi.PanelItems)
-    {
-        pw.PanelItems.size(pi.ItemsNumber);
-
-        int i;
-
-        for (i = 0; i < pi.ItemsNumber; i++)
-        {
-            PluginPanelItemW& item = copy(pw.PanelItems[i], pi.PanelItems[i]);
-            if (item.Flags & PPIF_SELECTED)
-                pw.SelectedItems.append(&item);
-        }
-
-        if (pi.SelectedItemsNumber == 1 && !pw.SelectedItems.size())
-        {
-            pw.SelectedItems.append(&pw.PanelItems[pw.CurrentItem]);
-        }
-
-        ASSERT(pw.SelectedItems.size() == (size_t)pi.SelectedItemsNumber);
-    }
-
     return pw;
 }
 
-bool FarGetPanelInfo(PanelInfoW& pw)
+bool FarGetActivePanelInfo(PanelInfoW& pw)
 {
     PanelInfo pi;
-    if (!FarGetPanelInfo(&pi))
+    if (!FarGetPanelInfo(&pi, true, false))
         return false;
 
     copy(pw, pi);
@@ -393,40 +378,10 @@ bool FarGetPanelInfo(PanelInfoW& pw)
     return true;
 }
 
-/**
- * Gets a short panel info from the Far.
- */
-bool FarGetShortPanelInfo(struct PanelInfo* pi)
-{
-    if (theFar.Control)
-        return theFar.Control(INVALID_HANDLE_VALUE, FCTL_GETPANELSHORTINFO, pi)?true:false;
-    return false;
-}
-
-bool FarGetShortPanelInfo(PanelInfoW& piw)
+bool FarGetPassivePanelInfo(PanelInfoW& pw)
 {
     PanelInfo pi;
-    if (!FarGetShortPanelInfo(&pi))
-        return false;
-
-    copy(piw, pi);
-    return true;
-}
-
-/**
- * Gets Panel info from the Far.
- */
-bool FarGetOtherPanelInfo(struct PanelInfo* pi)
-{
-    if (theFar.Control)
-        return theFar.Control(INVALID_HANDLE_VALUE, FCTL_GETANOTHERPANELINFO, pi)?true:false;
-    return false;
-}
-
-bool FarGetOtherPanelInfo(PanelInfoW& pw)
-{
-    PanelInfo pi;
-    if (!FarGetOtherPanelInfo(&pi))
+    if (!FarGetPanelInfo(&pi, false, false))
         return false;
 
     copy(pw, pi);
@@ -434,24 +389,82 @@ bool FarGetOtherPanelInfo(PanelInfoW& pw)
     return true;
 }
 
-/**
- * Gets a short info of inactive panel from the Far.
- */
-static bool FarGetShortOtherPanelInfo(struct PanelInfo* pi)
+MyStringW FarGetActivePanelDirectory()
 {
-    if (theFar.Control)
-        return theFar.Control(INVALID_HANDLE_VALUE, FCTL_GETANOTHERPANELSHORTINFO, pi)?true:false;
-    return false;
+    MyStringW res;
+
+    PanelInfo pi;
+
+    if (FarGetPanelInfo(&pi, true, false))
+    {
+        res = a2w(pi.CurDir, CP_OEMCP);
+    }
+
+    return res;
 }
 
-bool FarGetShortOtherPanelInfo(PanelInfoW& piw)
+MyStringW FarGetPassivePanelDirectory()
 {
-    PanelInfo pi;
-    if (!FarGetShortOtherPanelInfo(&pi))
-        return false;
+    MyStringW res;
 
-    copy(piw, pi);
-    return true;
+    PanelInfo pi;
+
+    if (FarGetPanelInfo(&pi, false, false))
+    {
+        res = a2w(pi.CurDir, CP_OEMCP);
+    }
+
+    return res;
+}
+
+static PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
+{
+    PluginPanelItemsW res;
+
+    PanelInfo pi;
+    if (FarGetPanelInfo(&pi, active, true))
+    {
+        int count;
+        PluginPanelItem* items;
+
+        if (selected)
+        {
+            count = pi.SelectedItemsNumber;
+
+            if (count == 1)
+            {
+                items = &pi.PanelItems[pi.CurrentItem];
+            }
+            else
+            {
+                items = pi.SelectedItems;
+            }
+        }
+        else
+        {
+            count = pi.ItemsNumber;
+            items = pi.PanelItems;
+        }
+
+        res.size(count);
+
+        for (int i = 0; i < count; i++)
+        {
+            copy(res[i], items[i]);
+        }
+    }
+
+    return res;
+}
+
+PluginPanelItemsW FarGetActivePanelItems(bool selected)
+{
+    return FarGetPanelItems(true, selected);
+}
+
+PluginPanelItemsW FarGetPassivePanelItems(bool selected)
+{
+    return FarGetPanelItems(false, selected);
 }
 
 /**

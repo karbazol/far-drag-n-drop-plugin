@@ -25,7 +25,7 @@ private:
     BOOL _operating;
     HRESULT QueryGetCustomData(FORMATETC* fmt);
 public:
-    DataObject(const PanelInfoW& info): _data(info), _async(VARIANT_TRUE),
+    DataObject(const wchar_t* dir, const PluginPanelItemsW& items): _data(dir, items), _async(VARIANT_TRUE),
     _operating(VARIANT_FALSE){}
     
     DEFINE_UNKNOWN
@@ -128,14 +128,14 @@ public:
 /**
  * Creates DataObject from plug-in's panel info structure
  */
-HRESULT createDataObject(PanelInfoW& info, IDataObject** dataObject)
+HRESULT createDataObject(const wchar_t* dir, PluginPanelItemsW& items, IDataObject** dataObject)
 {
     HRESULT res = S_OK;
 
     if (IsBadWritePtr(dataObject, sizeof(*dataObject)))
         return E_INVALIDARG;
 
-    *dataObject = new DataObject(info);
+    *dataObject = new DataObject(dir, items);
 
     (*dataObject)->AddRef();
 

@@ -35,11 +35,10 @@ static void initStringInfoFromOemFileName(const wchar_t* dir, const char* fileNa
     
 }
 /**/
-DataContainer::DataContainer(const PanelInfoW& info): 
-    _dir(), _files(NULL), _count(info.SelectedItems.size()),
+DataContainer::DataContainer(const wchar_t* dir, const PluginPanelItemsW& items): 
+    _dir(dir), _files(NULL), _count(items.size()),
     _custom(0), _customCount(0), _customCapacity(0)
 {
-    _dir = info.CurDir;
     if (_count > 0)
     {
         size_t i;
@@ -54,7 +53,7 @@ DataContainer::DataContainer(const PanelInfoW& info):
             }
             else/**/
             {
-                _files[i] = info.SelectedItems[i]->FindData.cFileName;
+                _files[i] = items[i].FindData.cFileName;
             }
         }
     }
