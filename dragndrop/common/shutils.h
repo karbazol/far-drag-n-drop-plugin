@@ -8,7 +8,13 @@ HRESULT PathToIDList(unsigned int cp, LPCITEMIDLIST parent, const char* path, LP
 HRESULT ConsolePathToIDList(LPCITEMIDLIST parent, const char* path, LPITEMIDLIST* pidl);
 void CopyMedium(STGMEDIUM& dest, const STGMEDIUM& src, CLIPFORMAT cf);
 
+#ifndef CFSTR_DRAGIMAGEBITS
 #define CFSTR_DRAGIMAGEBITS TEXT("DragImageBits")
+#endif
+
+#ifndef CFSTR_DRAGCONTEXT
+#define CFSTR_DRAGCONTEXT   TEXT("DragContext")
+#endif
 
 #define DECLARE_CBD_FMT(x)  \
 CLIPFORMAT get_##x()
