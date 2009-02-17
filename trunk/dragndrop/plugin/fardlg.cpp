@@ -116,7 +116,6 @@ int FarDialog::doShow()
 {
     if (!RunningDialogs::instance()->lockDialog(this))
     {
-        _running = false;
         return -1;
     }
 

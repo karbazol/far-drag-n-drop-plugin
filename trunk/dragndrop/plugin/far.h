@@ -44,26 +44,23 @@ struct PluginPanelItemW
     PluginPanelItemW(): Description(), Owner(), CustomColumnData(){}
 };
 
+typedef GrowOnlyArray<PluginPanelItemW> PluginPanelItemsW;
+
 struct PanelInfoW
 {
     int PanelType;
     int Plugin;
     RECT PanelRect;
-    GrowOnlyArray<PluginPanelItemW> PanelItems;
-    GrowOnlyArray<PluginPanelItemW*> SelectedItems;
     int CurrentItem;
     int TopPanelItem;
     int Visible;
     int Focus;
     int ViewMode;
-    MyStringW ColumnTypes;
-    MyStringW ColumnWidths;
-    MyStringW CurDir;
     int ShortNames;
     int SortMode;
     DWORD Flags;
     DWORD Reserved;
-    PanelInfoW(): PanelItems(), SelectedItems(), ColumnTypes(), ColumnWidths(), CurDir(){}
+    PanelInfoW(){}
 };
 
 struct WindowInfoW
@@ -87,10 +84,12 @@ const wchar_t* GetMsg(int MsgId);
  */
 int ConsoleMode(int param);
 bool FarGetWindowInfo(WindowInfoW& wip);
-bool FarGetPanelInfo(PanelInfoW& p);
-bool FarGetOtherPanelInfo(PanelInfoW& p);
-bool FarGetShortPanelInfo(PanelInfoW& piw);
-bool FarGetShortOtherPanelInfo(PanelInfoW& piw);
+bool FarGetActivePanelInfo(PanelInfoW& p);
+bool FarGetPassivePanelInfo(PanelInfoW& p);
+MyStringW FarGetActivePanelDirectory();
+MyStringW FarGetPassivePanelDirectory();
+PluginPanelItemsW FarGetActivePanelItems(bool selected);
+PluginPanelItemsW FarGetPassivePanelItems(bool selected);
 HWND GetFarWindow();
 MyStringA& TruncPathStr(MyStringA& s, int maxLen);
 MyStringW& TruncPathStr(MyStringW& s, int maxLen);

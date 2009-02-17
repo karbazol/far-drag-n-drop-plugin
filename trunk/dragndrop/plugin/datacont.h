@@ -31,7 +31,7 @@ private:
 public:
     DataContainer(): _dir(), _files(NULL), _count(0), _custom(0),
         _customCount(0), _customCapacity(0){}
-    DataContainer(const PanelInfoW& /*info*/);
+    DataContainer(const wchar_t* dir, const PluginPanelItemsW& /*items*/);
     ~DataContainer();                                                       
     HGLOBAL createHDrop();
     CustomData* findCustom(unsigned int cf, bool append=false);

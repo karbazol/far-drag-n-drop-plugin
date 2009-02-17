@@ -73,7 +73,7 @@ bool Dragging::start()
         return false;
 
     PanelInfoW info;
-    if (!FarGetPanelInfo(info) || info.Plugin && !(info.Flags & PFLAGS_REALNAMES))
+    if (!FarGetActivePanelInfo(info) || info.Plugin && !(info.Flags & PFLAGS_REALNAMES))
         return false;
 
     if (!info.Visible)
@@ -83,8 +83,11 @@ bool Dragging::start()
          info.PanelRect.right, info.PanelRect.bottom))
         return false;
 
+    MyStringW dir = FarGetActivePanelDirectory();
+    PluginPanelItemsW items = FarGetActivePanelItems(true);
+
     ShPtr<IDataObject> dataObj;
-    if (FAILED(createDataObject(info, &dataObj)))
+    if (FAILED(createDataObject(dir, items, &dataObj)))
         return false;
 
     /** @todo Find a place to show pop-up menu */

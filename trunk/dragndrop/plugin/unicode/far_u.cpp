@@ -250,7 +250,7 @@ bool FarGetWindowInfo(WindowInfoW& wip)
 bool FarGetPanelInfo(struct PanelInfo* pi)
 {
     if (theFar.Control)
-        return theFar.Control(INVALID_HANDLE_VALUE, FCTL_GETPANELINFO, pi)?true:false;
+        return theFar.Control(PANEL_ACTIVE, FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(pi))?true:false;
     return false;
 }
 
@@ -312,9 +312,9 @@ static PanelInfoW& copy(PanelInfoW& pw, const PanelInfo& pi)
     pw.Focus = pi.Focus;
     pw.ViewMode = pi.ViewMode;
 
-    pw.ColumnTypes = pi.lpwszColumnTypes;
-    pw.ColumnWidths = pi.lpwszColumnWidths;
-    pw.CurDir = pi.lpwszCurDir;
+    //pw.ColumnTypes = pi.lpwszColumnTypes;
+    //pw.ColumnWidths = pi.lpwszColumnWidths;
+    //pw.CurDir = pi.lpwszCurDir;
 
     pw.ShortNames = pi.ShortNames;
     pw.SortMode = pi.SortMode;
@@ -322,6 +322,7 @@ static PanelInfoW& copy(PanelInfoW& pw, const PanelInfo& pi)
     pw.Flags = pi.Flags;
     pw.Reserved = pi.Reserved;
 
+#if 0
     pw.PanelItems.size(0);
     pw.SelectedItems.size(0);
 
@@ -345,11 +346,12 @@ static PanelInfoW& copy(PanelInfoW& pw, const PanelInfo& pi)
 
         ASSERT(pw.SelectedItems.size() == (size_t)pi.SelectedItemsNumber);
     }
+#endif
 
     return pw;
 }
 
-bool FarGetPanelInfo(PanelInfoW& pw)
+bool FarGetActivePanelInfo(PanelInfoW& pw)
 {
     PanelInfo pi;
     if (!FarGetPanelInfo(&pi))
@@ -360,60 +362,112 @@ bool FarGetPanelInfo(PanelInfoW& pw)
     return true;
 }
 
-static bool FarGetOtherPanelInfo(struct PanelInfo* pi)
+static bool FarGetPassivePanelInfo(struct PanelInfo* pi)
 {
     if (theFar.Control)
-        return theFar.Control(PANEL_PASSIVE, FCTL_GETPANELINFO, pi)?true:false;
+        return theFar.Control(PANEL_PASSIVE, FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(pi))?true:false;
     return false;
 }
 
-bool FarGetOtherPanelInfo(PanelInfoW& p)
+bool FarGetPassivePanelInfo(PanelInfoW& p)
 {
     PanelInfo pi;
-    if (!FarGetOtherPanelInfo(&pi))
+    if (!FarGetPassivePanelInfo(&pi))
         return false;
 
     copy(p, pi);
 
     return true;
 }
-/**
- * Gets a short panel info from the Far.
- */
-bool FarGetShortPanelInfo(struct PanelInfo* pi)
+
+static MyStringW FarGetPanelDirectory(bool activePanel)
 {
+    MyStringW res;
+
     if (theFar.Control)
-        return theFar.Control(INVALID_HANDLE_VALUE, FCTL_GETPANELSHORTINFO, pi)?true:false;
-    return false;
+    {
+        HANDLE h = activePanel?PANEL_ACTIVE:PANEL_PASSIVE;
+
+        size_t buffSize = theFar.Control(h, FCTL_GETCURRENTDIRECTORY, 0, 0);
+
+        wchar_t* buff = new wchar_t[buffSize];
+
+        theFar.Control(h, FCTL_GETCURRENTDIRECTORY, buffSize,
+                reinterpret_cast<LONG_PTR>(static_cast<wchar_t*>(buff)));
+
+        res = buff;
+
+        delete [] buff;
+    }
+
+    return res;
 }
 
-bool FarGetShortPanelInfo(PanelInfoW& piw)
+MyStringW FarGetActivePanelDirectory()
 {
-    PanelInfo pi;
-    if (!FarGetShortPanelInfo(&pi))
-        return false;
-
-    copy(piw, pi);
-    return true;
+    return FarGetPanelDirectory(true);
 }
-/**
- * Gets a short info of inactive panel from the Far.
- */
-bool FarGetShortOtherPanelInfo(struct PanelInfo* pi)
+
+MyStringW FarGetPassivePanelDirectory()
 {
+    return FarGetPanelDirectory(false);
+}
+
+PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
+{
+    PluginPanelItemsW res;
+
     if (theFar.Control)
-        return theFar.Control(PANEL_PASSIVE, FCTL_GETPANELSHORTINFO, pi)?true:false;
-    return false;
+    {
+        HANDLE h = active?PANEL_ACTIVE:PANEL_PASSIVE;
+        int command = selected?FCTL_GETSELECTEDPANELITEM:FCTL_GETPANELITEM;
+
+        PanelInfo pi;
+
+        if (theFar.Control(h, FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&pi)))
+        {
+            int count = selected?pi.SelectedItemsNumber:pi.ItemsNumber;
+            int i;
+
+            res.size(count);
+
+            if (count > 1)
+            {
+
+                for (i = 0; i < count; ++i)
+                {
+                    PluginPanelItem item;
+                    theFar.Control(h, command, i, reinterpret_cast<LONG_PTR>(&item));
+
+                    copy(res[i], item);
+
+                    theFar.Control(h, FCTL_FREEPANELITEM, 0, reinterpret_cast<LONG_PTR>(&item));
+                }
+            }
+            else
+            {
+                PluginPanelItem item;
+                theFar.Control(h, command, pi.CurrentItem, reinterpret_cast<LONG_PTR>(&item));
+
+                copy(res[0], item);
+
+                theFar.Control(h, FCTL_FREEPANELITEM, 0, reinterpret_cast<LONG_PTR>(&item));
+            }
+        }
+    }
+
+    return res;
 }
 
-bool FarGetShortOtherPanelInfo(PanelInfoW& piw)
-{
-    PanelInfo pi;
-    if (!FarGetShortOtherPanelInfo(&pi))
-        return false;
 
-    copy(piw, pi);
-    return true;
+PluginPanelItemsW FarGetActivePanelItems(bool selected)
+{
+    return FarGetPanelItems(true, selected);
+}
+
+PluginPanelItemsW FarGetPassivePanelItems(bool selected)
+{
+    return FarGetPanelItems(false, selected);
 }
 
 /**
