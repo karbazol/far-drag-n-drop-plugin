@@ -447,7 +447,7 @@ PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
             else
             {
                 PluginPanelItem item;
-                theFar.Control(h, command, pi.CurrentItem, reinterpret_cast<LONG_PTR>(&item));
+                theFar.Control(h, FCTL_GETPANELITEM, pi.CurrentItem, reinterpret_cast<LONG_PTR>(&item));
 
                 copy(res[0], item);
 
