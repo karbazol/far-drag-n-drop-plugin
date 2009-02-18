@@ -375,7 +375,12 @@ public:
     }
     MyString& operator /= (const CharType* s)
     {
-        operator += (Traits::pathDelim);
+        if (length())
+        {
+            uniqueData();
+            if (data->data[data->len-1] != *Traits::pathDelim)
+                operator += (Traits::pathDelim);
+        }
         return operator += (s);
     }
     MyString& operator /= (const MyString& s)

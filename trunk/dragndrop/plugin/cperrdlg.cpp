@@ -25,7 +25,7 @@ CopyErrorDialog::CopyErrorDialogItems CopyErrorDialog::itemsTemplate =
 
 InitDialogItem* CopyErrorDialog::items()
 {
-    return &itemsTemplate.frame;
+    return &_items.frame;
 }
 
 int CopyErrorDialog::itemsCount()
@@ -33,8 +33,10 @@ int CopyErrorDialog::itemsCount()
     return sizeof(CopyErrorDialogItems)/sizeof(InitDialogItem);
 }
 
-CopyErrorDialog::RetCode CopyErrorDialog::show(const wchar_t* /*source*/, const wchar_t* /*dest*/, unsigned int /*error*/)
+CopyErrorDialog::RetCode CopyErrorDialog::show(const wchar_t* source, const wchar_t* dest, unsigned int /*error*/)
 {
+    _items.srcFileName.Data = source;
+    _items.dstFileName.Data = dest;
     FarDialog::show(true);
     return cancel;
 }

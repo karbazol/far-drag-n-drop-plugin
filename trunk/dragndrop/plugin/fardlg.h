@@ -23,7 +23,7 @@ struct InitDialogItem
     int Selected;
     unsigned int Flags;
     int DefaultButton;
-    wchar_t *Data;
+    const wchar_t *Data;
 };
 
 class DialogShower;
