@@ -24,6 +24,7 @@ private:
         InitDialogItem btnRetry; InitDialogItem btnSkip; InitDialogItem btnSkipAll; InitDialogItem btnCancel; // those are the buttons
     };
     static CopyErrorDialogItems itemsTemplate;
+    CopyErrorDialogItems _items;
 protected:
     InitDialogItem* items();
     int itemsCount();
@@ -36,7 +37,7 @@ public:
         skipAll,
         cancel
     };
-    CopyErrorDialog(): FarDialog(){}
+    CopyErrorDialog(): FarDialog(), _items(itemsTemplate){}
     ~CopyErrorDialog(){}
     RetCode show(const wchar_t* source, const wchar_t* dest, unsigned int error);
 };
