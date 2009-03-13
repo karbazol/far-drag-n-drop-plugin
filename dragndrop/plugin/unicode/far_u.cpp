@@ -441,7 +441,7 @@ PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
 
                     copy(res[i], item);
 
-                    theFar.Control(h, FCTL_FREEPANELITEM, 0, reinterpret_cast<LONG_PTR>(&item));
+                    //theFar.Control(h, FCTL_FREEPANELITEM, 0, reinterpret_cast<LONG_PTR>(&item));
                 }
             }
             else
@@ -451,7 +451,7 @@ PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
 
                 copy(res[0], item);
 
-                theFar.Control(h, FCTL_FREEPANELITEM, 0, reinterpret_cast<LONG_PTR>(&item));
+                //theFar.Control(h, FCTL_FREEPANELITEM, 0, reinterpret_cast<LONG_PTR>(&item));
             }
         }
     }

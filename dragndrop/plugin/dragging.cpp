@@ -41,15 +41,12 @@ void Dragging::shutDown()
     WinThread::instance()->stop();
 }
 
-/**
- * @brief Start dragging.
- *
- * The function checks the follwing conditions and decides
- * whether to start dragging.
- */
-bool Dragging::start()
+bool Dragging::isReadyForDragging()
 {
-    TRACE("Should we start dragging?\n");
+    if (!_initialized)
+        return false;
+    if (_dragging)
+        return false;
 
     if (_dragging)
     {
@@ -77,6 +74,23 @@ bool Dragging::start()
         return false;
 
     if (!info.Visible)
+        return false;
+
+    return true;
+}
+
+/**
+ * @brief Start dragging.
+ *
+ * The function checks the follwing conditions and decides
+ * whether to start dragging.
+ */
+bool Dragging::start()
+{
+    TRACE("Should we start dragging?\n");
+
+    PanelInfoW info;
+    if (!FarGetActivePanelInfo(info) || info.Plugin && !(info.Flags & PFLAGS_REALNAMES))
         return false;
 
     if (!InputProcessor::instance()->isMouseWithinRect(info.PanelRect.left, info.PanelRect.top,
