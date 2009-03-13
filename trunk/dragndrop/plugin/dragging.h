@@ -26,7 +26,7 @@ public:
     static Dragging* instance();
     void initialize();
     void shutDown();
-    inline bool isReadyForDragging(){return _initialized && !_dragging;}
+    bool isReadyForDragging();
     bool start();
     inline void draggingStarted(){_dragging = true;}
     inline void draggingEnded(){_dragging = false;}
