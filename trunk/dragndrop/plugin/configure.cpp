@@ -19,22 +19,24 @@
 struct ConfigDlgItems
 {
     InitDialogItem configTitle;
+    
     InitDialogItem checkKeyToStartDrag;
     InitDialogItem radioLeftCtl;
     InitDialogItem radioLeftAlt;
     InitDialogItem radioShift;
     InitDialogItem radioRightCtl;
     InitDialogItem radioRightAlt;
+    
     InitDialogItem sepPanels;
     InitDialogItem checkEnableDrop;
     InitDialogItem edtPixelsPassed;
     InitDialogItem txtPixelsPassed0;
     InitDialogItem txtPixelsPassed1;
-    InitDialogItem sepEditor;
-    InitDialogItem checkEnableDragEditor;
-    InitDialogItem chackEnableDropEditor;
-    InitDialogItem setButtons;
+    
+    InitDialogItem sepOptions;
+    InitDialogItem checkUseShellCopy;
 
+    InitDialogItem sepButtons;
     InitDialogItem btnOk;
     InitDialogItem btnCancel;
 };
@@ -166,7 +168,7 @@ public:
 
 ConfigDlgItems ConfigDlg::_items =
 {
-    /* 00 */{DI_DOUBLEBOX,3,1,46,15,0,0,0,0,(wchar_t*)MConfigTitle},
+    /* 00 */{DI_DOUBLEBOX,3,1,46,14,0,0,0,0,(wchar_t*)MConfigTitle},
     /* 01 */{DI_CHECKBOX,5,2,0,0,0,0,0,0,(wchar_t *)MUseKeyToStartDND},
     /* 02 */{DI_RADIOBUTTON,5,3,0,0,0,0,(unsigned int)DIF_GROUP|DIF_DISABLE,0,(wchar_t *)MLeftCtl},
     /* 03 */{DI_RADIOBUTTON,5,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MLeftAlt},
@@ -178,14 +180,13 @@ ConfigDlgItems ConfigDlg::_items =
         /* 09 */{DI_EDIT,5,8,7,0,0,0,0,0,L"0"},
         /* 10 */{DI_TEXT,9,8,37,0,0,0,0,0,(wchar_t *)MPixelsPassed},
         /* 11 */{DI_TEXT,9,9,37,0,0,0,0,0,(wchar_t *)MPixelsPassed2},
-    {DI_TEXT,5,10,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MEditor},
-    {DI_CHECKBOX,5,11,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MEnableDrag},
-    {DI_CHECKBOX,5,12,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MEnableDrop},
+    {DI_TEXT,5,10,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MOptions},
+    {DI_CHECKBOX,5,11,0,0,0,0,0,0,(wchar_t *)MUseShellCopy},
 
     // ------- Buttons -------
-    {DI_TEXT,5,13,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,L""},
-    {DI_BUTTON,0,14,0,0,0,0,(unsigned int)DIF_CENTERGROUP,1,(wchar_t *)MOK},
-    {DI_BUTTON,0,14,0,0,0,0,(unsigned int)DIF_CENTERGROUP,0,(wchar_t *)MCancel}
+    {DI_TEXT,5,12,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,L""},
+    {DI_BUTTON,0,13,0,0,0,0,(unsigned int)DIF_CENTERGROUP,1,(wchar_t *)MOK},
+    {DI_BUTTON,0,13,0,0,0,0,(unsigned int)DIF_CENTERGROUP,0,(wchar_t *)MCancel}
 };
 
 /**
@@ -198,12 +199,15 @@ int doConfigure(int /*Number*/)
     dlg.enableUseKeyToStartDnd(Config::instance()->checkKey());
     dlg.switchCheckBox(getMyItemId(checkEnableDrop),
             Config::instance()->allowDrop()?BSTATE_CHECKED:BSTATE_UNCHECKED);
+    dlg.switchCheckBox(getMyItemId(checkUseShellCopy),
+            Config::instance()->shellCopy());
 
     if (getMyItemId(btnOk) != dlg.show(true))
         return FALSE;
 
     Config::instance()->checkKey(dlg.getKeyToStartDnd());
     Config::instance()->allowDrop(dlg.checked(getMyItemId(checkEnableDrop)));
+    Config::instance()->shellCopy(dlg.checked(getMyItemId(checkUseShellCopy)));
 
     if(Config::instance()->allowDrop())
     {

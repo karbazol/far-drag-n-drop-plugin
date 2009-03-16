@@ -30,15 +30,15 @@ BOOL WINAPI MyGetNumberOfConsoleInputEvents(
   LPDWORD lpcNumberOfEvents
 )
 {
-    if (!Dragging::instance()->isReadyForDragging())
-        return GetNumberOfConsoleInputEvents(hConsoleInput, lpcNumberOfEvents);
-    if (!InputProcessor::instance()->readFromSystem(hConsoleInput, false))
-        return FALSE;
     if (IsBadWritePtr(lpcNumberOfEvents, sizeof(*lpcNumberOfEvents)))
     {
         SetLastError(ERROR_INVALID_DATA);
         return FALSE;
     }
+    if (!Dragging::instance()->isReadyForDragging())
+        return GetNumberOfConsoleInputEvents(hConsoleInput, lpcNumberOfEvents);
+    if (!InputProcessor::instance()->readFromSystem(hConsoleInput, false))
+        return FALSE;
     *lpcNumberOfEvents = InputProcessor::instance()->size();
     return TRUE;
 }

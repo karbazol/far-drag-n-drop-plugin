@@ -63,6 +63,8 @@ long FarDialog::dlgProc(HANDLE dlg, int msg, int param1, long param2)
 
     if (msg == DN_CLOSE && res)
     {
+        This->restoreItems();
+        This->_hwnd = 0;
         RunningDialogs::instance()->notifyDialog(This, false);
     }
     RunningDialogs::instance()->unlockDialog(This);
@@ -91,7 +93,6 @@ long FarDialog::handle(int msg, int param1, long param2)
         {
             long res = (long)onClose(param1);
             _running = false;
-            _hwnd = 0;
             return res;
         }
         break;
@@ -125,7 +126,7 @@ int FarDialog::doShow()
     /** @todo After the dialog has been shown copy flags and other stuff to the static items */
     if (RunningDialogs::instance()->lockDialog(this))
     {
-        restoreItems(farItems);
+        restoreItems();
         RunningDialogs::instance()->unlockDialog(this);
     }
     freeItems(farItems);
