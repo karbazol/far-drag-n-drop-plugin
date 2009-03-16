@@ -43,29 +43,6 @@ static void InitDialogItems(
     }
 }
 
-static void RestoreDialogItems(
-        const struct FarDialogItem *Item,
-        struct InitDialogItem *Init,
-        int ItemsNumber
-)
-{
-    int i;
-    for (i = 0; i < ItemsNumber; i++, Item++, Init++)
-    {
-        Init->Type = Item->Type;
-        Init->X1 = Item->X1;
-        Init->Y1 = Item->Y1;
-        Init->X2 = Item->X2;
-        Init->Y2 = Item->Y2;
-        Init->Focus = Item->Focus;
-        Init->Selected = Item->Selected;
-        Init->Flags = Item->Flags;
-        Init->DefaultButton = Item->DefaultButton;
-
-        /** @todo Deal with string data */
-    }
-}
-
 int FarDialog::run(void*& farItems)
 {
     int count = itemsCount();
@@ -79,12 +56,19 @@ int FarDialog::run(void*& farItems)
                 flags(), &dlgProc, (long)this);
 }
 
-void FarDialog::restoreItems(void* farItems)
+void FarDialog::restoreItems()
 {
     InitDialogItem* initItems = items();
+    FarDialogItem item;
     if (initItems)
     {
-        RestoreDialogItems(reinterpret_cast<FarDialogItem*>(farItems), initItems, itemsCount());
+        for (int i = 0; i < itemsCount(); i++)
+        {
+            if (sendMessage(DM_GETDLGITEM, i, reinterpret_cast<LONG_PTR>(&item)))
+            {
+                initItems[i].Selected = item.Selected;
+            }
+        }
     }
 }
 

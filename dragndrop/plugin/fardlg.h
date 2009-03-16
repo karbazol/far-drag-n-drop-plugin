@@ -39,7 +39,7 @@ private:
     static long WINAPI dlgProc(HANDLE dlg, int msg, int param1, long param2);
     int doShow();
     int run(void*& farItems);
-    void restoreItems(void* farItems);
+    void restoreItems();
     void freeItems(void* farItems);
 protected:
     virtual long handle(int msg, int param1, long param2);

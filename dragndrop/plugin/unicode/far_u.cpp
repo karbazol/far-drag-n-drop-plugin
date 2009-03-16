@@ -173,6 +173,18 @@ int DialogRun(HANDLE dlg)
     return -1;
 }
 
+/**
+ * Far's function to free a dialog
+ */
+
+void DialogFree(HANDLE h)
+{
+    if (theFar.DialogFree)
+    {
+        theFar.DialogFree(h);
+    }
+}
+
 // Far standard functions
 
 /**

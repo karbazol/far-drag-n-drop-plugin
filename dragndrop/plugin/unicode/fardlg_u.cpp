@@ -10,6 +10,7 @@ HANDLE DialogInit(int X1, int Y1, int X2, int Y2,
   const wchar_t *HelpTopic, struct FarDialogItem *Item, int ItemsNumber,
   DWORD Reserved, DWORD Flags, FARWINDOWPROC DlgProc, long Param=NULL);
 int DialogRun(HANDLE hdlg);
+void DialogFree(HANDLE hDlg);
 
 /**
  * This function converts a vector of InitDialogItem objects to vector of FarDialogItem objects
@@ -48,29 +49,6 @@ static void InitDialogItems(
     }
 }
 
-static void RestoreDialogItems(
-        const struct FarDialogItem *Item,
-        struct InitDialogItem *Init,
-        int ItemsNumber
-)
-{
-    int i;
-    for (i = 0; i < ItemsNumber; i++, Item++, Init++)
-    {
-        Init->Type = Item->Type;
-        Init->X1 = Item->X1;
-        Init->Y1 = Item->Y1;
-        Init->X2 = Item->X2;
-        Init->Y2 = Item->Y2;
-        Init->Focus = Item->Focus;
-        Init->Selected = Item->Selected;
-        Init->Flags = Item->Flags;
-        Init->DefaultButton = Item->DefaultButton;
-
-        /** @todo Deal with string data */
-    }
-}
-
 int FarDialog::run(void*& farItems)
 {
     int count = itemsCount();
@@ -84,18 +62,30 @@ int FarDialog::run(void*& farItems)
     return DialogRun(_hwnd);
 }
 
-void FarDialog::restoreItems(void* farItems)
+void FarDialog::restoreItems()
 {
     InitDialogItem* initItems = items();
+    FarDialogItem* item;
     if (initItems)
     {
-        RestoreDialogItems(reinterpret_cast<FarDialogItem*>(farItems), initItems, itemsCount());
+        int i;
+        for (i = 0; i < itemsCount(); i++)
+        {
+            item = reinterpret_cast<FarDialogItem*>(sendMessage(DM_GETDLGITEM, i, 0));
+            if (item)
+            {
+                initItems[i].Selected = item->Selected;
+                sendMessage(DM_FREEDLGITEM, 0, reinterpret_cast<LONG_PTR>(item));
+            }
+        }
     }
 }
 
 void FarDialog::freeItems(void* farItems)
 {
     delete [] reinterpret_cast<FarDialogItem*>(farItems);
+    DialogFree(_hwnd);
+    _hwnd = 0;
 }
 
 // vim: set et ts=4 sw=4 ai :
