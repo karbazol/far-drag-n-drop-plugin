@@ -322,6 +322,13 @@ long RunningDialogs::sendMessage(FarDialog* dlg, int msg, int param0, long param
         LOCKIT(_dialogsLock);
         if (!_activeDialog || (dlg != _activeDialog->dialog()))
             return 0;
+        if (msg == DM_CLOSE)
+        {
+            DialogEntry* e = _head->find(dlg);
+            if (e)
+                e->messages().clear();
+        }
+
         m.h = dlg->hwnd();
         m.message = msg;
         m.param1 = param0;

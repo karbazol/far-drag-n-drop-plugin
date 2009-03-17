@@ -35,6 +35,7 @@ struct ConfigDlgItems
     
     InitDialogItem sepOptions;
     InitDialogItem checkUseShellCopy;
+    InitDialogItem checkShowMenu;
 
     InitDialogItem sepButtons;
     InitDialogItem btnOk;
@@ -182,11 +183,12 @@ ConfigDlgItems ConfigDlg::_items =
         /* 11 */{DI_TEXT,9,9,37,0,0,0,0,0,(wchar_t *)MPixelsPassed2},
     {DI_TEXT,5,10,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MOptions},
     {DI_CHECKBOX,5,11,0,0,0,0,0,0,(wchar_t *)MUseShellCopy},
+    {DI_CHECKBOX,5,12,0,0,0,0,0,0,(wchar_t *)MShowMenu},
 
     // ------- Buttons -------
-    {DI_TEXT,5,12,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,L""},
-    {DI_BUTTON,0,13,0,0,0,0,(unsigned int)DIF_CENTERGROUP,1,(wchar_t *)MOK},
-    {DI_BUTTON,0,13,0,0,0,0,(unsigned int)DIF_CENTERGROUP,0,(wchar_t *)MCancel}
+    {DI_TEXT,5,13,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,L""},
+    {DI_BUTTON,0,14,0,0,0,0,(unsigned int)DIF_CENTERGROUP,1,(wchar_t *)MOK},
+    {DI_BUTTON,0,14,0,0,0,0,(unsigned int)DIF_CENTERGROUP,0,(wchar_t *)MCancel}
 };
 
 /**
@@ -201,6 +203,8 @@ int doConfigure(int /*Number*/)
             Config::instance()->allowDrop()?BSTATE_CHECKED:BSTATE_UNCHECKED);
     dlg.switchCheckBox(getMyItemId(checkUseShellCopy),
             Config::instance()->shellCopy());
+    dlg.switchCheckBox(getMyItemId(checkShowMenu),
+            Config::instance()->showMenu());
 
     if (getMyItemId(btnOk) != dlg.show(true))
         return FALSE;
@@ -208,6 +212,7 @@ int doConfigure(int /*Number*/)
     Config::instance()->checkKey(dlg.getKeyToStartDnd());
     Config::instance()->allowDrop(dlg.checked(getMyItemId(checkEnableDrop)));
     Config::instance()->shellCopy(dlg.checked(getMyItemId(checkUseShellCopy)));
+    Config::instance()->showMenu(dlg.checked(getMyItemId(checkShowMenu)));
 
     if(Config::instance()->allowDrop())
     {
@@ -221,16 +226,18 @@ int doConfigure(int /*Number*/)
     return TRUE;
 }
 
-Config::Config():_checkKey(0), _allowDrop(true), _shellCopy(true)
+Config::Config():_checkKey(0), _allowDrop(true), _shellCopy(true), _showMenu(false)
 {
     _checkKey = FarReadRegistry(_checkKeyName, _checkKey);
     _allowDrop = FarReadRegistry(_allowDropName, _allowDrop)?true:false;
     _shellCopy = FarReadRegistry(_shellCopyName, _shellCopy)?true:false;
+    _showMenu = FarReadRegistry(_showMenuName, _showMenu)?true:false;
 }
 
 const wchar_t* Config::_allowDropName = L"AllowDrop";
 const wchar_t* Config::_checkKeyName = L"CheckKey";
 const wchar_t* Config::_shellCopyName = L"UseShellCopy";
+const wchar_t* Config::_showMenuName = L"ShowUserMenu";
 
 Config* Config::instance()
 {
@@ -276,6 +283,16 @@ void Config::shellCopy(bool value)
         _shellCopy = value;
 
         FarWriteRegistry(_shellCopyName, _shellCopy);
+    }
+}
+
+void Config::showMenu(bool value)
+{
+    if (value != _showMenu)
+    {
+        _showMenu = value;
+
+        FarWriteRegistry(_showMenuName, _showMenu);
     }
 }
 

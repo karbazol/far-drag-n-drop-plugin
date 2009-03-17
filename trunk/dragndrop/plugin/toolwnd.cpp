@@ -68,6 +68,8 @@ LRESULT ToolWindow::handle(UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONUP:
         return onMouse(msg, wParam, lParam);
     case WM_LBUTTONDBLCLK:
     case WM_MBUTTONDBLCLK:
@@ -205,7 +207,7 @@ HRESULT ToolWindow::QueryContinueDrag(BOOL fEscapePressed, DWORD keyState)
 {
     if (fEscapePressed)
         return DRAGDROP_S_CANCEL;
-    else if ((keyState & MK_LBUTTON) == 0)
+    else if ((keyState & (MK_LBUTTON|MK_RBUTTON)) == 0)
         return DRAGDROP_S_DROP;
     else
         return S_OK;
@@ -241,6 +243,18 @@ LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
     if (_mouseCounter++ < 1)
         return 0;
     _mouseCounter = 0;
+
+    /**
+     * We cannot use DragDetect function here because it returns
+     * false in case when mouse moves with right button pressed.
+     *
+    if (!DragDetect(hwnd(), pt))
+    {
+        MainThread::instance()->setDragging(false);
+        hide();
+        return 0;
+    }
+     */
     if (wParam & (MK_LBUTTON|MK_RBUTTON))
     {
         TRACE("onMouse: buttond down\n");
@@ -264,7 +278,7 @@ LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
 #ifdef _DEBUG
             HRESULT hr =
 #endif
-            DoDragDrop(_data, this, DROPEFFECT_COPY, &effects);
+            DoDragDrop(_data, this, DROPEFFECT_COPY|DROPEFFECT_MOVE|DROPEFFECT_LINK, &effects);
 #ifdef _DEBUG
             DUMPERROR(hr);
 #endif
@@ -374,6 +388,7 @@ HRESULT ToolWindow::DragLeave()
 
 HRESULT ToolWindow::Drop(IDataObject* obj, DWORD keyState, POINTL ptl, DWORD* effect)
 {
+    TRACE("Drop occured\n");
     _dropData = NULL;
     if (_dropHelper)
     {
