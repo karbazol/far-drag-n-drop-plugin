@@ -13,14 +13,16 @@
 
 long WINAPI DefDlgProc(HANDLE hDlg, int Msg, int Param1, long Param2);
 
-FarDialog::FarDialog(): _hwnd(0), _running(false)
+FarDialog::FarDialog(): _hwnd(0), _running(0)
 {
+    _running = CreateEvent(NULL, TRUE, TRUE, NULL);
     RunningDialogs::instance()->registerDialog(this);
 }
 
 FarDialog::~FarDialog()
 {
     hide();
+    WaitForSingleObject(_running, INFINITE);
     RunningDialogs::instance()->unregisterDialog(this);
 
     TRACE("Leaving FarDialog::~FarDialog\n");
@@ -64,8 +66,10 @@ long FarDialog::dlgProc(HANDLE dlg, int msg, int param1, long param2)
     if (msg == DN_CLOSE && res)
     {
         This->restoreItems();
-        This->_hwnd = 0;
+        //This->_hwnd = 0;
         RunningDialogs::instance()->notifyDialog(This, false);
+
+        return res;
     }
     RunningDialogs::instance()->unlockDialog(This);
 
@@ -92,7 +96,6 @@ long FarDialog::handle(int msg, int param1, long param2)
     case DN_CLOSE:
         {
             long res = (long)onClose(param1);
-            _running = false;
             return res;
         }
         break;
@@ -115,21 +118,20 @@ int FarDialog::hide()
 
 int FarDialog::doShow()
 {
-    if (!RunningDialogs::instance()->lockDialog(this))
-    {
-        return -1;
-    }
-
-    void* farItems;
-    int res = run(farItems);
-
-    /** @todo After the dialog has been shown copy flags and other stuff to the static items */
+    int res = -1;
     if (RunningDialogs::instance()->lockDialog(this))
     {
+
+        void* farItems;
+        res = run(farItems);
+
         restoreItems();
+        freeItems(farItems);
+
         RunningDialogs::instance()->unlockDialog(this);
     }
-    freeItems(farItems);
+
+    SetEvent(_running);
                                                   
     return res;
 }
@@ -157,7 +159,7 @@ public:
 
 int FarDialog::show(bool modal)
 {
-    _running = true;
+    ResetEvent(_running);
     DialogShower* d = new DialogShower(this);
     if (modal)
         return reinterpret_cast<int>(MainThread::instance()->callIt(d));

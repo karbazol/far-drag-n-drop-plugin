@@ -194,6 +194,7 @@ bool InputProcessor::checkMouse(INPUT_RECORD& record)
         }
         else
         {
+            /** @todo Here we should check whether to show pop-up menu */
             _right = 0;
         }
     }

@@ -83,9 +83,9 @@ void FarDialog::restoreItems()
 
 void FarDialog::freeItems(void* farItems)
 {
-    delete [] reinterpret_cast<FarDialogItem*>(farItems);
     DialogFree(_hwnd);
     _hwnd = 0;
+    delete [] reinterpret_cast<FarDialogItem*>(farItems);
 }
 
 // vim: set et ts=4 sw=4 ai :

@@ -35,7 +35,7 @@ class FarDialog
 {
 private:
     HANDLE volatile _hwnd;
-    bool volatile _running;
+    HANDLE _running;
     static long WINAPI dlgProc(HANDLE dlg, int msg, int param1, long param2);
     int doShow();
     int run(void*& farItems);
@@ -69,7 +69,7 @@ public:
     /**
      * Allows to determine whether the dialog is running
      */
-    inline bool running(){return _running;}
+    inline bool running(){return WaitForSingleObject(_running,0)!=WAIT_OBJECT_0;}
 
     /**
      * Override this function to allow Dialog framework to show the dialog.

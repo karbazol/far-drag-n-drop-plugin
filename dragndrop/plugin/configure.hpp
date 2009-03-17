@@ -19,10 +19,12 @@ private:
     static const wchar_t* _allowDropName;
     static const wchar_t* _checkKeyName;
     static const wchar_t* _shellCopyName;
+    static const wchar_t* _showMenuName;
 private:
     DWORD _checkKey;
     bool _allowDrop;
     bool _shellCopy;
+    bool _showMenu;
     // Disable copy constructor
     Config(const Config&);
     Config();
@@ -36,6 +38,8 @@ public:
     void allowDrop(bool value);
     inline bool shellCopy() const {return _shellCopy;}
     void shellCopy(bool value);
+    inline bool showMenu() const {return _showMenu;}
+    void showMenu(bool value);
 };
 
 int doConfigure(int);
