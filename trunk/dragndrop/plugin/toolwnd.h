@@ -12,6 +12,7 @@
 #include "mywnd.h"
 #include "myshptr.h"
 #include "myunknown.h"
+#include "datacont.h"
 
 /**
  * This class represents main tool window used to drag and drop files.
@@ -30,7 +31,7 @@ protected:
     void beforeCreation(DWORD& style, DWORD& styleEx);
 
     // Message handlers
-    LRESULT prepareForDragging(IDataObject* data);
+    LRESULT prepareForDragging(const DataContainer& data);
     LRESULT onMouse(UINT msg, WPARAM wParam, LPARAM lParam);
     LRESULT onDblClick(UINT msg, WPARAM wParam, LPARAM lParam);
     HWND onGetActiveFar();

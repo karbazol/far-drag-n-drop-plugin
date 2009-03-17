@@ -96,7 +96,7 @@ void WinThread::run()
 /**
  * The functions sends a message to the tool window.
  */
-bool WinThread::startDragging(IDataObject* data)
+bool WinThread::startDragging(const DataContainer& data)
 {
     if (HolderApi::instance()->isLeftButtonDown())
         mouse_event(MOUSEEVENTF_LEFTUP,  0, 0, 0, NULL);
@@ -104,7 +104,7 @@ bool WinThread::startDragging(IDataObject* data)
         mouse_event(MOUSEEVENTF_RIGHTUP,  0, 0, 0, NULL);
 
     /** See ToolWindow::prepareForDragging for refernce. */
-    if (_window.sendMessage(WM_PREPAREFORDRAGGING, 0, (LPARAM)data))
+    if (_window.sendMessage(WM_PREPAREFORDRAGGING, 0, (LPARAM)&data))
     {
         //mouse_event(MOUSEEVENTF_LEFTDOWN,  0, 0, 0, NULL);
 

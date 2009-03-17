@@ -16,6 +16,7 @@
 #include "dndmsgs.h"
 #include "hldrapi.h"
 #include "dropprcs.h"
+#include "dataobj.h"
 
 void ToolWindow::beforeCreation(DWORD& /*style*/, DWORD& /*styleEx*/)
 {
@@ -64,7 +65,7 @@ LRESULT ToolWindow::handle(UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
     case WM_PREPAREFORDRAGGING:
-        return prepareForDragging((IDataObject*)lParam);
+        return prepareForDragging(*reinterpret_cast<DataContainer*>(lParam));
     case WM_MOUSEMOVE:
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
@@ -159,15 +160,14 @@ static void dumpConsoleFont()
 }
 #endif
 
-LRESULT ToolWindow::prepareForDragging(IDataObject* data)
+LRESULT ToolWindow::prepareForDragging(const DataContainer& data)
 {
 #ifdef _DEBUG
     dumpConsoleFont();
 #endif 
-    if (!data)
-        return 0;
-
-    _data = data;
+    
+    _data = 0;
+    createDataObject(data, &_data, Config::instance()->useShellObject());
 
     if (!show())
         return 0;
@@ -261,6 +261,8 @@ LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
         if ( _data != NULL )
         {
             MainThread::instance()->setDragging(true);
+#if 0
+            /** @todo Implement support for nice picture during drag */
             ShPtr<IDragSourceHelper> helper;
             DragBitmap theBmp;
             if (_dropHelper && SUCCEEDED(_dropHelper->QueryInterface(IID_IDragSourceHelper, (void**)&helper)))
@@ -273,12 +275,13 @@ LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
 
                 helper->InitializeFromBitmap(&img, _data);
             }
+#endif
             TRACE("Dragging starting\n");
             DWORD effects=0;
 #ifdef _DEBUG
             HRESULT hr =
 #endif
-            DoDragDrop(_data, this, DROPEFFECT_COPY|DROPEFFECT_MOVE|DROPEFFECT_LINK, &effects);
+            DoDragDrop(_data, this, DROPEFFECT_COPY, &effects);
 #ifdef _DEBUG
             DUMPERROR(hr);
 #endif
@@ -409,9 +412,9 @@ HRESULT ToolWindow::Drop(IDataObject* obj, DWORD keyState, POINTL ptl, DWORD* ef
 
     keyStateToEffect(keyState, *effect);
 
-    HRESULT hr = DropProcessor::instance()->processDrop(obj, effect, dir);
-
     hide();
+
+    HRESULT hr = DropProcessor::instance()->processDrop(obj, effect, dir);
 
     return hr;
 }

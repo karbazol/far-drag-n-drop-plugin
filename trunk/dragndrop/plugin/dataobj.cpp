@@ -13,6 +13,7 @@
 #include "enumfmt.h"
 #include "datacont.h"
 #include "shutils.h"
+#include "myshptr.h"
 
 /**
  * Custom data object used during dragging operation.
@@ -25,7 +26,7 @@ private:
     BOOL _operating;
     HRESULT QueryGetCustomData(FORMATETC* fmt);
 public:
-    DataObject(const wchar_t* dir, const PluginPanelItemsW& items): _data(dir, items), _async(VARIANT_TRUE),
+    DataObject(const DataContainer& data): _data(data), _async(VARIANT_TRUE),
     _operating(VARIANT_FALSE){}
     
     DEFINE_UNKNOWN
@@ -125,17 +126,77 @@ public:
     }
 };
 
+static HRESULT createShellDataObject(const DataContainer& data, IDataObject** dataObject)
+{
+    HRESULT res = S_OK;
+
+    ShPtr<IShellFolder> desktop;
+    res = SHGetDesktopFolder(&desktop);
+    if (FAILED(res))
+        return res;
+
+    LPITEMIDLIST il;
+    ULONG eaten;
+    res = desktop->ParseDisplayName(NULL, NULL, 
+            const_cast<LPOLESTR>(static_cast<const wchar_t*>(data.dir())), &eaten, &il, NULL);
+    if (FAILED(res))
+    {
+        return res;
+    }
+
+    ShPtr<IShellFolder> folder;
+    res = desktop->BindToObject(const_cast<LPCITEMIDLIST>(il), NULL, IID_IShellFolder,
+            reinterpret_cast<void**>(&folder));
+    ILFree(il);
+
+    if (FAILED(res))
+        return res;
+
+    ITEMIDLIST **files = new ITEMIDLIST*[data.fileCount()];
+    int i;
+    for (i = 0; i < static_cast<int>(data.fileCount()); i++)
+    {
+        res = folder->ParseDisplayName(NULL, NULL, 
+                const_cast<LPOLESTR>(static_cast<const wchar_t*>(data.files()[i])), &eaten, &files[i], NULL);
+
+        if (FAILED(res))
+        {
+            for (--i; i >= 0; i--)
+            {
+                ILFree(files[i]);
+            }
+
+            delete [] files;
+
+            return res;
+        }
+    }
+
+    res = folder->GetUIObjectOf(NULL, data.fileCount(), 
+            const_cast<LPCITEMIDLIST*>(files), IID_IDataObject, NULL, reinterpret_cast<void**>(dataObject));
+    for (i = 0; i < static_cast<int>(data.fileCount()); i++)
+    {
+        ILFree(files[i]);
+    }
+    delete [] files;
+
+    return res;
+}
+
 /**
  * Creates DataObject from plug-in's panel info structure
  */
-HRESULT createDataObject(const wchar_t* dir, PluginPanelItemsW& items, IDataObject** dataObject)
+HRESULT createDataObject(const DataContainer& data, IDataObject** dataObject, bool shellObj)
 {
     HRESULT res = S_OK;
 
     if (IsBadWritePtr(dataObject, sizeof(*dataObject)))
         return E_INVALIDARG;
 
-    *dataObject = new DataObject(dir, items);
+    if (shellObj)
+        return createShellDataObject(data, dataObject);
+
+    *dataObject = new DataObject(data);
 
     (*dataObject)->AddRef();
 

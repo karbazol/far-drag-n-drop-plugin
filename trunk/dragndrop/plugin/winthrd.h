@@ -9,6 +9,7 @@
 
 #include <windows.h>
 #include "toolwnd.h"
+#include "datacont.h"
 
 /**
  * @brief Window thread singleton.
@@ -34,7 +35,7 @@ public:
     static WinThread* instance();
     bool start();
     bool stop();
-    bool startDragging(IDataObject* data);
+    bool startDragging(const DataContainer& data);
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__WINTHRD_H__

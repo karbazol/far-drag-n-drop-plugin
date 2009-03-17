@@ -37,6 +37,7 @@ CopyErrorDialog::RetCode CopyErrorDialog::show(const wchar_t* source, const wcha
 {
     _items.srcFileName.Data = source;
     _items.dstFileName.Data = dest;
+    /** @todo Adjust dialog width */
     FarDialog::show(true);
     return cancel;
 }
