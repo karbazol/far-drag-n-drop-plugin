@@ -226,18 +226,21 @@ int doConfigure(int /*Number*/)
     return TRUE;
 }
 
-Config::Config():_checkKey(0), _allowDrop(true), _shellCopy(true), _showMenu(false)
+Config::Config():_checkKey(0), _allowDrop(true), _shellCopy(true), _showMenu(false),
+    _useShellObject(false)
 {
     _checkKey = FarReadRegistry(_checkKeyName, _checkKey);
     _allowDrop = FarReadRegistry(_allowDropName, _allowDrop)?true:false;
     _shellCopy = FarReadRegistry(_shellCopyName, _shellCopy)?true:false;
     _showMenu = FarReadRegistry(_showMenuName, _showMenu)?true:false;
+    _useShellObject = FarReadRegistry(_useShellObjectName, _useShellObject)?true:false;
 }
 
 const wchar_t* Config::_allowDropName = L"AllowDrop";
 const wchar_t* Config::_checkKeyName = L"CheckKey";
 const wchar_t* Config::_shellCopyName = L"UseShellCopy";
 const wchar_t* Config::_showMenuName = L"ShowUserMenu";
+const wchar_t* Config::_useShellObjectName = L"UseShellObject";
 
 Config* Config::instance()
 {
@@ -293,6 +296,16 @@ void Config::showMenu(bool value)
         _showMenu = value;
 
         FarWriteRegistry(_showMenuName, _showMenu);
+    }
+}
+
+void Config::useShellObject(bool value)
+{
+    if (value != _useShellObject)
+    {
+        _useShellObject = value;
+
+        FarWriteRegistry(_useShellObjectName, _useShellObject);
     }
 }
 

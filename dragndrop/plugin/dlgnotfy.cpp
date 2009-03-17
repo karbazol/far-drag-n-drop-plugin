@@ -55,7 +55,7 @@ bool CopyDialogNotify::onFileStep(const __int64& step)
 bool CopyDialogNotify::onFileError(const wchar_t* src, const wchar_t* dest, DWORD errorNumber)
 {
     /** @todo Implement error check */
-    if (_dialog)
+    if (_dialog && _dialog->running())
     {
         // give a _dialog a chance to appear
         while (_dialog->sendMessage(DM_GETTEXTPTR, 0, 0) == 0)

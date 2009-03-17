@@ -7,6 +7,7 @@
 #include "winthrd.h"
 #include "dataobj.h"
 #include "myshptr.h"
+#include "datacont.h"
 
 void Dragging::kill(Dragging* p)
 {
@@ -101,11 +102,9 @@ bool Dragging::start()
     PluginPanelItemsW items = FarGetActivePanelItems(true);
 
     ShPtr<IDataObject> dataObj;
-    if (FAILED(createDataObject(dir, items, &dataObj)))
-        return false;
+    DataContainer data(dir, items);
 
-    /** @todo Find a place to show pop-up menu */
-    if (WinThread::instance()->startDragging(dataObj))
+    if (WinThread::instance()->startDragging(data))
         _dragging = true;
 
     return _dragging;
