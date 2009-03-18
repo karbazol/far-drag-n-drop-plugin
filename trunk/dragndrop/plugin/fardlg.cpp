@@ -83,7 +83,6 @@ bool FarDialog::onInit()
 
 bool FarDialog::onClose(int /*closeId*/)
 {
-    /** @todo After the dialog has been shown copy flags and other stuff to the static items */
     return true;
 }
 

@@ -8,6 +8,7 @@
 #include "dataobj.h"
 #include "myshptr.h"
 #include "datacont.h"
+#include "configure.hpp"
 
 void Dragging::kill(Dragging* p)
 {
@@ -108,6 +109,17 @@ bool Dragging::start()
         _dragging = true;
 
     return _dragging;
+}
+
+bool Dragging::showPopupMenu()
+{
+    if (Config::instance()->showMenu())
+    {
+        DataContainer data(FarGetActivePanelDirectory(), FarGetActivePanelItems(true));
+
+        return WinThread::instance()->showPopupMenu(data);
+    }
+    return false;
 }
 
 // vim: set et ts=4 ai :

@@ -168,7 +168,7 @@ bool InputProcessor::checkThread()
     return _thread != GetCurrentThreadId();
 }
 
-bool InputProcessor::checkMouse(INPUT_RECORD& record)
+bool InputProcessor::checkMouseAndShowPopupMenu(INPUT_RECORD& record)
 {
     if (record.EventType == MOUSE_EVENT)
     {
@@ -194,7 +194,10 @@ bool InputProcessor::checkMouse(INPUT_RECORD& record)
         }
         else
         {
-            /** @todo Here we should check whether to show pop-up menu */
+            if (_right)
+            {
+                Dragging::instance()->showPopupMenu();
+            }
             _right = 0;
         }
     }
@@ -296,7 +299,7 @@ void InputProcessor::processBuffer()
     {
         if (checkEvent(_buffer[_userSize])||
             checkGrabbing(_buffer[_userSize])||
-            checkMouse(_buffer[_userSize])||
+            checkMouseAndShowPopupMenu(_buffer[_userSize])||
             checkKeyBoard(_buffer[_userSize])
             )
         {

@@ -29,7 +29,7 @@ WCHAR* ToolWindow::getClassName()
     return _class;
 }
 
-ToolWindow::ToolWindow(): MyWindow(), Unknown(), _data(), _dropData(), _dropHelper(), _mouseCounter(0)
+ToolWindow::ToolWindow(): MyWindow(), Unknown(), _data(), _dropData(), _dropHelper(), _menu(), _mouseCounter(0)
 {
     AddRef();
 
@@ -76,6 +76,12 @@ LRESULT ToolWindow::handle(UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
         return onDblClick(msg, wParam, lParam);
+    case WM_INITMENUPOPUP:
+        // Here we allow the m_pMenu to generate its 'Send To' menu items.
+    case WM_MEASUREITEM:
+    case WM_DRAWITEM:
+        return onMenuMessage(msg, wParam, lParam);
+    
     case WM_ISACTIVEDND:
         return onIsActiveFar();
     case WM_HLDR_ISDNDWND:
@@ -88,6 +94,8 @@ LRESULT ToolWindow::handle(UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_HIDEDNDWINDOW:
         hide();
         break;
+    case WM_DND_SHOWPOPUPMENU:
+        return showPopupMenu(*reinterpret_cast<const DataContainer*>(lParam));
 
     case WM_CREATE:
         onCreate();
@@ -183,6 +191,56 @@ LRESULT ToolWindow::prepareForDragging(const DataContainer& data)
     return 1;
 }
 
+LRESULT ToolWindow::showPopupMenu(const DataContainer& data)
+{
+    int res = 1;
+    HRESULT hr;
+    ShPtr<IContextMenu> pMenu;
+
+    hr = getShellUIObject(data, IID_IContextMenu, 
+            reinterpret_cast<void**>(&pMenu));
+    if (FAILED(hr))
+        return 0;
+
+    HMENU hMenu = CreatePopupMenu();
+    hr = pMenu->QueryContextMenu(hMenu, 1, 1, (UINT)-1, 0);
+
+    if (SUCCEEDED(hr))
+    {
+        hr = pMenu->QueryInterface(IID_IContextMenu2, reinterpret_cast<void**>(&_menu));
+        if (FAILED(hr))
+            TRACE("IContextMenu2 is not supported\n");
+        POINT pt;
+        GetCursorPos(&pt);
+        res = TrackPopupMenu(hMenu, TPM_RETURNCMD, pt.x, pt.y, NULL, hwnd(), NULL);
+
+        if (res)
+        {
+            CMINVOKECOMMANDINFO ci = {
+                sizeof(ci),
+                    0,
+                    hwnd(),
+                    MAKEINTRESOURCEA(res-1),0,0,SW_NORMAL,0,0
+            };
+
+            hr = pMenu->InvokeCommand(&ci);
+            if (FAILED(hr))
+            {
+                res = 0;
+            }
+        }
+    }
+    else
+    {
+        res = 0;
+    }
+
+    DestroyMenu(hMenu);
+    _menu = 0;
+
+    return 1;
+}
+
 HRESULT ToolWindow::QueryInterface(REFIID iid, void** obj)
 {
     if (IsBadWritePtr(obj, sizeof(*obj)))
@@ -238,6 +296,14 @@ LRESULT ToolWindow::onDblClick(UINT msg, WPARAM wParam, LPARAM lParam)
     return MyWindow::handle(msg, wParam, lParam);
 }
 
+LRESULT ToolWindow::onMenuMessage(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (_menu)
+    {
+        _menu->HandleMenuMsg(msg, wParam, lParam);
+    }
+    return msg == WM_INITMENUPOPUP ? TRUE : FALSE;
+}
 LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
 {
     if (_mouseCounter++ < 1)

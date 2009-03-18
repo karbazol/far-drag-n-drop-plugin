@@ -56,7 +56,7 @@ private:
      * Returns true if there is a screen-grabing.
      */
     bool checkGrabbing(INPUT_RECORD& record);
-    bool checkMouse(INPUT_RECORD& record);
+    bool checkMouseAndShowPopupMenu(INPUT_RECORD& record);
     bool checkKeyBoard(INPUT_RECORD& record);
     bool checkMouseButtons(INPUT_RECORD& record);
 private:
