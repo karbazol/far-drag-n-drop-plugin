@@ -1,0 +1,8 @@
+#summary How to build the plug-in.
+
+= Software to use =
+To build the plug-in you will need the following software:
+  * Subversion
+  * Python
+  * scons
+  * C/C++ compiler
