@@ -416,7 +416,6 @@ void RunningDialogs::notifyDialog(FarDialog* dlg, bool shown)
     {
         ASSERT(_activeDialog && _activeDialog->dialog() == dlg);
         processPostedDlgMessages(dlg);
-        /** @todo discard all queued messages for the dialog */
 
         _activeDialog = _activeDialog->pop();
         if (_activeDialog)

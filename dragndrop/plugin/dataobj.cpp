@@ -126,7 +126,7 @@ public:
     }
 };
 
-static HRESULT createShellDataObject(const DataContainer& data, IDataObject** dataObject)
+HRESULT getShellUIObject(const DataContainer& data, REFIID iid, void** dataObject)
 {
     HRESULT res = S_OK;
 
@@ -173,7 +173,7 @@ static HRESULT createShellDataObject(const DataContainer& data, IDataObject** da
     }
 
     res = folder->GetUIObjectOf(NULL, data.fileCount(), 
-            const_cast<LPCITEMIDLIST*>(files), IID_IDataObject, NULL, reinterpret_cast<void**>(dataObject));
+            const_cast<LPCITEMIDLIST*>(files), iid, NULL, dataObject);
     for (i = 0; i < static_cast<int>(data.fileCount()); i++)
     {
         ILFree(files[i]);
@@ -194,7 +194,7 @@ HRESULT createDataObject(const DataContainer& data, IDataObject** dataObject, bo
         return E_INVALIDARG;
 
     if (shellObj)
-        return createShellDataObject(data, dataObject);
+        return getShellUIObject(data, IID_IDataObject, reinterpret_cast<void**>(dataObject));
 
     *dataObject = new DataObject(data);
 

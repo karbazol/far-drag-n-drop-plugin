@@ -28,6 +28,7 @@ public:
     void shutDown();
     bool isReadyForDragging();
     bool start();
+    bool showPopupMenu();
     inline void draggingStarted(){_dragging = true;}
     inline void draggingEnded(){_dragging = false;}
     inline bool dragging(){return _dragging;}

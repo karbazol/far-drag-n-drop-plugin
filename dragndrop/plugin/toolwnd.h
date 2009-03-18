@@ -23,6 +23,7 @@ private:
     ShPtr<IDataObject> _data;
     ShPtr<IDataObject> _dropData;
     ShPtr<IDropTargetHelper> _dropHelper;
+    ShPtr<IContextMenu2> _menu;
     int _mouseCounter;
     void keyStateToEffect(DWORD keyState, DWORD& effect);
 protected:
@@ -32,11 +33,13 @@ protected:
 
     // Message handlers
     LRESULT prepareForDragging(const DataContainer& data);
+    LRESULT onMenuMessage(UINT msg, WPARAM wParam, LPARAM lParam);
     LRESULT onMouse(UINT msg, WPARAM wParam, LPARAM lParam);
     LRESULT onDblClick(UINT msg, WPARAM wParam, LPARAM lParam);
     HWND onGetActiveFar();
     LRESULT onIsActiveFar();
     LRESULT onIsDragging();
+    LRESULT showPopupMenu(const DataContainer& data);
     void onDestroy();
     void onCreate();
 public:

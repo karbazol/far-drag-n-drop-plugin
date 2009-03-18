@@ -10,6 +10,7 @@
 #include <windows.h>
 #include "toolwnd.h"
 #include "datacont.h"
+#include "dndmsgs.h"
 
 /**
  * @brief Window thread singleton.
@@ -36,6 +37,10 @@ public:
     bool start();
     bool stop();
     bool startDragging(const DataContainer& data);
+    inline bool showPopupMenu(const DataContainer& data)
+    {
+        return _window.sendMessage(WM_DND_SHOWPOPUPMENU, 0, reinterpret_cast<LPARAM>(&data))?true:false;
+    }
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__WINTHRD_H__

@@ -105,7 +105,9 @@ void* MainThread::sendMessage(unsigned int msg, void* param0, void* param1,
 
 unsigned int MainThread::processMessage(bool wait, void** result)
 {
-    ASSERT(_threadId == GetCurrentThreadId());
+    if (_threadId != GetCurrentThreadId())
+        return 0;
+
     unsigned int res = 0;
 
     if (WaitForSingleObject(_eventMessage, wait?INFINITE:0) == WAIT_OBJECT_0)
