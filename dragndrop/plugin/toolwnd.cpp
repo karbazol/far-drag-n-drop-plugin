@@ -487,7 +487,7 @@ HRESULT ToolWindow::Drop(IDataObject* obj, DWORD keyState, POINTL ptl, DWORD* ef
 
 void ToolWindow::keyStateToEffect(DWORD /*keyState*/, DWORD& /*effect*/)
 {
-    /** @todo Handle differrent scenarios: move/copy/link. */
+    /** @todo Handle differrent scenarios: move/copy/link. bug #6 */
 }
 
 // vim: set et ts=4 ai :
