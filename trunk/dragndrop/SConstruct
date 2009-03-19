@@ -93,7 +93,7 @@ if optsenv['debug'] :
 else:
     commonCppFlags  += ['/MT']
     commonCppFlags  += ['/DNDEBUG']
-    commonCppFlags  += ['/Ox']              # Optimize them all
+    commonCppFlags  += ['/O1']              # Optimize them all
     commonLinkFlags += ['/NODEFAULTLIB']
     commonLinkFlags += ['/opt:nowin98']     # Minimize size of binaries
 

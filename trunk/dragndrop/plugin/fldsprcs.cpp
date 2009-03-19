@@ -102,7 +102,7 @@ HRESULT FileDescriptorProcessor::handle(IStorage* stg, const wchar_t* name)
         if (hr == STG_E_FILEALREADYEXISTS)
         {
             // They give us a second chance
-            /** @todo Ask user what to do with existing file */
+            /** @todo Ask user what to do with existing file bug #2*/
             hr = StgCreateStorageEx(s, STGM_CREATE|STGM_READWRITE|STGM_SHARE_EXCLUSIVE,
                     STGFMT_DOCFILE, 0, NULL, 0, IID_IStorage, (void**)&stgOut);
             if (FAILED(hr))

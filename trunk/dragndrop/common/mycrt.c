@@ -11,13 +11,29 @@
 #ifndef _DEBUG
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
+static HANDLE getMyHeap()
+{
+    ULONG  HeapFragValue = 2;
+    static HANDLE heap = 0;
+    if (!heap)
+    {
+        heap = HeapCreate(0, 1024*1024, 0);
+        HeapSetInformation(heap,
+                       HeapCompatibilityInformation,
+                       &HeapFragValue,
+                       sizeof(HeapFragValue));
+    }
+
+    return heap;
+}
+
 #if _MSC_VER >= 1400
 __declspec(noalias) __declspec(restrict)
 #endif
 void* malloc(size_t size)
 {
-//    return HeapAlloc(GetProcessHeap(), 0, size);
-    return CoTaskMemAlloc(size);
+    return HeapAlloc(getMyHeap(), 0, size);
+//    return CoTaskMemAlloc(size);
 }
 
 #if _MSC_VER >= 1400
@@ -25,8 +41,11 @@ __declspec(noalias)
 #endif
 void free(void* p)
 {
-//    HeapFree(GetProcessHeap(), 0, p);
-    CoTaskMemFree(p);
+    if (p)
+    {
+        HeapFree(getMyHeap(), 0, p);
+//        CoTaskMemFree(p);
+    }
 }
 
 #if _MSC_VER >= 1400
@@ -34,8 +53,15 @@ __declspec(noalias) __declspec(restrict)
 #endif
 void* realloc(void* p, size_t size)
 {
-//    return HeapReAlloc(GetProcessHeap(), 0, p, size);
-    return CoTaskMemRealloc(p, size);
+    if (p)
+    {
+        return HeapReAlloc(getMyHeap(), 0, p, size);
+    }
+    else
+    {
+        return HeapAlloc(getMyHeap(), 0, size);
+    }
+//    return CoTaskMemRealloc(p, size);
 }
 
 void __cdecl _purecall(

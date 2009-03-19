@@ -37,7 +37,7 @@ bool CopyDialogNotify::onFileExists(const wchar_t* src, const wchar_t* dest)
     src;
     dest;
 
-    /** @todo Ask user whether to overwrite files */
+    /** @todo Ask user whether to overwrite files bug #3 */
     return true;
 }
 
