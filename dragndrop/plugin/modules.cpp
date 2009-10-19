@@ -50,6 +50,7 @@ class ModuleImportsWalker : public CommonWalker, public ModuleWalker
 protected:
     void** _current;
     int* _names;
+    PIMAGE_IMPORT_DESCRIPTOR _importedModule;
 public:
     ModuleImportsWalker(void* module): CommonWalker(module), _current(0), _names(0){}
     ~ModuleImportsWalker(){}
@@ -59,13 +60,13 @@ public:
             return;
         PIMAGE_DOS_HEADER pDos = (PIMAGE_DOS_HEADER)_module;
         PIMAGE_NT_HEADERS pNT = (PIMAGE_NT_HEADERS)((DWORD_PTR)pDos + pDos->e_lfanew);
-        PIMAGE_IMPORT_DESCRIPTOR pImports = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD_PTR)pDos +
+        _importedModule = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD_PTR)pDos +
             pNT->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
 
-        _current = (void**)((DWORD_PTR)pDos + pImports->FirstThunk);
+        _current = (void**)((DWORD_PTR)pDos + _importedModule->FirstThunk);
         _protect = new MemProtect(_current, PAGE_EXECUTE_READWRITE);
-        if (pImports->OriginalFirstThunk)
-            _names = (int*)((DWORD_PTR)pDos + pImports->OriginalFirstThunk);
+        if (_importedModule->OriginalFirstThunk)
+            _names = (int*)((DWORD_PTR)pDos + _importedModule->OriginalFirstThunk);
     }
     bool next()
     {
@@ -73,7 +74,14 @@ public:
             return false;
 
         if (!*_current++)
-            return false;
+        {
+            _importedModule++;
+            if (!_importedModule->OriginalFirstThunk)
+                return false;
+            _current = (void**)((DWORD_PTR)_module + _importedModule->FirstThunk);
+            _names = (int*)((DWORD_PTR)_module + _importedModule->OriginalFirstThunk);
+            return true;
+        }
 
         if (_names)
             _names++;
@@ -116,7 +124,7 @@ ModuleWalker* ImportsWalker(void* module)
 bool patchModuleImports(void* module, PatchInfo* patches, size_t count)
 {
     AutoWalker m(ImportsWalker(module));
-
+    size_t patched = 0;
     do
     {
         size_t i;
@@ -126,12 +134,13 @@ bool patchModuleImports(void* module, PatchInfo* patches, size_t count)
             {
                 patches[i].func = m->func();
                 m->func(patches[i].patch);
+                patched++;
                 break;
             }
         }
     } while (m->next());
     
-    return true; 
+    return patched==count; 
 }
 
 /**

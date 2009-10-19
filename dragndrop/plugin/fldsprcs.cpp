@@ -80,6 +80,33 @@ HRESULT FileDescriptorProcessor::copyItem(IDataObject* obj, const wchar_t* name,
         break;
     }
 
+    if (SUCCEEDED(hr))
+    {
+        FILETIME *c(0),*a(0),*m(0);
+        if (desc->dwFlags & FD_CREATETIME)
+        {
+            c = &desc->ftCreationTime;
+        }
+        if (desc->dwFlags & FD_ACCESSTIME)
+        {
+            a = &desc->ftLastAccessTime;
+        }
+        if (desc->dwFlags & FD_WRITESTIME)
+        {
+            m = &desc->ftLastWriteTime;
+        }
+        if (c || a || m)
+        {
+            HANDLE h = CreateFile(name, GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+            if (h != INVALID_HANDLE_VALUE)
+            {
+                SetFileTime(h, c, a, m);
+
+                CloseHandle(h);
+            }
+        }
+    }
+
     ReleaseStgMedium(&stg);
 
     return hr;
