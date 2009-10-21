@@ -106,7 +106,22 @@ public:
         if (!value || !_names || !*_names)
             return false;
 
-        return lstrcmpA((char*)_module + *_names + 2, value)==0;
+        return lstrcmpA(funcName(), value)==0;
+    }
+    const char* funcName() const
+    {
+        if (!_module || !_names || !*_names)
+            return "";
+        char* res = (char*)_module + *_names + 2;
+        if (!IsBadReadPtr(res, 1))
+            return res;
+        return "";
+    }
+    const char* modName() const
+    {
+        if (!_module || !_importedModule || !_importedModule->OriginalFirstThunk)
+            return 0;
+        return (char*)_module + _importedModule->Name;
     }
 };
 
@@ -124,7 +139,6 @@ ModuleWalker* ImportsWalker(void* module)
 bool patchModuleImports(void* module, PatchInfo* patches, size_t count)
 {
     AutoWalker m(ImportsWalker(module));
-    size_t patched = 0;
     do
     {
         size_t i;
@@ -134,13 +148,12 @@ bool patchModuleImports(void* module, PatchInfo* patches, size_t count)
             {
                 patches[i].func = m->func();
                 m->func(patches[i].patch);
-                patched++;
                 break;
             }
         }
     } while (m->next());
     
-    return patched==count; 
+    return true; 
 }
 
 /**

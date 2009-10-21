@@ -250,6 +250,17 @@ bool FarGetWindowInfo(WindowInfoW& wip)
 {
     struct WindowInfo wi;
     wi.Pos = wip.Pos;
+    wi.TypeNameSize = 0;
+    wi.NameSize = 0;
+    if (!FarGetWindowInfo(&wi))
+        return false;
+
+    wip.TypeName.length(wi.TypeNameSize);
+    wi.TypeName = wip.TypeName;
+
+    wip.Name.length(wi.NameSize);
+    wi.Name = wip.Name;
+
     if (!FarGetWindowInfo(&wi))
         return false;
 
