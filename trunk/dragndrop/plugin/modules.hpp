@@ -46,6 +46,9 @@ public:
      * @return true if the function name under cursor is the same as value.
      */
     virtual bool isName(const char* value) const = 0;
+
+    virtual const char* funcName() const = 0;
+    virtual const char* modName() const = 0;
 };
 
 /**

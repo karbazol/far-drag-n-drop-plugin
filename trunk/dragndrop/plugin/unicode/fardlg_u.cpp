@@ -71,11 +71,12 @@ void FarDialog::restoreItems()
         int i;
         for (i = 0; i < itemsCount(); i++)
         {
-            item = reinterpret_cast<FarDialogItem*>(sendMessage(DM_GETDLGITEM, i, 0));
+            item = reinterpret_cast<FarDialogItem*>(malloc(sendMessage(DM_GETDLGITEM, i, 0)));
             if (item)
             {
+                sendMessage(DM_GETDLGITEM, i, reinterpret_cast<LONG_PTR>(item));
                 initItems[i].Selected = item->Selected;
-                sendMessage(DM_FREEDLGITEM, 0, reinterpret_cast<LONG_PTR>(item));
+                free(item);
             }
         }
     }
