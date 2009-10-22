@@ -18,7 +18,7 @@ HRESULT FileDescriptorProcessor::operator()(IDataObject* obj, DWORD*)
     int i = 0;
     while (f.next())
     {
-        hr = copyItem(obj, f.name(), f.value(), i++);
+        hr = copyItem(obj, f, i++);
         if (FAILED(hr))
         {
             return hr;
@@ -28,25 +28,25 @@ HRESULT FileDescriptorProcessor::operator()(IDataObject* obj, DWORD*)
     return hr;
 }
 
-HRESULT FileDescriptorProcessor::handleDir(const wchar_t* name, DWORD attr)
+HRESULT FileDescriptorProcessor::handleDir(FileDescriptorIterator& file)
 {
-    if (dir().ensureDirectory(name, attr))
+    if (dir().ensureDirectory(file.name(), file.value()->dwFileAttributes))
         return S_OK;
     return HRESULT_FROM_WIN32(GetLastError());
 }
     
-HRESULT FileDescriptorProcessor::copyItem(IDataObject* obj, const wchar_t* name, FILEDESCRIPTOR* desc, int index)
+HRESULT FileDescriptorProcessor::copyItem(IDataObject* obj, FileDescriptorIterator& file, int index)
 {
-    if (!name)
+    if (!file.name())
         return E_FAIL;
 
-    if (desc->dwFlags & FD_ATTRIBUTES
-        && desc->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    if (file.value()->dwFlags & FD_ATTRIBUTES
+        && file.value()->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
     {
-        return handleDir(name, desc->dwFileAttributes);
+        return handleDir(file);
     }
     
-    TRACE("Copying %S file\n", name);
+    TRACE("Copying %S file\n", file.name());
     FORMATETC fmt = {CF_FILECONTENTS, 0, DVASPECT_CONTENT, (LONG)index, (DWORD)-1};
     STGMEDIUM stg = {0};
 
@@ -65,15 +65,15 @@ HRESULT FileDescriptorProcessor::copyItem(IDataObject* obj, const wchar_t* name,
             hr = CreateStreamOnHGlobal(stg.hGlobal, FALSE, &stm);
             if (SUCCEEDED(hr))
             {
-                hr = handle(stm, name);
+                hr = handle(stm, file);
             }
         }
         break;
     case TYMED_ISTREAM:
-        hr = handle(stg.pstm, name);
+        hr = handle(stg.pstm, file);
         break;
     case TYMED_ISTORAGE:
-        hr = handle(stg.pstg, name);
+        hr = handle(stg.pstg, file);
         break;
     default:
         hr = DV_E_TYMED;
@@ -82,29 +82,7 @@ HRESULT FileDescriptorProcessor::copyItem(IDataObject* obj, const wchar_t* name,
 
     if (SUCCEEDED(hr))
     {
-        FILETIME *c(0),*a(0),*m(0);
-        if (desc->dwFlags & FD_CREATETIME)
-        {
-            c = &desc->ftCreationTime;
-        }
-        if (desc->dwFlags & FD_ACCESSTIME)
-        {
-            a = &desc->ftLastAccessTime;
-        }
-        if (desc->dwFlags & FD_WRITESTIME)
-        {
-            m = &desc->ftLastWriteTime;
-        }
-        if (c || a || m)
-        {
-            HANDLE h = CreateFile(name, GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
-            if (h != INVALID_HANDLE_VALUE)
-            {
-                SetFileTime(h, c, a, m);
-
-                CloseHandle(h);
-            }
-        }
+        hr = updateItemTimes(file);
     }
 
     ReleaseStgMedium(&stg);
@@ -112,11 +90,49 @@ HRESULT FileDescriptorProcessor::copyItem(IDataObject* obj, const wchar_t* name,
     return hr;
 }
 
-HRESULT FileDescriptorProcessor::handle(IStorage* stg, const wchar_t* name)
+HRESULT FileDescriptorProcessor::updateItemTimes(FileDescriptorIterator& file)
 {
     HRESULT hr = S_OK;
 
-    MyStringW s = dir().root() / name;
+    FILETIME *c(0),*a(0),*m(0);
+    if (file.value()->dwFlags & FD_CREATETIME)
+    {
+        c = &file.value()->ftCreationTime;
+    }
+    if (file.value()->dwFlags & FD_ACCESSTIME)
+    {
+        a = &file.value()->ftLastAccessTime;
+    }
+    if (file.value()->dwFlags & FD_WRITESTIME)
+    {
+        m = &file.value()->ftLastWriteTime;
+    }
+    if (c || a || m)
+    {
+        MyStringW fullName = dir().root() / file.name();
+        HANDLE h = CreateFile(fullName, GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+        if (h != INVALID_HANDLE_VALUE)
+        {
+            SetFileTime(h, c, a, m);
+
+            hr = HRESULT_FROM_WIN32(GetLastError());
+
+            CloseHandle(h);
+        }
+        else
+        {
+            hr = HRESULT_FROM_WIN32(GetLastError());
+        }
+    }
+
+    return hr;
+}
+
+HRESULT FileDescriptorProcessor::handle(IStorage* stg, FileDescriptorIterator& file)
+{
+    HRESULT hr = S_OK;
+
+    MyStringW s = dir().root() / file.name();
 
     ShPtr<IStorage> stgOut;
     hr = StgCreateStorageEx(s, STGM_READWRITE|STGM_SHARE_EXCLUSIVE, STGFMT_DOCFILE,
@@ -147,13 +163,10 @@ HRESULT FileDescriptorProcessor::handle(IStorage* stg, const wchar_t* name)
     return hr;
 }
 
-HRESULT FileDescriptorProcessor::handle(IStream* stm, const wchar_t* name)
+HRESULT FileDescriptorProcessor::handle(IStream* stm, FileDescriptorIterator& file)
 {
     HRESULT hr = S_OK;
-    MyStringW s = dir().root();
-
-    s += L"\\";
-    s += name;
+    MyStringW s = dir().root() / file.name();
 
     ShPtr<IStream> stmOut;
 
@@ -168,12 +181,35 @@ HRESULT FileDescriptorProcessor::handle(IStream* stm, const wchar_t* name)
     }
 
     LARGE_INTEGER seekTo={0};
-    stm->Seek(seekTo, STREAM_SEEK_SET, NULL);
+    hr = stm->Seek(seekTo, STREAM_SEEK_SET, NULL);
+    if (FAILED(hr) && hr != E_NOTIMPL)
+    {
+        TRACE("IStream::Seek failed\n");
+        DUMPERROR(hr);
+
+        return hr;
+    }
     stmOut->Seek(seekTo, STREAM_SEEK_SET, NULL);
 
     STATSTG stg;
-    stm->Stat(&stg, STATFLAG_NONAME);
-    hr = stm->CopyTo(stmOut, stg.cbSize, NULL, NULL);
+    hr = stm->Stat(&stg, STATFLAG_NONAME);
+    ULARGE_INTEGER size = stg.cbSize;
+    if (FAILED(hr))
+    {
+        if (hr == E_NOTIMPL && (file.value()->dwFlags & FD_FILESIZE))
+        {
+            size.LowPart = file.value()->nFileSizeLow;
+            size.HighPart = file.value()->nFileSizeHigh;
+        }
+        else
+        {
+            TRACE("IStream::Stat failed\n");
+            DUMPERROR(hr);
+            return hr;
+        }
+
+    }
+    hr = stm->CopyTo(stmOut, size, NULL, NULL);
 
     return hr;
 }
