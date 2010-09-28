@@ -26,6 +26,7 @@ private:
     static CopyErrorDialogItems itemsTemplate;
     CopyErrorDialogItems _items;
 protected:
+    void calcWidth();
     InitDialogItem* items();
     int itemsCount();
     DWORD flags();

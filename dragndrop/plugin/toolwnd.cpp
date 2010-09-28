@@ -29,7 +29,8 @@ WCHAR* ToolWindow::getClassName()
     return _class;
 }
 
-ToolWindow::ToolWindow(): MyWindow(), Unknown(), _data(), _dropData(), _dropHelper(), _menu(), _mouseCounter(0)
+ToolWindow::ToolWindow(): MyWindow(), Unknown(), _data(), _dropData(), _dropHelper(),
+    _menu2(), _menu3(),  _mouseCounter(0)
 {
     AddRef();
 
@@ -76,6 +77,8 @@ LRESULT ToolWindow::handle(UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
         return onDblClick(msg, wParam, lParam);
+    case WM_MENUCHAR:
+        return onMenuChar(msg, wParam, lParam);
     case WM_INITMENUPOPUP:
         // Here we allow the m_pMenu to generate its 'Send To' menu items.
     case WM_MEASUREITEM:
@@ -207,9 +210,12 @@ LRESULT ToolWindow::showPopupMenu(const DataContainer& data)
 
     if (SUCCEEDED(hr))
     {
-        hr = pMenu->QueryInterface(IID_IContextMenu2, reinterpret_cast<void**>(&_menu));
+        hr = pMenu->QueryInterface(IID_IContextMenu2, reinterpret_cast<void**>(&_menu2));
         if (FAILED(hr))
             TRACE("IContextMenu2 is not supported\n");
+        hr = pMenu->QueryInterface(IID_IContextMenu3, reinterpret_cast<void**>(&_menu3));
+        if (FAILED(hr))
+            TRACE("IContextMenu3 is not supported\n");
         POINT pt;
         GetCursorPos(&pt);
         res = TrackPopupMenu(hMenu, TPM_RETURNCMD, pt.x, pt.y, NULL, hwnd(), NULL);
@@ -236,9 +242,10 @@ LRESULT ToolWindow::showPopupMenu(const DataContainer& data)
     }
 
     DestroyMenu(hMenu);
-    _menu = 0;
+    _menu2 = 0;
+    _menu3 = 0;
 
-    return 1;
+    return res;
 }
 
 HRESULT ToolWindow::QueryInterface(REFIID iid, void** obj)
@@ -296,11 +303,29 @@ LRESULT ToolWindow::onDblClick(UINT msg, WPARAM wParam, LPARAM lParam)
     return MyWindow::handle(msg, wParam, lParam);
 }
 
+LRESULT ToolWindow::onMenuChar(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (_menu3)
+    {
+        LRESULT res;
+        _menu3->HandleMenuMsg2(msg, wParam, lParam, &res);
+        return res;
+    }
+
+    return MyWindow::handle(msg, wParam, lParam);
+}
+
 LRESULT ToolWindow::onMenuMessage(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    if (_menu)
+    if (_menu3)
     {
-        _menu->HandleMenuMsg(msg, wParam, lParam);
+        LRESULT res;
+        _menu3->HandleMenuMsg2(msg, wParam, lParam, &res);
+        return res;
+    }
+    else if (_menu2)
+    {
+        _menu2->HandleMenuMsg(msg, wParam, lParam);
     }
     return msg == WM_INITMENUPOPUP ? TRUE : FALSE;
 }
@@ -352,10 +377,9 @@ LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
             DUMPERROR(hr);
 #endif
             TRACE("Dragging ended\n");
-            MainThread::instance()->setDragging(false);
         }
-        else
-            MainThread::instance()->setDragging(false);
+        
+        MainThread::instance()->setDragging(false);
 
         _data = NULL;
     }

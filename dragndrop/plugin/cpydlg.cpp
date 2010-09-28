@@ -47,9 +47,15 @@ bool CopyDialog::onInit()
 bool CopyDialog::onClose(int id)
 {
     id;
+    /** @todo Ask user are they sure to cancel copy/move operation */
     return true;
 }
 
+/*
+ * This function converts integer numbers into string using
+ * comma as 'Digit grouping symbol'.
+ * I.e. number 999999999 will be converted to "999,999,999".
+ */
 static wchar_t* sizeToString(wchar_t* buff, const __int64& value)
 {
     wsprintf(buff, L"%I64d", value);
@@ -150,7 +156,10 @@ void CopyDialog::updatePercents()
 
 void CopyDialog::updateProgressBar(int value, int controlId)
 {
+    /** @todo Get rid of magic numbers. The dialog width maybe variable */
     wchar_t stringValue[41];
+
+    ASSERT(value < LENGTH(stringValue));
 
     int i = value - 1;
     int j = value;
