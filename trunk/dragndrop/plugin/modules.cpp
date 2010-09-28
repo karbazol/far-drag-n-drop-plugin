@@ -7,6 +7,7 @@
 
 #include "modules.hpp"
 #include "protect.h"
+#include "utils.h"
 
 /**
  * @brief MemProtect wrappers
@@ -141,6 +142,11 @@ bool patchModuleImports(void* module, PatchInfo* patches, size_t count)
     AutoWalker m(ImportsWalker(module));
     do
     {
+#ifdef _DEBUG__
+        const char* modName = m->modName();
+        const char* funcName = m->funcName();
+        TRACE("Imported function %s::%s\n", modName, funcName);
+#endif
         size_t i;
         for (i = 0; i < count; i++)
         {

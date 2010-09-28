@@ -19,9 +19,16 @@ MyStringW getErrorDesc(unsigned int e)
 
     if (msg)
     {
-        size_t i = lstrlen(msg) - 1;
-        if (msg[i] == L'\n')
+        size_t i = lstrlen(msg);
+        while(i > 0)
+        {
+            --i;
+            if (msg[i] != L'\n' && msg[i] != L'\r')
+            {
+                break;
+            }
             msg[i] = 0;
+        }
 
         res = msg;
 

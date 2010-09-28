@@ -99,6 +99,13 @@ void DumpIid(const char* fileName, int line, const char* function, const void* g
 #define TRACE_FUNC() \
     TRACE("[%s:%d:%s] Entered function\n", __FILE__, __LINE__, __FUNCTION__)
 
+#ifndef max
+#define max(x, y) ((x) > (y) ? (x) : (y))
+#endif
+
+#ifndef min
+#define min(x, y) ((x) < (y) ? (x) : (y))
+#endif
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__UTILS_H__
 // vim: set et ts=4 ai :

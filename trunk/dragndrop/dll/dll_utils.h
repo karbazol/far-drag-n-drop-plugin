@@ -8,6 +8,7 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLL_UTILS_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DLL_UTILS_H__
 
+#include "utils.h"
 #include "mystring.h"
 
 MyStringW getErrorDesc(unsigned int e);

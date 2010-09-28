@@ -120,11 +120,12 @@ int FarDialog::doShow()
     int res = -1;
     if (RunningDialogs::instance()->lockDialog(this))
     {
+        calcWidth();
 
         void* farItems;
         res = run(farItems);
 
-        restoreItems();
+//        restoreItems();
         freeItems(farItems);
 
         RunningDialogs::instance()->unlockDialog(this);
@@ -284,6 +285,10 @@ bool FarDialog::lock()
 void FarDialog::unlock()
 {
     RunningDialogs::instance()->unlockDialog(this);
+}
+
+void FarDialog::calcWidth()
+{
 }
 
 // vim: set et ts=4 ai :

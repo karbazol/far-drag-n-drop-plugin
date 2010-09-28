@@ -181,6 +181,9 @@ HRESULT FileDescriptorProcessor::handle(IStream* stm, FileDescriptorIterator& fi
     }
 
     LARGE_INTEGER seekTo={0};
+    // At least Microsoft zipfldr.dll does not
+    // implment IStream::Seek function so
+    // we do not treat E_NOTIMPL as fatal error and proceed
     hr = stm->Seek(seekTo, STREAM_SEEK_SET, NULL);
     if (FAILED(hr) && hr != E_NOTIMPL)
     {
@@ -196,6 +199,10 @@ HRESULT FileDescriptorProcessor::handle(IStream* stm, FileDescriptorIterator& fi
     ULARGE_INTEGER size = stg.cbSize;
     if (FAILED(hr))
     {
+        // Failure getting stream size using IStream::Stat function
+        // is not fatal. We can try to determine the value
+        // using FILDESCRIPTOR::nFileSize(Low|High) fields.
+        // If the fields are not filled this is the problem.
         if (hr == E_NOTIMPL && (file.value()->dwFlags & FD_FILESIZE))
         {
             size.LowPart = file.value()->nFileSizeLow;
@@ -209,6 +216,8 @@ HRESULT FileDescriptorProcessor::handle(IStream* stm, FileDescriptorIterator& fi
         }
 
     }
+
+    /** @todo Implement copying by chuncks of data */
     hr = stm->CopyTo(stmOut, size, NULL, NULL);
 
     return hr;

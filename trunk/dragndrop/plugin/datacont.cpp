@@ -1,40 +1,7 @@
 #include <shlobj.h>
 #include "shutils.h"
 #include "datacont.h"
-/**
-static void initStringInfoFromOemFileName(const wchar_t* dir, const char* fileName, MyStringW& s)
-{
-    size_t buffSize = lstrlen(dir) + 2 + MAX_PATH; // length(filename) and backslash and NULL
-    wchar_t * buff = new wchar_t[buffSize];
 
-    lstrcpy(buff, dir);
-    wchar_t* p = buff + lstrlen(buff);
-    *p++ = L'\\';
-
-    if (!MultiByteToWideChar(CP_OEMCP, 0, fileName, -1, p, MAX_PATH))
-    {
-        delete [] buff;
-        s = L"";
-        return;
-    }
-    
-    WIN32_FIND_DATA fd;
-    HANDLE hData = FindFirstFile(buff, &fd);
-
-    if (hData == INVALID_HANDLE_VALUE)
-    {
-        s = L"";
-    }
-    else
-    {
-        FindClose(hData);
-        s = fd.cFileName;
-    }
-
-    delete [] buff;
-    
-}
-/**/
 DataContainer::DataContainer(const wchar_t* dir, const PluginPanelItemsW& items): 
     _dir(dir), _files(NULL), _count(items.size()),
     _custom(0), _customCount(0), _customCapacity(0)
@@ -45,16 +12,7 @@ DataContainer::DataContainer(const wchar_t* dir, const PluginPanelItemsW& items)
         _files = new MyStringW[_count];
         for (i = 0; i < _count; i++)
         {
-            /**
-            if (*info.SelectedItems[i].FindData.cAlternateFileName)
-            {
-                initStringInfoFromOemFileName(_dir, 
-                        info.SelectedItems[i].FindData.cAlternateFileName, _files[i]);
-            }
-            else/**/
-            {
-                _files[i] = items[i].FindData.cFileName;
-            }
+            _files[i] = items[i].FindData.cFileName;
         }
     }
 }

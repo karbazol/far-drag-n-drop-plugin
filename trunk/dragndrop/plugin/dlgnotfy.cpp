@@ -64,7 +64,10 @@ bool CopyDialogNotify::onFileError(const wchar_t* src, const wchar_t* dest, DWOR
         }
     }
     CopyErrorDialog dlg;
-    dlg.show(src, dest, errorNumber);
+    if (CopyErrorDialog::cancel == dlg.show(src, dest, errorNumber))
+    {
+        return true;
+    }
     return false;
 }
 

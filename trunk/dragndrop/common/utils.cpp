@@ -51,36 +51,26 @@ static bool setSidDacl(PSECURITY_DESCRIPTOR pDescriptor, PSECURITY_DESCRIPTOR pS
 void* getEveryOneDescriptor()
 {
     PSECURITY_DESCRIPTOR pDescriptor = {0};
-    static BOOL fInitialized = {0};
+    SID_IDENTIFIER_AUTHORITY Auth = SECURITY_WORLD_SID_AUTHORITY;
+    PSECURITY_DESCRIPTOR pSID;
 
-    if(!fInitialized)
+    if(AllocateAndInitializeSid(&Auth, 1, SECURITY_WORLD_RID, 0, 0, 0, 0, 0, 0, 0, &pSID))
     {
-        SID_IDENTIFIER_AUTHORITY Auth = SECURITY_WORLD_SID_AUTHORITY;
-        PSECURITY_DESCRIPTOR pSID;
-
-        if(AllocateAndInitializeSid(&Auth, 1, SECURITY_WORLD_RID, 0, 0, 0, 0, 0, 0, 0, &pSID))
+        pDescriptor = malloc(SECURITY_DESCRIPTOR_MIN_LENGTH);
+        if(pDescriptor)
         {
-            pDescriptor = malloc(SECURITY_DESCRIPTOR_MIN_LENGTH);
-            if(pDescriptor)
+            if(InitializeSecurityDescriptor(pDescriptor, SECURITY_DESCRIPTOR_REVISION1))
             {
-                if(InitializeSecurityDescriptor(pDescriptor, SECURITY_DESCRIPTOR_REVISION1))
+                if (setSidDacl(pDescriptor, pSID))
                 {
-                    if (setSidDacl(pDescriptor, pSID))
-                    {
-                        fInitialized = true;
-                        return pDescriptor;
-                    }
+                    return pDescriptor;
                 }
-                free(pDescriptor);
-                pDescriptor = NULL;
             }
+            free(pDescriptor);
+            pDescriptor = NULL;
         }
-
     }
     
-    if(!fInitialized)
-        return NULL;
-
     return pDescriptor;    
 }
 

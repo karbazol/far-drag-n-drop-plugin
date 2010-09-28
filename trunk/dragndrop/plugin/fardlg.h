@@ -51,6 +51,13 @@ protected:
     virtual InitDialogItem* items();
     virtual DWORD flags();
 protected:
+
+    /**
+     * @brief Calculates width of the dialog
+     * 
+     * The function is called when dialog is about to be shown.
+     */
+    virtual void calcWidth();
     // HANDLERS
     virtual bool onInit();
     virtual bool onClose(int closeId);
