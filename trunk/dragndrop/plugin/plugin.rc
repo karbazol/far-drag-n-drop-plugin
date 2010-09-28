@@ -29,7 +29,7 @@ BEGIN
             VALUE "FileDescription", "Drag'n'drop Plugin for FAR Manager. Main module."
             VALUE "FileVersion", "2.0 build " BUILDSTRING
             VALUE "InternalName", "DragnDrop.dll"
-            VALUE "LegalCopyright", "2005-2008 Karbazol"
+            VALUE "LegalCopyright", "2005-2010 Karbazol"
             VALUE "OriginalFilename", "drgndrop.dll"
             VALUE "ProductName", "Drag'n'drop Plugin for FAR Manager"
             VALUE "ProductVersion", "2.0.0." BUILDSTRING

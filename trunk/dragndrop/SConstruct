@@ -28,24 +28,6 @@ else:
     outDir = 'bin'
     objDir = 'obj'
 
-class SrcEmmiter:
-    def __init__(self):
-        self.result = []
-    def __call__(self, target, source, env):
-        if is_List(source):
-            for s in source:
-                self(target, s, env)
-            return (self.result, source)
-        c = source.children()
-        if c == None or len(c) == 0:
-            s = str(source)
-            if not s in self.result:
-                self.result.append(str(s))
-        else:
-            for s in c:
-                self(target, s, env)
-        return (self.result, source)
-
 def getCtagsSrc(source,env,res):
     if is_List(source):
         for s in source:
