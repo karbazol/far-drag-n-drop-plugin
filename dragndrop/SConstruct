@@ -81,7 +81,6 @@ else:
 
 env = Environment(options=opts, ENV=osenv, tools=['default', 'packaging']) 
 
-env['MSVS_VERSION'] = '7.1'
 env.Tool('msvc')
 
 env.Append(CPPPATH=commonCppPath, CPATH=commonCppPath, CXXFLAGS=commonCppFlags, 

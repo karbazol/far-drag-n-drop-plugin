@@ -28,8 +28,12 @@ int MyStringTraits<char>::strcmp(const MyStringTraits<char>::type* s1, const MyS
     return lstrcmpA(s1, s2);
 }
 
-MyStringTraits<char>::type* MyStringTraits<char>::pathDelim = "\\";
-MyStringTraits<char>::type* MyStringTraits<char>::slash = "/";
+const MyStringTraits<char>::type* MyStringTraits<char>::backSlash = "\\";
+const MyStringTraits<char>::type* MyStringTraits<char>::pathDelim = MyStringTraits<char>::backSlash;
+const MyStringTraits<char>::type* MyStringTraits<char>::slash = "/";
+const MyStringTraits<char>::type* MyStringTraits<char>::tab = "\t";
+const MyStringTraits<char>::type* MyStringTraits<char>::cr = "\r";
+const MyStringTraits<char>::type* MyStringTraits<char>::lf = "\n";
 
 size_t MyStringTraits<wchar_t>::strlen(const MyStringTraits<wchar_t>::type* p)
 {
@@ -41,13 +45,17 @@ MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::strcpy(MyStringTraits<wc
     return lstrcpyW(dest, src);
 }
 
-MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::pathDelim = L"\\";
-MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::slash = L"/";
-
 int MyStringTraits<wchar_t>::strcmp(const MyStringTraits<wchar_t>::type* s1, const MyStringTraits<wchar_t>::type* s2)
 {
     return lstrcmpW(s1, s2);
 }
+
+const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::backSlash = L"\\";
+const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::pathDelim = MyStringTraits<wchar_t>::backSlash;
+const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::slash = L"/";
+const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::tab = L"\t";
+const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::cr = L"\r";
+const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::lf = L"\n";
 
 #endif
 

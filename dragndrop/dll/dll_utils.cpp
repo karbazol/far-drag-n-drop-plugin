@@ -19,23 +19,12 @@ MyStringW getErrorDesc(unsigned int e)
 
     if (msg)
     {
-        size_t i = lstrlen(msg);
-        while(i > 0)
-        {
-            --i;
-            if (msg[i] != L'\n' && msg[i] != L'\r')
-            {
-                break;
-            }
-            msg[i] = 0;
-        }
-
         res = msg;
 
         LocalFree(msg);
     }
 
-    return res;
+    return strip(res);
 }
 
 MyStringW getLastErrorDesc()

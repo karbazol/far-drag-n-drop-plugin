@@ -40,7 +40,7 @@ private:
     int doShow();
     int run(void*& farItems);
     void restoreItems();
-    void freeItems(void* farItems);
+    void freeFarItems(void* farItems);
 protected:
     virtual long handle(int msg, int param1, long param2);
     virtual int left();
@@ -48,16 +48,12 @@ protected:
     virtual int right();
     virtual int bottom();
     virtual const wchar_t* help();
+    virtual void prepareItems(int consoleWidth, int consoleHeight) {consoleWidth; consoleHeight;}
     virtual InitDialogItem* items();
+    virtual void releaseItems() {}
     virtual DWORD flags();
 protected:
 
-    /**
-     * @brief Calculates width of the dialog
-     * 
-     * The function is called when dialog is about to be shown.
-     */
-    virtual void calcWidth();
     // HANDLERS
     virtual bool onInit();
     virtual bool onClose(int closeId);
