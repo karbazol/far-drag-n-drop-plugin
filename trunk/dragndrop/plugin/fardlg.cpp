@@ -6,6 +6,7 @@
  * $Id$
  */
 
+#include "dll_utils.h"
 #include "fardlg.h"
 #include "mainthrd.h"
 #include "dlgfmwk.h"
@@ -120,13 +121,16 @@ int FarDialog::doShow()
     int res = -1;
     if (RunningDialogs::instance()->lockDialog(this))
     {
-        calcWidth();
+        CONSOLE_SCREEN_BUFFER_INFO consoleInfo = {0};
+        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &consoleInfo);
+        prepareItems(consoleInfo.dwSize.X, consoleInfo.dwSize.Y);
 
         void* farItems;
         res = run(farItems);
 
 //        restoreItems();
-        freeItems(farItems);
+        freeFarItems(farItems);
+        releaseItems();
 
         RunningDialogs::instance()->unlockDialog(this);
     }
@@ -285,10 +289,6 @@ bool FarDialog::lock()
 void FarDialog::unlock()
 {
     RunningDialogs::instance()->unlockDialog(this);
-}
-
-void FarDialog::calcWidth()
-{
 }
 
 // vim: set et ts=4 ai :

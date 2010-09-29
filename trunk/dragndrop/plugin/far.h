@@ -91,8 +91,8 @@ MyStringW FarGetPassivePanelDirectory();
 PluginPanelItemsW FarGetActivePanelItems(bool selected);
 PluginPanelItemsW FarGetPassivePanelItems(bool selected);
 HWND GetFarWindow();
-MyStringA& TruncPathStr(MyStringA& s, int maxLen);
-MyStringW& TruncPathStr(MyStringW& s, int maxLen);
+MyStringA TruncPathStr(const MyStringA& s, int maxLen);
+MyStringW TruncPathStr(const MyStringW& s, int maxLen);
 
 
 extern BOOL (*IsActiveFar)();

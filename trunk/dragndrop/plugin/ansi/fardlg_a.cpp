@@ -72,7 +72,7 @@ void FarDialog::restoreItems()
     }
 }
 
-void FarDialog::freeItems(void* farItems)
+void FarDialog::freeFarItems(void* farItems)
 {
     delete [] reinterpret_cast<FarDialogItem*>(farItems);
 }

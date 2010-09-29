@@ -10,6 +10,11 @@
 
 #include <stddef.h>
 #include "utils.h"
+#include "growarry.h"
+
+#ifndef EXCEPTION_EXECUTE_HANDLER
+#define EXCEPTION_EXECUTE_HANDLER       1
+#endif
 
 /**
  * Magic number used to mark memory regions used by MyString objects.
@@ -36,8 +41,12 @@ struct MyStringTraits
      */
     static type* strcpy(type*, const type*);
     static int strcmp(const type* s1, const type* s2);
-    static type* pathDelim;
-    static type* slash;
+    static const type* pathDelim;
+    static const type* slash;
+    static const type* backSlash;
+    static const type* tab;
+    static const type* cr;
+    static const type* lf;
 };
 
 void myStringLock();
@@ -78,7 +87,133 @@ void normalizePath(StringType& path)
     }
 }
 
+template<class StringType>
+StringType lstrip(const StringType& s)
+{
+    const StringType::CharType* p = s;
+    if (!p||!StringType::Traits::strlen(p))
+    {
+        return StringType();
+    }
 
+    for (;*p && *p <= 32;++p);
+
+    return StringType(p);
+}
+
+template<class StringType>
+StringType rstrip(const StringType& s)
+{
+    StringType res(s);
+
+    size_t i;
+    for (i = s.length(); i && s[i-1] <= 32; --i);
+
+    if (i < s.length())
+    {
+        res.length(i);
+    }
+
+    return res;
+}
+
+template<class StringType>
+StringType strip(const StringType& s)
+{
+    return lstrip<StringType>(rstrip<StringType>(s));
+}
+
+template<class StringType>
+StringType substring(const StringType& s, size_t offset, 
+        size_t len=static_cast<size_t>(-1))
+{
+    if (offset >= s.length())
+    {
+        return StringType();
+    }
+
+    const StringType::CharType* p = s + offset;
+
+    StringType res(p);
+
+    res.length(min(s.length() - offset, len));
+
+    return res;
+}
+
+template<class StringType>
+StringType wrapString(const StringType& s, size_t maxChars, size_t tabLen=8)
+{
+    tabLen; /** @todo Tabs should be counted too. */
+    if (!s || StringType::Traits::strlen(s) <= maxChars)
+        return s;
+
+    StringType res(s);
+
+    size_t pos = 0;
+    size_t candidate = 0;
+    size_t begin = 0;
+    StringType::CharType* p = res;
+
+    while (p[pos])
+    {
+        if (p[pos] <= 32)
+        {
+            candidate = pos;
+        }
+
+        if (pos - begin > maxChars)
+        {
+            if (candidate > begin)
+            {
+                p[candidate] = *StringType::Traits::lf;
+                begin = candidate+1;
+            }
+        }
+        
+        pos++;
+    }
+
+    return res;
+}
+
+template<class StringType>
+void wrapString(const StringType& s, size_t maxChars, 
+        GrowOnlyArray<StringType>& lines, size_t tabLen=8)
+{
+    tabLen; /** @todo Tabs should be counted too. */
+    lines.clear();
+
+    if (maxChars > s.length())
+    {
+        lines.append(s);
+        return;
+    }
+
+    size_t begin = 0;
+    size_t pos   = 0;
+    size_t candidate = 0;
+    const StringType::CharType* p = s;
+
+    for (pos = 0; p[pos]; pos++)
+    {
+        if (p[pos] <= 32)
+        {
+            candidate = pos;
+        }
+
+        if (pos - begin > maxChars)
+        {
+            if (candidate > begin)
+            {
+                lines.append(substring(s, begin, candidate - begin));
+                begin = candidate + 1;
+            }
+        }
+    }
+
+    lines.append(substring(s, begin));
+}
 /**
  * Main template class to represent string data
  */

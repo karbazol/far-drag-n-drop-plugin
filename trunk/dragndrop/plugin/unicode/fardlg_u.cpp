@@ -82,7 +82,7 @@ void FarDialog::restoreItems()
     }
 }
 
-void FarDialog::freeItems(void* farItems)
+void FarDialog::freeFarItems(void* farItems)
 {
     DialogFree(_hwnd);
     _hwnd = 0;
