@@ -7,8 +7,21 @@ SetOptionDefault('PART_LOGGER', '$PART_TEXT_LOGGER')
 # By default we allways build 32-bit version
 SetOptionDefault('TARGET_PLATFORM', SystemPlatform(os='win32',arch='x86'))
 
+def _ansiOrUnicode(env):
+    return 'unicode' if env.get('UNICODE') else 'ansi'
+
+def _ansiOrUnicodeShort(env):
+    return _ansiOrUnicode(env)[0]
+
+SetOptionDefault('_ansiOrUnicode', _ansiOrUnicode)
+SetOptionDefault('_ansiOrUnicodeShort', _ansiOrUnicodeShort)
+SetOptionDefault('ANSI_OR_UNICODE', '${_ansiOrUnicode(__env__)}')
+SetOptionDefault('A_OR_U', '${_ansiOrUnicodeShort(__env__)}')
+
 SetOptionDefault('INSTALL_ROOT', '#install')
-SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/drgndrop')
+SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/${ANSI_OR_UNICODE}/drgndrop')
+SetOptionDefault('SDK_LIB_ROOT', '${SDK_ROOT}/${ANSI_OR_UNICODE}/lib')
+SetOptionDefault('SDK_BIN_ROOT', '${SDK_ROOT}/${ANSI_OR_UNICODE}/bin')
 
 Part(
     alias='common',
@@ -28,7 +41,8 @@ Part(
     )
 Part(
     alias='plugin',
-    parts_file='plugin/plugin.parts'
+    parts_file='plugin/plugin.parts',
+    UNICODE=0,
     )
 
 # vim: set et ts=4 sw=4 ai ft=python :
