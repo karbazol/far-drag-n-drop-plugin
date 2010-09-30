@@ -1,0 +1,27 @@
+Import('*')
+
+env.PartName('hook')
+env.PartVersion('2.0.0')
+
+env.DependsOn([
+    Component('dll'),
+])
+
+env.Replace(
+    SHLIBSUFFIX='.hook',
+    PDB='drophook.pdb'
+    )
+
+env.Append(
+    CPPDEFINES=['_HOOK_EXPORTS'],
+    LIBS=['user32', 'shlwapi', 'ole32', 'advapi32'],
+    )
+
+headers=['hook.h', 'dndcmnct.h']
+sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
+
+env.SdkInclude(headers)
+env.Sdk(env.SharedLibrary(target=['drgndrop', 'drophook.lib'], source=sources))
+
+# vim: set et ts=4 sw=4 ai ft=python :
+

@@ -8,7 +8,6 @@
 #include <windows.h>
 #include "dll.h"
 #include "utils.h"
-#include "hookfuncs.h"
 
 /**
  * Utility class used by the Dll singleton to store linked list of 

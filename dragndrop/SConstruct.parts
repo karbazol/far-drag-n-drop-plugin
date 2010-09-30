@@ -1,0 +1,35 @@
+from parts import *
+
+# Enable smart logging
+SetOptionDefault('LOGGER', '$TEXT_LOGGER')
+SetOptionDefault('PART_LOGGER', '$PART_TEXT_LOGGER')
+
+# By default we allways build 32-bit version
+SetOptionDefault('TARGET_PLATFORM', SystemPlatform(os='win32',arch='x86'))
+
+SetOptionDefault('INSTALL_ROOT', '#install')
+SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/drgndrop')
+
+Part(
+    alias='common',
+    parts_file='common/common.parts'
+    )
+Part(
+    alias='dll',
+    parts_file='dll/dll.parts'
+    )
+Part(
+    alias='holder',
+    parts_file='holder/holder.parts'
+    )
+Part(
+    alias='hook',
+    parts_file='hook/hook.parts'
+    )
+Part(
+    alias='plugin',
+    parts_file='plugin/plugin.parts'
+    )
+
+# vim: set et ts=4 sw=4 ai ft=python :
+

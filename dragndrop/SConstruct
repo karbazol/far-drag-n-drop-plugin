@@ -79,7 +79,7 @@ else:
     commonLinkFlags += ['/NODEFAULTLIB']
     commonLinkFlags += ['/opt:nowin98']     # Minimize size of binaries
 
-env = Environment(options=opts, ENV=osenv, tools=['default', 'packaging']) 
+env = Environment(options=opts, tools=['default', 'packaging'], MSVS_VERSION='8.0') 
 
 env.Tool('msvc')
 
@@ -87,7 +87,9 @@ env.Append(CPPPATH=commonCppPath, CPATH=commonCppPath, CXXFLAGS=commonCppFlags,
         CFLAGS=commonCppFlags, LINKFLAGS=commonLinkFlags, CTAGSSUFFIXES=ctagsSuffixes, 
         CTAGS='ctags', CTAGSFLAGS='--c++-types=+xp --fields=+iaS --extra=+q', LIBPATH=outDir)
 
-env['BUILDERS']['Tags'] = Builder(action='$CTAGS $CTAGSFLAGS $SOURCES', emitter=ctagsEmmiter)
+if env.Detect('ctags'):
+    env['BUILDERS']['Tags'] = Builder(action='$CTAGS $CTAGSFLAGS $SOURCES', emitter=ctagsEmmiter)
+env.PrependENVPath('PATH', os.path.abspath('tools'))
 env['BUILDERS']['Lng'] = Builder(action='lng.generator.exe -oh ${TARGET.dir} -ol $OUTDIR $SOURCE')
 
 def getSources(dir):
@@ -173,14 +175,17 @@ hookDll = env.SharedLibrary(source=hookObjs+commonObj+commonDllObj,
         SHLIBSUFFIX='.hook',
         LIBS=libs, LINKFLAGS=hookLinkFlags)
 
-tags = env.Tags(target='tags', source=[plugin, hookDll, holder])
+if env['BUILDERS'].has_key('Tags'):
+    tags = env.Tags(target='tags', source=[plugin, hookDll, holder])
+else:
+    tags = None
 
 distrSrc = [plugin[0], hookDll[0], holder[0], pluginLng[1], pluginLng[2]]
 instDistr = env.Install(optsenv['plugdir'], source=distrSrc)
 env.Alias('install', optsenv['plugdir'])
 
 if optsenv['debug']:
-    Default(['install', 'tags'])
+    Default(['install'] + ['tags'] if tags else [])
 
 # vim: set et ts=4 ft=python :
 
