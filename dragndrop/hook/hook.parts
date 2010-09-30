@@ -1,5 +1,7 @@
 Import('*')
 
+import fnmatch
+
 env.PartName('hook')
 env.PartVersion('2.0.0')
 
@@ -24,7 +26,11 @@ if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS=['/entry:DllMain'])
 
 env.SdkInclude(headers)
-env.Sdk(env.SharedLibrary(target=['drgndrop', 'drophook.lib'], source=sources))
+dll = lambda x: fnmatch.fnmatch(x.name, '*.hook')
+staff = lambda x: not fnmatch.fnmatch(x.name, '*.hook') 
+targets = env.SharedLibrary(target=['drgndrop', 'drophook.lib'], source=sources)
+env.InstallBin(filter(dll, targets))
+env.Sdk(filter(staff, targets))
 
 # vim: set et ts=4 sw=4 ai ft=python :
 
