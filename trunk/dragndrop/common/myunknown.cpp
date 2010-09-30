@@ -7,7 +7,6 @@
 
 #include "myunknown.h"
 #include "utils.h"
-#include "dll.h"
 
 /**
  * Returns pointers to supported interfaces. 

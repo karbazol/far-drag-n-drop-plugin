@@ -1,0 +1,13 @@
+Import('*')
+
+env.PartName('common')
+env.PartVersion('2.0.0')
+
+sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
+headers = Pattern(includes=['*.h', '*.hpp'], recursive=False).files()
+
+env.SdkInclude(headers)
+env.Sdk(env.StaticLibrary(target='common', source=sources))
+
+# vim: set et ts=4 sw=4 ai ft=python :
+

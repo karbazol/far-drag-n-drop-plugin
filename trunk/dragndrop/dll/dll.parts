@@ -1,0 +1,17 @@
+Import('*')
+
+env.PartName('dll')
+env.PartVersion('2.0.0')
+
+env.DependsOn([
+    Component('common', '*', REQ.DEFAULT),
+])
+
+sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
+headers = Pattern(includes=['*.h', '*.hpp'], recursive=False)
+
+env.SdkInclude(headers)
+env.Sdk(env.StaticLibrary(target='dllutils', source=sources))
+
+# vim: set et ts=4 sw=4 ai ft=python :
+

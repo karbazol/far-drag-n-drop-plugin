@@ -1,0 +1,21 @@
+Import('*')
+
+env.PartName('holder')
+env.PartVersion('2.0.0')
+
+env.DependsOn([
+    Component('hook')
+])
+
+env.Replace(PROGSUFFIX='.dnd')
+
+env.Append(
+    LIBS=['user32', 'gdi32', 'shlwapi', 'ole32', 'advapi32']
+)
+
+sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
+
+env.InstallBin(env.Program(target='holder', source=sources))
+
+# vim: set et ts=4 sw=4 ai ft=python :
+
