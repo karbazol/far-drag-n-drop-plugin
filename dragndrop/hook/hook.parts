@@ -14,11 +14,14 @@ env.Replace(
 
 env.Append(
     CPPDEFINES=['_HOOK_EXPORTS'],
-    LIBS=['user32', 'shlwapi', 'ole32', 'advapi32'],
+    LIBS=['kernel32', 'user32', 'shlwapi', 'ole32', 'advapi32', 'libcmt'],
     )
 
 headers=['hook.h', 'dndcmnct.h']
 sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
+
+if env.isConfigBasedOn('release'):
+    env.Append(LINKFLAGS=['/entry:DllMain'])
 
 env.SdkInclude(headers)
 env.Sdk(env.SharedLibrary(target=['drgndrop', 'drophook.lib'], source=sources))

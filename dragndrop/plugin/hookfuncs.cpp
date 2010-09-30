@@ -85,8 +85,17 @@ static void initPatches()
     }
 }
 
+#if _MSC_VER >= 1400  && defined(NDEBUG)
+extern "C" int __sse2_available_init();
+#endif
+
+
 bool patchImports()
 {
+#if _MSC_VER >= 1400  && defined(NDEBUG)
+    __sse2_available_init();
+#endif
+
     initPatches();
     
     return patchModuleImports(GetModuleHandle(0), patches, LENGTH(patches));

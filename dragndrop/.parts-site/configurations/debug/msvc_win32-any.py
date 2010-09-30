@@ -13,13 +13,11 @@ config=configuration(map_default_version)
 
 config.VersionRange("*",
                     append=ConfigValues(
-                        CPPDEFINES=['WIN32','_WINDOWS', '_WIN32_WINNT=0x0500',
-                            'UNICODE', '_UNICODE'],
+                        CPPDEFINES=['_DEBUG'],
                         CCFLAGS=[
-                            '/nologo',
-                            '/W4', '/WX',
-                            '/GR-', # No RTTI
-                            '/Gy',  # Function level linking
+                            '/MTd', # Use multi-threaded static CRT
+                            '/Z7',  # Use msvc 7.1 compatible debug info
+                            '/Od',  # No optimization
                             ],
                         LINKFLAGS=[
                             '/INCREMENTAL:NO', '/DEBUG', '/OPT:REF'

@@ -11,18 +11,21 @@ def map_default_version(env):
 
 config=configuration(map_default_version)
 
+config.VersionRange("6.0-7.1",
+                    append=ConfigValues(
+                        LINKFLAGS=['/opt:nowin98']
+                        )
+                    )
+
 config.VersionRange("*",
                     append=ConfigValues(
-                        CPPDEFINES=['WIN32','_WINDOWS', '_WIN32_WINNT=0x0500',
-                            'UNICODE', '_UNICODE'],
+                        CPPDEFINES=['NDEBUG'],
                         CCFLAGS=[
-                            '/nologo',
-                            '/W4', '/WX',
-                            '/GR-', # No RTTI
-                            '/Gy',  # Function level linking
+                            '/MT',  # Use multi-threaded static crt
+                            '/Oxs', # Optimize them all
                             ],
                         LINKFLAGS=[
-                            '/INCREMENTAL:NO', '/DEBUG', '/OPT:REF'
+                            '/NODEFAULTLIB'
                             ]
                         )
                     )
