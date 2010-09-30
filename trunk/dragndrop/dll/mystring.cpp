@@ -29,7 +29,11 @@ int MyStringTraits<char>::strcmp(const MyStringTraits<char>::type* s1, const MyS
 }
 
 const MyStringTraits<char>::type* MyStringTraits<char>::backSlash = "\\";
-const MyStringTraits<char>::type* MyStringTraits<char>::pathDelim = MyStringTraits<char>::backSlash;
+//const MyStringTraits<char>::type* MyStringTraits<char>::pathDelim = MyStringTraits<char>::backSlash;
+/** Bug in compiler???. Optimizing compiler puts pathDelim initialization in to .CRT section
+ *  when previous line used
+ */
+const MyStringTraits<char>::type* MyStringTraits<char>::pathDelim = "\\";
 const MyStringTraits<char>::type* MyStringTraits<char>::slash = "/";
 const MyStringTraits<char>::type* MyStringTraits<char>::tab = "\t";
 const MyStringTraits<char>::type* MyStringTraits<char>::cr = "\r";
@@ -51,7 +55,11 @@ int MyStringTraits<wchar_t>::strcmp(const MyStringTraits<wchar_t>::type* s1, con
 }
 
 const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::backSlash = L"\\";
-const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::pathDelim = MyStringTraits<wchar_t>::backSlash;
+//const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::pathDelim = MyStringTraits<wchar_t>::backSlash;
+/** Bug in compiler???. Optimizing compiler puts pathDelim initialization in to .CRT section
+ *  when previous line used
+ */
+const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::pathDelim = L"\\";
 const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::slash = L"/";
 const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::tab = L"\t";
 const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::cr = L"\r";
