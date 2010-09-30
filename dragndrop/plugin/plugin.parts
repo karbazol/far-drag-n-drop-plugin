@@ -1,5 +1,8 @@
 Import('*')
 
+print "ANSI_OR_UNICODE=", env.subst('$ANSI_OR_UNICODE')
+print "A_OR_U=", env.subst('$A_OR_U')
+
 env.PartName('plugin')
 env.PartVersion('2.0.0')
 
@@ -8,13 +11,13 @@ env.DependsOn([
 ])
 
 env.Append(
-    CPPPATH=['#/../common_a', '.'],
+    CPPPATH=['#/../common_${A_OR_U}', '.'],
     CPPDEFINES=['_FAR_USE_FARFINDDATA'],
     LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32'],
     )
 
 sources  = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
-sources += Pattern(src_dir='ansi', includes=['*.cpp', '*.c', '*.def'], recursive=False).files()
+sources += Pattern(src_dir=env.subst('$ANSI_OR_UNICODE'), includes=['*.cpp', '*.c', '*.def'], recursive=False).files()
 env.Sdk(env.SharedLibrary(target='drgndrop', source=sources))
 
 # vim: set et ts=4 sw=4 ai ft=python :
