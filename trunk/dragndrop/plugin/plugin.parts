@@ -1,8 +1,5 @@
 Import('*')
 
-print "ANSI_OR_UNICODE=", env.subst('$ANSI_OR_UNICODE')
-print "A_OR_U=", env.subst('$A_OR_U')
-
 env.PartName('plugin')
 env.PartVersion('2.0.0')
 
@@ -20,9 +17,25 @@ env.Append(
 if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS=['/entry:DllMain'])
 
+#determine build number
+import subprocess
+import xml.dom.minidom as xml
+
+try:
+    so, se = subprocess.Popen('svn info --xml %s' % env.subst('$SRC_DIR'), 
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    d = xml.parseString(so)
+    buildstr = d.getElementsByTagName('entry')[0].getAttribute('revision')  
+    env.Append(RCFLAGS=['-DBUILDNUMBER=%s' % buildstr, r'-DBUILDSTRING=\"%s\"' % buildstr])
+except Exception, e:
+    print "Faild to setup RCFLAGS", e
+
 sources  = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
 sources += Pattern(src_dir=env.subst('$ANSI_OR_UNICODE'), includes=['*.cpp', '*.c', '*.def'], recursive=False).files()
-env.Sdk(env.SharedLibrary(target='drgndrop', source=sources))
+
+sources += [env.RES(target='plugin.res', source='plugin.rc')]
+
+env.InstallTarget(env.SharedLibrary(target='drgndrop', source=sources))
 
 # vim: set et ts=4 sw=4 ai ft=python :
 
