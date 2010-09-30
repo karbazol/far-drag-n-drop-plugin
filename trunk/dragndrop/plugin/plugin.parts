@@ -13,8 +13,12 @@ env.DependsOn([
 env.Append(
     CPPPATH=['#/../common_${A_OR_U}', '.'],
     CPPDEFINES=['_FAR_USE_FARFINDDATA'],
-    LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32'],
+    LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32', 
+        'kernel32', 'libcmt', 'uuid'],
     )
+
+if env.isConfigBasedOn('release'):
+    env.Append(LINKFLAGS=['/entry:DllMain'])
 
 sources  = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
 sources += Pattern(src_dir=env.subst('$ANSI_OR_UNICODE'), includes=['*.cpp', '*.c', '*.def'], recursive=False).files()

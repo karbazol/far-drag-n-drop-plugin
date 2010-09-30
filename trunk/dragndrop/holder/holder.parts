@@ -10,8 +10,11 @@ env.DependsOn([
 env.Replace(PROGSUFFIX='.dnd')
 
 env.Append(
-    LIBS=['user32', 'gdi32', 'shlwapi', 'ole32', 'advapi32']
+    LIBS=['user32', 'gdi32', 'shlwapi', 'ole32', 'advapi32', 'kernel32', 'libcmt']
 )
+
+if env.isConfigBasedOn('release'):
+    env.Append(LINKFLAGS = ['/entry:WinMain'])
 
 sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
 
