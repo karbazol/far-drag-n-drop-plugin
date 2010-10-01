@@ -39,7 +39,7 @@ BOOL WINAPI MyGetNumberOfConsoleInputEvents(
         return GetNumberOfConsoleInputEvents(hConsoleInput, lpcNumberOfEvents);
     if (!InputProcessor::instance()->readFromSystem(hConsoleInput, false))
         return FALSE;
-    *lpcNumberOfEvents = InputProcessor::instance()->size();
+    *lpcNumberOfEvents = static_cast<DWORD>(InputProcessor::instance()->size());
     return TRUE;
 }
 

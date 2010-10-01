@@ -36,13 +36,13 @@ class FarDialog
 private:
     HANDLE volatile _hwnd;
     HANDLE _running;
-    static long WINAPI dlgProc(HANDLE dlg, int msg, int param1, long param2);
+    static LONG_PTR WINAPI dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2);
     int doShow();
     int run(void*& farItems);
     void restoreItems();
     void freeFarItems(void* farItems);
 protected:
-    virtual long handle(int msg, int param1, long param2);
+    virtual LONG_PTR handle(int msg, int param1, LONG_PTR param2);
     virtual int left();
     virtual int top();
     virtual int right();
@@ -82,8 +82,8 @@ public:
     int show(bool modal);
     int hide();
     
-    long sendMessage(int msg, int param1, long param2);
-    void postMessage(int msg, int param1, long param2);
+    LONG_PTR sendMessage(int msg, int param1, LONG_PTR param2);
+    void postMessage(int msg, int param1, LONG_PTR param2);
 
     // Operations with the dialog controls
     bool enable(int id);

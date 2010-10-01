@@ -57,7 +57,7 @@ public:
     ConfigDlg(): FarDialog(){}
     ~ConfigDlg(){}
 protected:
-    long handle(int msg, int param1, long param2)
+    LONG_PTR handle(int msg, int param1, LONG_PTR param2)
     {
         switch (msg)
         {

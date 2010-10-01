@@ -5,7 +5,7 @@ SetOptionDefault('LOGGER', '$TEXT_LOGGER')
 SetOptionDefault('PART_LOGGER', '$PART_TEXT_LOGGER')
 
 # By default we allways build 32-bit version
-SetOptionDefault('TARGET_PLATFORM', SystemPlatform(os='win32',arch='x86'))
+# SetOptionDefault('TARGET_PLATFORM', SystemPlatform(os='win32',arch='x86'))
 
 def _ansiOrUnicode(env):
     return 'unicode' if env.get('UNICODE') else 'ansi'

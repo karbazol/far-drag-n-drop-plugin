@@ -27,7 +27,7 @@ public:
         HANDLE h;
         int message;
         int param1;
-        long param2;
+        LONG_PTR param2;
     };
 private:
     ActiveDialog* _activeDialog;
@@ -37,10 +37,10 @@ private:
     RunningDialogs();
     ~RunningDialogs();
     static void kill(RunningDialogs* p);
-    long processPostedSetText(HANDLE dlg, int id, const wchar_t* s);
+    LONG_PTR processPostedSetText(HANDLE dlg, int id, const wchar_t* s);
     void processPostedDlgMessages(FarDialog* dlg);
     FarDialog* getDialog(HANDLE handle);
-    long processPostedMessage(HANDLE dlg, int msg, int param0, long param1);
+    LONG_PTR processPostedMessage(HANDLE dlg, int msg, int param0, LONG_PTR param1);
 public:
     static RunningDialogs* instance();
 
@@ -49,14 +49,14 @@ public:
     bool lockDialog(FarDialog* dlg);
     void unlockDialog(FarDialog* dlg);
 
-    long sendSafeMessage(HANDLE handle, int msg, int param0, long param1);
+    LONG_PTR sendSafeMessage(HANDLE handle, int msg, int param0, LONG_PTR param1);
 
-    long sendMessage(FarDialog* dlg, int msg, int param0, long param1);
-    void postMessage(FarDialog* dlg, int msg, int param0, long param1);
+    LONG_PTR sendMessage(FarDialog* dlg, int msg, int param0, LONG_PTR param1);
+    void postMessage(FarDialog* dlg, int msg, int param0, LONG_PTR param1);
 
     void notifyDialog(FarDialog* dlg, bool shown);
 
-    long processMessages(Message* msg);
+    LONG_PTR processMessages(Message* msg);
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__DLGFMWK_H__

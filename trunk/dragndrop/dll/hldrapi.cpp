@@ -26,7 +26,10 @@ static MyStringW getHolderFileName()
     MyStringW res;
     res.length(chars);
 
-    while (chars == GetModuleFileName(reinterpret_cast<HMODULE>(getMyModuleBaseAddress()), res, chars))
+    while (chars == 
+            GetModuleFileName(
+                reinterpret_cast<HMODULE>(getMyModuleBaseAddress()), res, 
+                static_cast<DWORD>(chars)))
     {
         chars += MAX_PATH;
 

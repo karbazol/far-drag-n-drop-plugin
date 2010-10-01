@@ -147,7 +147,8 @@ bool HdropProcessor::initStringInfo(MyStringW& s, HGLOBAL hDrop)
 
         while (*p0)
         {
-            int n = MultiByteToWideChar(CP_ACP, 0, p0, -1, p1, size);
+            int n = MultiByteToWideChar(CP_ACP, 0, p0, -1, p1,
+                    static_cast<int>(size));
             p1 += n;
             size -= n;
             p0 += lstrlenA(p0) + 1;

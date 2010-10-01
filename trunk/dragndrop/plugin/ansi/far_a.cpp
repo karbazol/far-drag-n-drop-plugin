@@ -130,7 +130,7 @@ int WINAPI Configure(int Number)
 /**
  * Far's default dialog procedure
  */
-long WINAPI DefDlgProc(HANDLE hDlg, int Msg, int Param1, long Param2)
+LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2)
 {
     if (!theFar.DefDlgProc)
     {
@@ -213,7 +213,7 @@ const wchar_t* GetMsg(int MsgId)
 /**
  * Sends a message to specified dialog
  */
-long SendDlgMessage(HANDLE hDlg, int Msg, int Param1, long Param2)
+LONG_PTR SendDlgMessage(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2)
 {
     if (theFar.SendDlgMessage)
     {
@@ -244,7 +244,8 @@ long SendDlgMessage(HANDLE hDlg, int Msg, int Param1, long Param2)
 int ConsoleMode(int param)
 {
     if (theFar.AdvControl)
-        return theFar.AdvControl(theFar.ModuleNumber, ACTL_CONSOLEMODE, (void*)param);
+        return static_cast<int>(
+                theFar.AdvControl(theFar.ModuleNumber, ACTL_CONSOLEMODE, (void*)param));
     return -1;
 }
 
@@ -514,7 +515,7 @@ bool FarWriteRegistry(const wchar_t* name, DWORD type, const void* value, size_t
         return false;
 
     bool res = (ERROR_SUCCESS == RegSetValueExW(key, name, 0, type, 
-                reinterpret_cast<const BYTE*>(value), size));
+                reinterpret_cast<const BYTE*>(value), static_cast<DWORD>(size)));
 
     RegCloseKey(key);
 
@@ -540,7 +541,7 @@ size_t FarReadRegistry(const wchar_t* name, DWORD type, void* value, size_t size
                 0, KEY_READ, &key))
         return 0;
 
-    DWORD res = size;
+    DWORD res = static_cast<DWORD>(size);
 
     if (ERROR_SUCCESS != RegQueryValueExW(key, name, NULL, &type, (BYTE*)value, &res))
         res = 0;

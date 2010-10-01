@@ -12,7 +12,7 @@
 #include "dlgfmwk.h"
 #include "mystring.h"
 
-long WINAPI DefDlgProc(HANDLE hDlg, int Msg, int Param1, long Param2);
+LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2);
 
 FarDialog::FarDialog(): _hwnd(0), _running(0)
 {
@@ -39,7 +39,7 @@ InitDialogItem* FarDialog::items()
     return 0;
 }
 
-long FarDialog::dlgProc(HANDLE dlg, int msg, int param1, long param2)
+LONG_PTR FarDialog::dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2)
 {
     FarDialog* This;
     if (msg == DN_INITDIALOG)
@@ -48,7 +48,7 @@ long FarDialog::dlgProc(HANDLE dlg, int msg, int param1, long param2)
         if (This)
         {
             This->_hwnd = dlg;
-            This->sendMessage(DM_SETDLGDATA, 0, (long)This);
+            This->sendMessage(DM_SETDLGDATA, 0, (LONG_PTR)This);
             RunningDialogs::instance()->notifyDialog(This, true);
         }
     }
@@ -62,7 +62,7 @@ long FarDialog::dlgProc(HANDLE dlg, int msg, int param1, long param2)
     if (!This)
         return DefDlgProc(dlg, msg, param1, param2);
 
-    long res = This->handle(msg, param1, param2);
+    LONG_PTR res = This->handle(msg, param1, param2);
 
     if (msg == DN_CLOSE && res)
     {
@@ -87,15 +87,15 @@ bool FarDialog::onClose(int /*closeId*/)
     return true;
 }
 
-long FarDialog::handle(int msg, int param1, long param2)
+LONG_PTR FarDialog::handle(int msg, int param1, LONG_PTR param2)
 {
     switch (msg)
     {
     case DN_INITDIALOG:
-        return (long)onInit();
+        return (LONG_PTR)onInit();
     case DN_CLOSE:
         {
-            long res = (long)onClose(param1);
+            LONG_PTR res = (LONG_PTR)onClose(param1);
             return res;
         }
         break;
@@ -109,7 +109,7 @@ long FarDialog::handle(int msg, int param1, long param2)
  */
 int FarDialog::hide()
 {
-    int res = sendMessage(DM_CLOSE, 0, 0);
+    int res = static_cast<int>(sendMessage(DM_CLOSE, 0, 0));
 
     _hwnd = 0;
     
@@ -208,12 +208,12 @@ DWORD FarDialog::flags()
     return 0;
 }
 
-long FarDialog::sendMessage(int msg, int param1, long param2)
+LONG_PTR FarDialog::sendMessage(int msg, int param1, LONG_PTR param2)
 {
     return RunningDialogs::instance()->sendMessage(this, msg, param1, param2);
 }
 
-void FarDialog::postMessage(int msg, int param1, long param2)
+void FarDialog::postMessage(int msg, int param1, LONG_PTR param2)
 {
     RunningDialogs::instance()->postMessage(this, msg, param1, param2);
 }
@@ -258,7 +258,7 @@ int FarDialog::switchCheckBox(int id, int state)
 {
     if (running())
     {
-        return sendMessage(DM_SETCHECK, id, state);
+        return static_cast<int>(sendMessage(DM_SETCHECK, id, state));
     }
     else
     {
@@ -273,7 +273,7 @@ int FarDialog::checkState(int id)
 {
     if (running())
     {
-        return sendMessage(DM_GETCHECK, id, 0);
+        return static_cast<int>(sendMessage(DM_GETCHECK, id, 0));
     }
     else
     {

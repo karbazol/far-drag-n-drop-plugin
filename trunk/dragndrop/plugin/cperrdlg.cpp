@@ -33,7 +33,7 @@ CopyErrorDialog::CopyErrorDialogItems CopyErrorDialog::itemsTemplate =
 void CopyErrorDialog::allocItems(size_t additionalErrorLines)
 {
     _itemsCount = sizeof(CopyErrorDialogItems)/sizeof(InitDialogItem)
-        + additionalErrorLines;
+        + static_cast<int>(additionalErrorLines);
 
     _items = reinterpret_cast<InitDialogItem*>(
             ::malloc(sizeof(InitDialogItem)*(_itemsCount)));
@@ -53,7 +53,7 @@ void CopyErrorDialog::prepareItems(int consoleWidth, int consoleHeight)
     wrapString(_errorMessage, 
             min(_srcFileName.length(), _dstFileName.length()), _errorLines);
 
-    int extraSize = _errorLines.size() - 1;
+    int extraSize = static_cast<int>(_errorLines.size()) - 1;
     allocItems(extraSize);
 
     CopyErrorDialogItems& items(*reinterpret_cast<CopyErrorDialogItems*>(_items));

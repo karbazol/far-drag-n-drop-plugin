@@ -221,7 +221,7 @@ void* MainThread::onCallIt(Callable* p)
     return res;
 }
 
-long MainThread::onSendDlgMessage(void* msg)
+LONG_PTR MainThread::onSendDlgMessage(void* msg)
 {
     return RunningDialogs::instance()->processMessages(reinterpret_cast<RunningDialogs::Message*>(msg));
 }

@@ -172,7 +172,7 @@ HRESULT getShellUIObject(const DataContainer& data, REFIID iid, void** dataObjec
         }
     }
 
-    res = folder->GetUIObjectOf(NULL, data.fileCount(), 
+    res = folder->GetUIObjectOf(NULL, static_cast<UINT>(data.fileCount()), 
             const_cast<LPCITEMIDLIST*>(files), iid, NULL, dataObject);
     for (i = 0; i < static_cast<int>(data.fileCount()); i++)
     {

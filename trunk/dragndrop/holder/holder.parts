@@ -17,6 +17,8 @@ env.Append(
 
 if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS = ['/entry:WinMain'])
+    if env.get('TARGET_ARCH') == 'x86_64':
+        env.Append(LIBS = ['libcmt'])
 
 sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
 
