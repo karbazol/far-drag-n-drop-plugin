@@ -117,7 +117,8 @@ bool Holder::setupCurDir()
     WCHAR *currDir = new WCHAR[buff];
 
     bool res = false;
-    if (ExpandEnvironmentStrings(L"%SystemRoot%", currDir, buff))
+    if (ExpandEnvironmentStrings(L"%SystemRoot%", currDir, 
+                static_cast<DWORD>(buff)))
     {
         res = SetCurrentDirectory(currDir)?true:false;
     }

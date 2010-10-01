@@ -79,7 +79,7 @@ bool splitAndAbsPath(const wchar_t* path, MyStringW& prefix, MyStringW& suffix)
     prefix.length(size);
     wchar_t* basename;
 
-    if (!GetFullPathName(path, size, prefix, &basename))
+    if (!GetFullPathName(path, static_cast<DWORD>(size), prefix, &basename))
     {
         prefix.length(0);
         return false;
@@ -118,7 +118,8 @@ MyStringA w2a(const wchar_t* s, int cp)
     {
         res.length(size-1);
 
-        WideCharToMultiByte(cp, 0, s, -1, static_cast<char*>(res), size, NULL, NULL);
+        WideCharToMultiByte(cp, 0, s, -1, static_cast<char*>(res), 
+                static_cast<int>(size), NULL, NULL);
     }
 
     return res;
@@ -142,7 +143,8 @@ MyStringW a2w(const char* s, int cp)
         {
             res.length(size-1);
 
-            MultiByteToWideChar(cp, 0, s, -1, static_cast<wchar_t*>(res), size);
+            MultiByteToWideChar(cp, 0, s, -1, static_cast<wchar_t*>(res), 
+                    static_cast<int>(size));
         }
     }
 

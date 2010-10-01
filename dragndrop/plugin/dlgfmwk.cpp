@@ -11,7 +11,7 @@
 #include "growarry.h"
 #include "mainthrd.h"
 
-long SendDlgMessage(HANDLE hDlg, int Msg, int Param1, long Param2);
+LONG_PTR SendDlgMessage(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2);
 
 /**
  * @brief Dialog entry
@@ -152,7 +152,7 @@ public:
 
         return res;
     }
-    RunningDialogs::Message& addMessage(HANDLE h, int msg, int p1, long p2)
+    RunningDialogs::Message& addMessage(HANDLE h, int msg, int p1, LONG_PTR p2)
     {
         RunningDialogs::Message m;
         m.h = h;
@@ -281,8 +281,8 @@ void RunningDialogs::unregisterDialog(FarDialog* dlg)
     TRACE("RunningDialogs::unregisterDialog called for %p\n", dlg);
 }
 
-long RunningDialogs::sendSafeMessage(HANDLE handle,
-        int msg, int param0, long param1)
+LONG_PTR RunningDialogs::sendSafeMessage(HANDLE handle,
+        int msg, int param0, LONG_PTR param1)
 {
     LOCKIT(_dialogsLock);
 
@@ -294,7 +294,7 @@ long RunningDialogs::sendSafeMessage(HANDLE handle,
 }
 
 void RunningDialogs::postMessage(FarDialog* dlg,
-        int msg, int param0, long param1)
+        int msg, int param0, LONG_PTR param1)
 {
     LOCKIT(_dialogsLock);
 
@@ -315,7 +315,7 @@ void RunningDialogs::postMessage(FarDialog* dlg,
     MainThread::instance()->postDlgMessage();
 }
 
-long RunningDialogs::sendMessage(FarDialog* dlg, int msg, int param0, long param1)
+LONG_PTR RunningDialogs::sendMessage(FarDialog* dlg, int msg, int param0, LONG_PTR param1)
 {
     Message m;
     {
@@ -357,7 +357,7 @@ void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
         {
             wchar_t* str = s;
             //e->setControlText(i, s);
-            SendDlgMessage(dlg->hwnd(), DM_SETTEXTPTR, i, (long)str);
+            SendDlgMessage(dlg->hwnd(), DM_SETTEXTPTR, i, (LONG_PTR)str);
         }
     }
 
@@ -370,7 +370,7 @@ void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
     }
 }
 
-long RunningDialogs::processPostedSetText(HANDLE dlg,
+LONG_PTR RunningDialogs::processPostedSetText(HANDLE dlg,
         int id, const wchar_t* s)
 {
     LOCKIT(_dialogsLock);
@@ -378,18 +378,18 @@ long RunningDialogs::processPostedSetText(HANDLE dlg,
     DialogEntry* e = _head->find(dlg);
 
     if (!e)
-        return sendSafeMessage(dlg, DM_SETTEXTPTR, id, (long)s);
+        return sendSafeMessage(dlg, DM_SETTEXTPTR, id, (LONG_PTR)s);
     else
     {
         MyStringW str;
         if (e->getControlText(id, str))
             s = str;
-        return sendSafeMessage(dlg, DM_SETTEXTPTR, id, (long)s);
+        return sendSafeMessage(dlg, DM_SETTEXTPTR, id, (LONG_PTR)s);
     }
 }
 
-long RunningDialogs::processPostedMessage(HANDLE dlg,
-        int msg, int param0, long param1)
+LONG_PTR RunningDialogs::processPostedMessage(HANDLE dlg,
+        int msg, int param0, LONG_PTR param1)
 {
     LOCKIT(_dialogsLock);
 
@@ -425,7 +425,7 @@ void RunningDialogs::notifyDialog(FarDialog* dlg, bool shown)
     }
 }
 
-long RunningDialogs::processMessages(Message* msg)
+LONG_PTR RunningDialogs::processMessages(Message* msg)
 {
     LOCKIT(_dialogsLock);
 

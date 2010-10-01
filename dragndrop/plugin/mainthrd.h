@@ -97,7 +97,7 @@ private:
     void onSetDragging(bool value);
     bool onGetDirFromScreenPoint(POINT&pt, MyStringW& dir);
     void* onCallIt(Callable* p);
-    long onSendDlgMessage(void* msg);
+    LONG_PTR onSendDlgMessage(void* msg);
 public:
     static MainThread* instance();
     // returns last processed message id
@@ -109,9 +109,9 @@ public:
     {
         return sendMessage(MTM_GETDIRFROMPT, &pt, &dir)?true:false;
     }
-    inline long sendDlgMessage(void* msg)
+    inline LONG_PTR sendDlgMessage(void* msg)
     {
-        return reinterpret_cast<long>(sendMessage(MTM_SENDDLGMSG, msg));
+        return reinterpret_cast<LONG_PTR>(sendMessage(MTM_SENDDLGMSG, msg));
     }
     inline void postDlgMessage()
     {

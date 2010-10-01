@@ -81,6 +81,7 @@ void WINAPI RtlMoveMemory ( void *, const void *, size_t count );
 #undef memmove
 #endif
 
+#ifndef _M_X64
 void * __cdecl memmove (
         void * dst,
         const void * src,
@@ -100,6 +101,7 @@ int main()
 {
     return 0;
 }
+#endif
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // _DEBUG

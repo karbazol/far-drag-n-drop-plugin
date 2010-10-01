@@ -291,7 +291,7 @@ bool CopyDialog::step(const __int64& step)
 
 InitDialogItem* CopyDialog::items()
 {
-    return &_items.frame;
+    return reinterpret_cast<InitDialogItem*>(&_items);
 }
 
 int CopyDialog::itemsCount()

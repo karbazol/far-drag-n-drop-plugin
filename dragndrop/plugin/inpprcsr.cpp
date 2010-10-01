@@ -82,7 +82,7 @@ void InputProcessor::appendBuffer(PINPUT_RECORD buffer, DWORD records)
     size_t newSize = _buffSize + records;
 
     if (newSize > _buffCapacity)
-        growBuff(newSize+255);
+        growBuff(static_cast<DWORD>(newSize+255));
 
     memmove(_buffer + _buffSize, buffer, records*sizeof(*_buffer));
 
@@ -93,7 +93,7 @@ void InputProcessor::appendBuffer(PINPUT_RECORD buffer, DWORD records)
 
 DWORD InputProcessor::readBuffer(PINPUT_RECORD buffer, DWORD records, bool unicode)
 {
-    DWORD res = min(records, _userSize);
+    DWORD res = static_cast<DWORD>(min(records, _userSize));
     memmove(buffer, _buffer, res*sizeof(*buffer));
     
     if (!unicode)
@@ -275,7 +275,7 @@ bool InputProcessor::readFromSystem(HANDLE h, bool waitForInput)
     {
         size_t newSize = _buffSize + systemCount;
 
-        growBuff(newSize);
+        growBuff(static_cast<DWORD>(newSize));
 
         if (!_buffer)
             FatalAppExit(0, L"Memory allocation failed");

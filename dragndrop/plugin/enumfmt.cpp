@@ -70,7 +70,7 @@ HRESULT EnumFORMATETC::Next(ULONG celt, FORMATETC* fmt, ULONG* fetched)
         return S_FALSE;
     if (IsBadWritePtr(fmt, celt*sizeof(*fmt)))
         return E_POINTER;
-    LONG res = min(_count - _curr, celt);
+    LONG res = static_cast<LONG>(min(_count - _curr, celt));
     if (res <= 0)
         return S_FALSE;
     if (fetched)
@@ -89,7 +89,7 @@ HRESULT EnumFORMATETC::Next(ULONG celt, FORMATETC* fmt, ULONG* fetched)
 
 HRESULT EnumFORMATETC::Skip(ULONG celt)
 {
-    LONG skip = min(_count - _curr, celt);
+    LONG skip = static_cast<LONG>(min(_count - _curr, celt));
     if (skip <= 0)
         return S_FALSE;
     _curr += skip;

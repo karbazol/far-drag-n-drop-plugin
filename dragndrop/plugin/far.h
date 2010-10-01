@@ -38,9 +38,9 @@ struct PluginPanelItemW
     MyStringW       Description;
     MyStringW       Owner;
     GrowOnlyArray<MyStringW> CustomColumnData;
-    DWORD           UserData;
+    DWORD_PTR       UserData;
     DWORD           CRC32;
-    DWORD           Reserved[2];
+    DWORD_PTR       Reserved[2];
     PluginPanelItemW(): Description(), Owner(), CustomColumnData(){}
 };
 
