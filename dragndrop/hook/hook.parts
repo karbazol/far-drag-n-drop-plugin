@@ -16,7 +16,7 @@ env.Replace(
 
 env.Append(
     CPPDEFINES=['_HOOK_EXPORTS'],
-    LIBS=['kernel32', 'user32', 'shlwapi', 'ole32', 'advapi32', 'libcmt'],
+    LIBS=['kernel32', 'user32', 'shlwapi', 'ole32', 'advapi32'],
     )
 
 headers=['hook.h', 'dndcmnct.h']

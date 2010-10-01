@@ -22,6 +22,7 @@ SetOptionDefault('INSTALL_ROOT', '#install')
 SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/${ANSI_OR_UNICODE}/drgndrop')
 SetOptionDefault('SDK_LIB_ROOT', '${SDK_ROOT}/${ANSI_OR_UNICODE}/lib')
 SetOptionDefault('SDK_BIN_ROOT', '${SDK_ROOT}/${ANSI_OR_UNICODE}/bin')
+SetOptionDefault('BUILD_DIR','$BUILD_DIR_ROOT/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/$ALIAS')
 
 Part(
     alias='common',
@@ -42,7 +43,6 @@ Part(
 Part(
     alias='plugin',
     parts_file='plugin/plugin.parts',
-    UNICODE=0,
     )
 
 # vim: set et ts=4 sw=4 ai ft=python :
