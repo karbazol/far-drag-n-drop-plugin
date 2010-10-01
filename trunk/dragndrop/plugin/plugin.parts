@@ -11,7 +11,7 @@ env.Append(
     CPPPATH=['#/../common_${A_OR_U}', '.'],
     CPPDEFINES=['_FAR_USE_FARFINDDATA'],
     LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32', 
-        'kernel32', 'libcmt', 'uuid'],
+        'kernel32', 'uuid'],
     )
 
 if env.isConfigBasedOn('release'):

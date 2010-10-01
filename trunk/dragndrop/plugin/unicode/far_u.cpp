@@ -215,11 +215,9 @@ long SendDlgMessage(HANDLE hDlg, int Msg, int Param1, long Param2)
  * Helps to determine wheather the Far is running in Full-screen mode or 
  * in windowed mode
  */
-int ConsoleMode(int param)
+int ConsoleMode(int /*param*/)
 {
-    if (theFar.AdvControl)
-        return theFar.AdvControl(theFar.ModuleNumber, ACTL_CONSOLEMODE, (void*)param);
-    return -1;
+    return FAR_CONSOLE_WINDOWED;
 }
 
 /**
@@ -411,11 +409,11 @@ static MyStringW FarGetPanelDirectory(bool activePanel)
     {
         HANDLE h = activePanel?PANEL_ACTIVE:PANEL_PASSIVE;
 
-        size_t buffSize = theFar.Control(h, FCTL_GETCURRENTDIRECTORY, 0, 0);
+        size_t buffSize = theFar.Control(h, FCTL_GETPANELDIR, 0, 0);
 
         wchar_t* buff = new wchar_t[buffSize];
 
-        theFar.Control(h, FCTL_GETCURRENTDIRECTORY, buffSize,
+        theFar.Control(h, FCTL_GETPANELDIR, buffSize,
                 reinterpret_cast<LONG_PTR>(static_cast<wchar_t*>(buff)));
 
         res = buff;

@@ -79,6 +79,25 @@ struct WindowInfoW
 
 const wchar_t* GetMsg(int MsgId);
 
+#ifndef FAR_CONSOLE_GET_MODE
+#define FAR_CONSOLE_GET_MODE       (-2)
+#endif
+#ifndef FAR_CONSOLE_TRIGGER
+#define FAR_CONSOLE_TRIGGER        (-1)
+#endif
+#ifndef FAR_CONSOLE_SET_WINDOWED
+#define FAR_CONSOLE_SET_WINDOWED   (0)
+#endif
+#ifndef FAR_CONSOLE_SET_FULLSCREEN
+#define FAR_CONSOLE_SET_FULLSCREEN (1)
+#endif
+#ifndef FAR_CONSOLE_WINDOWED
+#define FAR_CONSOLE_WINDOWED       (0)
+#endif
+#ifndef FAR_CONSOLE_FULLSCREEN
+#define FAR_CONSOLE_FULLSCREEN     (1)
+#endif
+
 /**
  * Returns TRUE if the far.exe is running in console mode otherwise FALSE
  */

@@ -13,7 +13,8 @@ config=configuration(map_default_version)
 
 config.VersionRange("6.0-7.1",
                     append=ConfigValues(
-                        LINKFLAGS=['/opt:nowin98']
+                        LINKFLAGS=['/opt:nowin98'],
+                        LIBS=['libcmt']
                         )
                     )
 
