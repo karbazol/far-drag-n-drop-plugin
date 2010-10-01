@@ -1,3 +1,5 @@
+import fnmatch
+
 Import('*')
 
 env.PartName('holder')
@@ -18,7 +20,11 @@ if env.isConfigBasedOn('release'):
 
 sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
 
-env.InstallBin(env.Program(target='holder', source=sources))
+
+env.InstallBin(
+    filter(lambda x: fnmatch.fnmatch(x.name, '*.dnd'),
+        env.Program(target='holder', source=sources)
+    ))
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

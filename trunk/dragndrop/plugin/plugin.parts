@@ -16,6 +16,7 @@ env.Append(
 
 if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS=['/entry:DllMain'])
+    env.Append(LIBS=['libcmt'])
 
 #determine build number
 import subprocess

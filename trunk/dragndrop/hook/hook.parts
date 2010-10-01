@@ -24,6 +24,7 @@ sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
 
 if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS=['/entry:DllMain'])
+    env.Append(LIBS=['libcmt'])
 
 env.SdkInclude(headers)
 dll = lambda x: fnmatch.fnmatch(x.name, '*.hook')
