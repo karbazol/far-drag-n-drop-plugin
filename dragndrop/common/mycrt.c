@@ -96,6 +96,11 @@ void * __cdecl memmove (
     return ret;
 }
 
+int main()
+{
+    return 0;
+}
+
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // _DEBUG
 

@@ -13,8 +13,7 @@ config=configuration(map_default_version)
 
 config.VersionRange("6.0-7.1",
                     append=ConfigValues(
-                        LINKFLAGS=['/opt:nowin98'],
-                        LIBS=['libcmt']
+                        LINKFLAGS=['/opt:nowin98']
                         )
                     )
 
@@ -24,10 +23,13 @@ config.VersionRange("*",
                         CCFLAGS=[
                             '/MT',  # Use multi-threaded static crt
                             '/Oxs', # Optimize them all
+                            '/EHs-',
+                            '/EHa-',
+                            '/GS-'
                             ],
                         LINKFLAGS=[
                             '/NODEFAULTLIB'
-                            ]
+                            ],
                         )
                     )
     

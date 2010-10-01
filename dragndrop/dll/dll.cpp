@@ -133,11 +133,19 @@ void Dll::doCall(CallBackInfo* p)
     for (;p; p = p->call());
 }
 
+#if _MSC_VER >= 1400  && defined(NDEBUG)
+extern "C" int __sse2_available_init();
+#endif
+
 BOOL Dll::Main(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpvReserved*/)
 {
     switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH:
+#if _MSC_VER >= 1400  && defined(NDEBUG)
+        __sse2_available_init();
+#endif
+
         Dll::instance();
         InitDbgTrace();
         return TRUE;

@@ -22,7 +22,7 @@ config.VersionRange("*",
                             '/Gy',  # Function level linking
                             ],
                         LINKFLAGS=[
-                            '/INCREMENTAL:NO', '/DEBUG', '/OPT:REF'
+                            '/INCREMENTAL:NO', '/DEBUG', '/OPT:REF',
                             ]
                         )
                     )
