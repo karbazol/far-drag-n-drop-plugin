@@ -88,7 +88,7 @@ static void initPatches()
 bool patchImports()
 {
     initPatches();
-    
+
     return patchModuleImports(GetModuleHandle(0), patches, LENGTH(patches));
 }
 
