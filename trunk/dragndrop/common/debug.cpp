@@ -34,7 +34,8 @@ struct DebugBuffs
 
 static bool getModuleName(void* module, char* modulePath, size_t modulePathSize, char*& moduleFileName)
 {
-    if (GetModuleFileNameA(reinterpret_cast<HMODULE>(module), modulePath, modulePathSize))
+    if (GetModuleFileNameA(reinterpret_cast<HMODULE>(module), modulePath,
+                static_cast<DWORD>(modulePathSize)))
     {
         moduleFileName = StrRChrA(modulePath, NULL, '\\');
         if (moduleFileName)
@@ -107,7 +108,7 @@ void DbgTrace(const char* lpszFormat,...)
 
     DebugBuffs* p = GetDbgThreadBuff();
 
-    wvnsprintfA(p->pBuff, (sizeof(p->buff0) - (p->pBuff - p->buff0)), lpszFormat, va);
+    wvnsprintfA(p->pBuff, static_cast<int>(sizeof(p->buff0) - (p->pBuff - p->buff0)), lpszFormat, va);
     p->pBuff = p->buff0 + lstrlenA(p->buff0);
 
     char* pN = StrChrA(p->buff0, '\n');

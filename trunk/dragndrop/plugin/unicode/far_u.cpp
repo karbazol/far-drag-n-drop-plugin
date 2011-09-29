@@ -75,7 +75,7 @@ static const wchar_t* getRegistryKeyName()
  * The plugin here performs its initialization.
  */
 void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
-{                     
+{
     checkConman();
 
     if (!patchImports())
@@ -83,7 +83,7 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
 
     // Create MainThread instance
     MainThread::instance();
-    
+
     TRACE("Setting plugin startup info\n");
     theFar = *Info;
     farFuncs = *Info->FSF;
@@ -212,7 +212,7 @@ LONG_PTR SendDlgMessage(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2)
 }
 
 /**
- * Helps to determine wheather the Far is running in Full-screen mode or 
+ * Helps to determine wheather the Far is running in Full-screen mode or
  * in windowed mode
  */
 int ConsoleMode(int /*param*/)
@@ -498,17 +498,17 @@ HWND GetFarWindow()
 {
     static HWND hwnd = 0;
     if (!hwnd)
-    {                                      
+    {
         if (!theFar.AdvControl)
             return NULL;
 
         hwnd = (HWND)theFar.AdvControl(theFar.ModuleNumber, ACTL_GETFARHWND, NULL);
-        
+
         // The case of ConEmu
         HWND parent = GetAncestor(hwnd, GA_PARENT);
         if (parent != 0)
         {
-            // Far's parent is not null. 
+            // Far's parent is not null.
             // This may mean far is run in ConEmu not in generic console
             wchar_t buff[260];
             if (GetClassName(parent, buff, LENGTH(buff)))
@@ -532,12 +532,12 @@ HWND GetFarWindow()
 bool FarWriteRegistry(const wchar_t* name, DWORD type, const void* value, size_t size)
 {
     HKEY key = 0;
-    
+
     if (ERROR_SUCCESS != RegCreateKeyExW(HKEY_CURRENT_USER, getRegistryKeyName(), 0,
             NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &key, NULL))
         return false;
 
-    bool res = (ERROR_SUCCESS == RegSetValueExW(key, name, 0, type, 
+    bool res = (ERROR_SUCCESS == RegSetValueExW(key, name, 0, type,
                 reinterpret_cast<const BYTE*>(value), static_cast<DWORD>(size)));
 
     RegCloseKey(key);

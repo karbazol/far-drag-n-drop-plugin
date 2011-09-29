@@ -230,10 +230,10 @@ Config::Config():_checkKey(0), _allowDrop(true), _shellCopy(true), _showMenu(fal
     _useShellObject(false)
 {
     _checkKey = FarReadRegistry(_checkKeyName, _checkKey);
-    _allowDrop = FarReadRegistry(_allowDropName, _allowDrop)?true:false;
-    _shellCopy = FarReadRegistry(_shellCopyName, _shellCopy)?true:false;
-    _showMenu = FarReadRegistry(_showMenuName, _showMenu)?true:false;
-    _useShellObject = FarReadRegistry(_useShellObjectName, _useShellObject)?true:false;
+    _allowDrop = !!FarReadRegistry(_allowDropName, _allowDrop);
+    _shellCopy = !!FarReadRegistry(_shellCopyName, _shellCopy);
+    _showMenu = !!FarReadRegistry(_showMenuName, _showMenu);
+    _useShellObject = !!FarReadRegistry(_useShellObjectName, _useShellObject);
 }
 
 const wchar_t* Config::_allowDropName = L"AllowDrop";

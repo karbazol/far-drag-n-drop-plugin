@@ -19,9 +19,9 @@ SetOptionDefault('ANSI_OR_UNICODE', '${_ansiOrUnicode(__env__)}')
 SetOptionDefault('A_OR_U', '${_ansiOrUnicodeShort(__env__)}')
 
 SetOptionDefault('INSTALL_ROOT', '#install')
-SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/${ANSI_OR_UNICODE}/drgndrop')
-SetOptionDefault('SDK_LIB_ROOT', '${SDK_ROOT}/${ANSI_OR_UNICODE}/lib')
-SetOptionDefault('SDK_BIN_ROOT', '${SDK_ROOT}/${ANSI_OR_UNICODE}/bin')
+SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/${ANSI_OR_UNICODE}/drgndrop/${TARGET_PLATFORM}')
+SetOptionDefault('SDK_LIB_ROOT', '${SDK_ROOT}/${TARGET_PLATFORM}/${ANSI_OR_UNICODE}/lib')
+SetOptionDefault('SDK_BIN_ROOT', '${SDK_ROOT}/${TARGET_PLATFORM}/${ANSI_OR_UNICODE}/bin')
 SetOptionDefault('BUILD_DIR','$BUILD_DIR_ROOT/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/$ALIAS')
 
 Part(
