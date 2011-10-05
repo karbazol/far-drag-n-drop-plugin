@@ -7,7 +7,7 @@ sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
 headers = Pattern(includes=['*.h', '*.hpp'], recursive=False).files()
 
 env.SdkInclude(headers)
-env.Sdk(env.StaticLibrary(target='common', source=sources))
+env.SdkLib(env.StaticLibrary(target='common', source=sources))
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

@@ -25,7 +25,7 @@ CopyDialog::CopyDialogItems CopyDialog::copyDialogItemsTemplate =
 
 CopyDialog::CopyDialog(): FarDialog(), _items(copyDialogItemsTemplate),
     _totalProcessedSize(0), _totalSize(0), _currentProcessedSize(0),
-    _currentSize(0), _srcFile(), _destFile(), _filesToProcess(0),
+    _currentSize(0), /*_srcFile(), _destFile(),*/ _filesToProcess(0),
     _filesProcessed(-1), _fileListProcessed(false), _speed(0)
 {
     wsprintf(szFilesProcessed, GetMsg(MFilesProcessed), 0, 0);
@@ -250,18 +250,18 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
     if (running())
     {
         _filesProcessed++;
-        _srcFile = src;
-        _destFile = dest;
+        MyStringW srcFile = src;
+        MyStringW destFile = dest;
 
         _totalProcessedSize += (_currentSize - _currentProcessedSize);
         _currentProcessedSize = 0;
         _currentSize = size;
 
-        TruncPathStr(_srcFile, 40);
-        TruncPathStr(_destFile, 40);
+        TruncPathStr(srcFile, 40);
+        TruncPathStr(destFile, 40);
 
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (long)(wchar_t*)_srcFile);
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (long)(wchar_t*)_destFile);
+        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (long)(wchar_t*)srcFile);
+        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (long)(wchar_t*)destFile);
 
         updateFilesProcessed();
         updatePercents();

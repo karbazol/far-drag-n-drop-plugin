@@ -148,7 +148,11 @@ void MainThread::processPostedMessages()
         handleMessage(m._msg, m._param0, m._param1, m._param2, m._param3);
     }
 
-    _posted.clear();
+    {
+        LOCKIT(_postGuard);
+
+        _posted.clear();
+    }
 
 }
 
