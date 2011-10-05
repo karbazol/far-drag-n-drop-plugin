@@ -142,8 +142,10 @@ BOOL Dll::Main(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpvReserved*/)
     switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH:
-#if _MSC_VER >= 1400  && defined(NDEBUG) && defined(_M_X86)
+#if _MSC_VER >= 1400  && defined(NDEBUG)
+#if defined(_M_X86)
         __sse2_available_init();
+#endif
 #endif
 
         Dll::instance();

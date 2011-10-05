@@ -27,11 +27,11 @@ if env.isConfigBasedOn('release'):
     env.Append(LIBS=['libcmt'])
 
 env.SdkInclude(headers)
-dll = lambda x: fnmatch.fnmatch(x.name, '*.hook')
-staff = lambda x: not fnmatch.fnmatch(x.name, '*.hook') 
+dll = lambda x: not fnmatch.fnmatch(x.name, '*.lib')
+staff = lambda x: fnmatch.fnmatch(x.name, '*.lib') 
 targets = env.SharedLibrary(target=['drgndrop', 'drophook.lib'], source=sources)
 env.InstallBin(filter(dll, targets))
-env.Sdk(filter(staff, targets))
+env.SdkLib(filter(staff, targets))
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

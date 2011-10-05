@@ -124,7 +124,7 @@ StringType strip(const StringType& s)
 }
 
 template<class StringType>
-StringType substring(const StringType& s, size_t offset, 
+StringType substring(const StringType& s, size_t offset,
         size_t len=static_cast<size_t>(-1))
 {
     if (offset >= s.length())
@@ -170,7 +170,7 @@ StringType wrapString(const StringType& s, size_t maxChars, size_t tabLen=8)
                 begin = candidate+1;
             }
         }
-        
+
         pos++;
     }
 
@@ -178,7 +178,7 @@ StringType wrapString(const StringType& s, size_t maxChars, size_t tabLen=8)
 }
 
 template<class StringType>
-void wrapString(const StringType& s, size_t maxChars, 
+void wrapString(const StringType& s, size_t maxChars,
         GrowOnlyArray<StringType>& lines, size_t tabLen=8)
 {
     tabLen; /** @todo Tabs should be counted too. */
@@ -434,7 +434,7 @@ public:
         {
             return true;
         }
-        else 
+        else
         {
             return (0 == Traits::strcmp(s, data->data));
         }
