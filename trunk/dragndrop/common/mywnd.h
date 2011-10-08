@@ -33,7 +33,7 @@ protected:
     virtual void beforeCreation(DWORD& style, DWORD& styleEx);
 
     /**
-     * Called internaly by WindowProc.
+     * Called internally by WindowProc.
      */
     virtual LRESULT handle(UINT msg, WPARAM wParam, LPARAM lParam);
 public:

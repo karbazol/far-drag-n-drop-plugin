@@ -62,12 +62,19 @@ static const wchar_t* getRegistryKeyName()
     if (!regKeyName)
     {
         regKeyName = new MyStringW(a2w(theFar.RootKey, CP_OEMCP));
-        *regKeyName /= L"Karbazol\\DragNDrop";
+        if (regKeyName)
+        {
+            *regKeyName /= L"Karbazol\\DragNDrop";
 
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&freeRegistry), regKeyName);
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&freeRegistry), regKeyName);
+            }
+        }
     }
 
-    return *regKeyName;
+    return regKeyName?*regKeyName:0;
 }
 
 /**
@@ -79,10 +86,17 @@ void WINAPI SetStartupInfo(const struct PluginStartupInfo *Info)
     checkConman();
 
     if (!patchImports())
+    {
         return;
+    }
 
     // Create MainThread instance
-    MainThread::instance();
+    if (!MainThread::instance())
+    {
+        // if failed to create MainThread class instance all
+        // the follwing does not make sence.
+        return;
+    }
 
     TRACE("Setting plugin startup info\n");
     theFar = *Info;
@@ -96,7 +110,11 @@ void WINAPI SetStartupInfo(const struct PluginStartupInfo *Info)
     Config::instance();
 
     // Prepare for dragging
-    Dragging::instance()->initialize();
+    Dragging* dragging = Dragging::instance();
+    if (dragging)
+    {
+        dragging->initialize();
+    }
 }
 
 /**
@@ -174,18 +192,25 @@ static void killMessages(Messages* p)
     delete p;
 }
 
-static Messages& messages()
+static Messages* messagesInstance()
 {
     static Messages* m = 0;
     if (!m)
     {
         m = new Messages;
 
-        Dll::instance()->registerProcessEndCallBack(
-                reinterpret_cast<PdllCallBack>(&killMessages), m);
+        if (m)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(
+                    reinterpret_cast<PdllCallBack>(&killMessages), m);
+            }
+        }
     }
 
-    return *m;
+    return m;
 }
 
 /**
@@ -193,21 +218,26 @@ static Messages& messages()
  */
 const wchar_t* GetMsg(int MsgId)
 {
-    if (static_cast<unsigned int>(MsgId) >= messages().size())
+    Messages* messages = messagesInstance();
+    if (!messages)
     {
-        messages().size(MsgId+1);
+        return L"";
+    }
+    if (static_cast<unsigned int>(MsgId) >= messages->size())
+    {
+        messages->size(MsgId+1);
     }
     if (theFar.GetMsg)
     {
         const char* p = theFar.GetMsg(theFar.ModuleNumber, MsgId);
-        if (messages()[MsgId].aMessage != p)
+        if ((*messages)[MsgId].aMessage != p)
         {
-            messages()[MsgId].aMessage = p;
-            messages()[MsgId].wMessage = a2w(p, CP_OEMCP);
+            (*messages)[MsgId].aMessage = p;
+            (*messages)[MsgId].wMessage = a2w(p, CP_OEMCP);
         }
     }
 
-    return messages()[MsgId].wMessage;
+    return (*messages)[MsgId].wMessage;
 }
 
 /**

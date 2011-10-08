@@ -33,15 +33,28 @@ HRESULT WorkerThread::execute(IDataObject* obj, const wchar_t* destDir)
 
 DWORD WorkerThread::thread(WorkerThread* This)
 {
-    HRESULT hr = OleInitialize(NULL);
-    if (SUCCEEDED(hr))
+    __try
     {
-        hr = This->run();
+        HRESULT hr = OleInitialize(NULL);
+        __try
+        {
+            if (SUCCEEDED(hr))
+            {
+                hr = This->run();
+            }
+        }
+        __finally
+        {
+            delete This;
+
+            OleUninitialize();
+        }
+
     }
-
-    delete This;
-
-    OleUninitialize();
+    __except(UnhandledExceptionFilter(GetExceptionInformation()))
+    {
+        ExitThread(GetExceptionCode());
+    }
 
     return 0;
 }

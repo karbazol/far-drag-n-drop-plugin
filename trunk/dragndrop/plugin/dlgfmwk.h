@@ -28,6 +28,7 @@ public:
         int message;
         int param1;
         LONG_PTR param2;
+        Message(): h(0), message(0), param1(0), param2(0){}
     };
 private:
     ActiveDialog* _activeDialog;

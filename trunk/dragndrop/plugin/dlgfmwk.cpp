@@ -26,7 +26,7 @@ private:
         bool queued;
         MyStringW text;
         ControlTextMessage(): queued(false), text(){}
-        ControlTextMessage(const ControlTextMessage& m): 
+        ControlTextMessage(const ControlTextMessage& m):
             queued(m.queued), text(m.text){}
         ControlTextMessage& operator=(const ControlTextMessage& m)
         {
@@ -212,14 +212,20 @@ void RunningDialogs::kill(RunningDialogs* p)
 }
 
 RunningDialogs* RunningDialogs::instance()
-{                                                                      
+{
     static RunningDialogs* p = 0;
 
     if (!p)
     {
         p = new RunningDialogs();
-
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+        if (p)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+            }
+        }
     }
 
     return p;
@@ -270,13 +276,22 @@ void RunningDialogs::unregisterDialog(FarDialog* dlg)
 {
     LOCKIT(_dialogsLock);
 
-    DialogEntry* p;
-    DialogEntry* e = _head->find(dlg, &p);
+    if (_head)
+    {
 
-    e->deleteIt(p);
+        DialogEntry* p(0);
+        DialogEntry* e = _head->find(dlg, &p);
 
-    if (e == _head)
-        _head = p;
+        if (e)
+        {
+            e->deleteIt(p);
+
+            if (e == _head)
+            {
+                _head = p;
+            }
+        }
+    }
 
     TRACE("RunningDialogs::unregisterDialog called for %p\n", dlg);
 }
@@ -300,7 +315,9 @@ void RunningDialogs::postMessage(FarDialog* dlg,
 
     DialogEntry* e = _head->find(dlg);
     if (!e)
+    {
         return;
+    }
 
     switch (msg)
     {
@@ -312,7 +329,11 @@ void RunningDialogs::postMessage(FarDialog* dlg,
         break;
     }
 
-    MainThread::instance()->postDlgMessage();
+    MainThread* mainThread = MainThread::instance();
+    if (mainThread)
+    {
+        mainThread->postDlgMessage();
+    }
 }
 
 LONG_PTR RunningDialogs::sendMessage(FarDialog* dlg, int msg, int param0, LONG_PTR param1)

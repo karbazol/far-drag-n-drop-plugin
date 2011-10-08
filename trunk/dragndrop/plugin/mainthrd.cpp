@@ -38,7 +38,14 @@ MainThread* MainThread::instance()
     if (!p)
     {
         p = new MainThread();
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+        if (p)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+            }
+        }
     }
 
     return p;
@@ -85,7 +92,9 @@ void* MainThread::sendMessage(unsigned int msg, void* param0, void* param1,
         void* param2, void* param3)
 {
     if (_threadId == GetCurrentThreadId())
+    {
         return _result = handleMessage(msg, param0, param1, param2, param3);
+    }
     else
     {
 
@@ -106,13 +115,15 @@ void* MainThread::sendMessage(unsigned int msg, void* param0, void* param1,
 unsigned int MainThread::processMessage(bool wait, void** result)
 {
     if (_threadId != GetCurrentThreadId())
+    {
         return 0;
+    }
 
     unsigned int res = 0;
 
     if (WaitForSingleObject(_eventMessage, wait?INFINITE:0) == WAIT_OBJECT_0)
     {
-        _result = handleMessage(_msg._msg, _msg._param0, _msg._param1, 
+        _result = handleMessage(_msg._msg, _msg._param0, _msg._param1,
                 _msg._param2, _msg._param3);
 
         if (result)
@@ -142,7 +153,7 @@ bool MainThread::popPostedMessage(MainThread::Message& m)
 
 void MainThread::processPostedMessages()
 {
-    Message m;
+    Message m = {0};
     while (popPostedMessage(m))
     {
         handleMessage(m._msg, m._param0, m._param1, m._param2, m._param3);
@@ -165,10 +176,19 @@ void* MainThread::waitForMessage(unsigned int msg)
 
 void MainThread::onSetDragging(bool value)
 {
+    Dragging* dragging = Dragging::instance();
+    if (!dragging)
+    {
+        return;
+    }
     if (value)
-        Dragging::instance()->draggingStarted();
+    {
+        dragging->draggingStarted();
+    }
     else
-        Dragging::instance()->draggingEnded();
+    {
+        dragging->draggingEnded();
+    }
 }
 
 bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
@@ -181,7 +201,7 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
         return false;
 
     ScreenToClient(GetFarWindow(), &pt);
-    
+
     RECT rect;
     GetClientRect(GetFarWindow(), &rect);
 
@@ -227,7 +247,12 @@ void* MainThread::onCallIt(Callable* p)
 
 LONG_PTR MainThread::onSendDlgMessage(void* msg)
 {
-    return RunningDialogs::instance()->processMessages(reinterpret_cast<RunningDialogs::Message*>(msg));
+    RunningDialogs* runningDialogs = RunningDialogs::instance();
+    if (!runningDialogs)
+    {
+        return 0;
+    }
+    return runningDialogs->processMessages(reinterpret_cast<RunningDialogs::Message*>(msg));
 }
 
 // vim: set et ts=4 ai :

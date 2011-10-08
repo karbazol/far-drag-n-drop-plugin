@@ -13,7 +13,14 @@ ThreadPool* ThreadPool::instance()
     if (!p)
     {
         p = new ThreadPool;
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+        if (p)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+            }
+        }
     }
 
     return p;
@@ -22,6 +29,11 @@ ThreadPool* ThreadPool::instance()
 HRESULT ThreadPool::newThread(IDataObject* obj, const wchar_t* destDir)
 {
     WorkerThread* thread = new WorkerThread();
+
+    if (!thread)
+    {
+        return E_OUTOFMEMORY;
+    }
 
     return thread->execute(obj, destDir);
 }

@@ -11,7 +11,6 @@ env.DependsOn([
 
 env.Replace(
     SHLIBSUFFIX='.hook',
-    PDB='drophook.pdb'
     )
 
 env.Append(
@@ -20,7 +19,7 @@ env.Append(
     )
 
 headers=['hook.h', 'dndcmnct.h']
-sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
+sources = env.Glob('*.cpp') + env.Glob('*.c')
 
 if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS=['/entry:DllMain'])
@@ -29,7 +28,7 @@ if env.isConfigBasedOn('release'):
 env.SdkInclude(headers)
 dll = lambda x: not fnmatch.fnmatch(x.name, '*.lib')
 staff = lambda x: fnmatch.fnmatch(x.name, '*.lib') 
-targets = env.SharedLibrary(target=['drgndrop', 'drophook.lib'], source=sources)
+targets = env.SharedLibrary(target=['drgndrop_${TARGET_ARCH}', 'drophook_${TARGET_ARCH}.lib'], source=sources)
 env.InstallBin(filter(dll, targets))
 env.SdkLib(filter(staff, targets))
 

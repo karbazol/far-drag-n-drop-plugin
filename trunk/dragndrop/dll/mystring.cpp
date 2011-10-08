@@ -173,7 +173,14 @@ MyStringCS* MyStringCS::instance()
     {
         p = new MyStringCS;
 
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+        if (p)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+            }
+        }
     }
 
     return p;

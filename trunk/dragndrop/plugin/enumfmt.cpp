@@ -8,11 +8,21 @@ EnumFORMATETC::EnumFORMATETC(FORMATETC* fmt, size_t count, const CustomData* cst
     if (_count)
     {
         _fmt = new FORMATETC[_count];
-        memmove(_fmt, fmt, count*sizeof(*_fmt));
-
-        for (;count < _count; count++)
+        if (_fmt)
         {
-            _fmt[count] = cstmData++->fmt;
+            memmove(_fmt, fmt, count*sizeof(*_fmt));
+
+            if (cstmData && !IsBadReadPtr(cstmData, cstmCount*sizeof(*cstmData)))
+            {
+                for (;count < _count; count++)
+                {
+                    _fmt[count] = cstmData++->fmt;
+                }
+            }
+        }
+        else
+        {
+            _count = 0;
         }
     }
     else

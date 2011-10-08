@@ -196,34 +196,42 @@ ConfigDlgItems ConfigDlg::_items =
  */
 int doConfigure(int /*Number*/)
 {
-    ConfigDlg dlg;
+    Config* config = Config::instance();
 
-    dlg.enableUseKeyToStartDnd(Config::instance()->checkKey());
-    dlg.switchCheckBox(getMyItemId(checkEnableDrop),
-            Config::instance()->allowDrop()?BSTATE_CHECKED:BSTATE_UNCHECKED);
-    dlg.switchCheckBox(getMyItemId(checkUseShellCopy),
-            Config::instance()->shellCopy());
-    dlg.switchCheckBox(getMyItemId(checkShowMenu),
-            Config::instance()->showMenu());
-
-    if (getMyItemId(btnOk) != dlg.show(true))
-        return FALSE;
-
-    Config::instance()->checkKey(dlg.getKeyToStartDnd());
-    Config::instance()->allowDrop(dlg.checked(getMyItemId(checkEnableDrop)));
-    Config::instance()->shellCopy(dlg.checked(getMyItemId(checkUseShellCopy)));
-    Config::instance()->showMenu(dlg.checked(getMyItemId(checkShowMenu)));
-
-    if(Config::instance()->allowDrop())
+    if (config)
     {
-        // RegisterHooker();
+        ConfigDlg dlg;
+
+        dlg.enableUseKeyToStartDnd(config->checkKey());
+        dlg.switchCheckBox(getMyItemId(checkEnableDrop),
+                config->allowDrop()?BSTATE_CHECKED:BSTATE_UNCHECKED);
+        dlg.switchCheckBox(getMyItemId(checkUseShellCopy),
+                config->shellCopy());
+        dlg.switchCheckBox(getMyItemId(checkShowMenu),
+                config->showMenu());
+
+        if (getMyItemId(btnOk) != dlg.show(true))
+        {
+            return FALSE;
+        }
+
+        config->checkKey(dlg.getKeyToStartDnd());
+        config->allowDrop(dlg.checked(getMyItemId(checkEnableDrop)));
+        config->shellCopy(dlg.checked(getMyItemId(checkUseShellCopy)));
+        config->showMenu(dlg.checked(getMyItemId(checkShowMenu)));
+
+        if(config->allowDrop())
+        {
+            // RegisterHooker();
+        }
+        else
+        {
+            // DeregisterHooker();
+        };
+        return TRUE;
     }
-    else
-    {
-        // DeregisterHooker();
-    };
 
-    return TRUE;
+    return FALSE;
 }
 
 Config::Config():_checkKey(0), _allowDrop(true), _shellCopy(true), _showMenu(false),
@@ -248,7 +256,14 @@ Config* Config::instance()
     if (!p)
     {
         p = new Config();
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+        if (p)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+            }
+        }
     }
 
     return p;

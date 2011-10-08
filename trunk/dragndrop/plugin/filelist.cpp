@@ -1,7 +1,7 @@
 /**
  * @file filelist.cpp
  * Contains implementation of FileList class.
- * 
+ *
  * $Id$
  */
 
@@ -29,7 +29,7 @@ public:
         if (insertAfter)
             insertAfter->_next = this;
     }
-    FileListEntryContainer* deleteIt()                                      
+    FileListEntryContainer* deleteIt()
     {
         FileListEntryContainer* next;
 
@@ -85,7 +85,7 @@ FileListEntry& FileListEntry::operator=(const FileListEntry& e)
     return *this;
 }
 
-FileListEntry::FileListEntry(const MyStringW& cmnDir, const wchar_t* subpath, 
+FileListEntry::FileListEntry(const MyStringW& cmnDir, const wchar_t* subpath,
             const WIN32_FIND_DATA& data): _srcpath(cmnDir), _data(data)
 {
     if (!_srcpath)
@@ -105,7 +105,7 @@ FileListEntry::FileListEntry(const MyStringW& cmnDir, const wchar_t* subpath,
 const wchar_t* FileListEntry::subpath() const
 {
     if (!_srcpath)
-        return 0;
+        return L"";
 
     return _srcpath + _subpath;
 }
@@ -172,7 +172,7 @@ bool FileList::appendEntry(const FileListEntry& e)
         _tail = new FileListEntryContainer(e, _tail);
         if (!_head)
             _head = _tail;
-        
+
         if (WaitForSingleObject(_haveEntries, 0) != WAIT_OBJECT_0)
             SetEvent(_haveEntries);
 
@@ -236,7 +236,7 @@ bool FileList::processDir(const wchar_t* prefix, const FileListEntry& e)
                 res = false;
                 break;
             }
-            if (FILE_ATTRIBUTE_DIRECTORY == 
+            if (FILE_ATTRIBUTE_DIRECTORY ==
                     (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             {
                 processDir(prefix, entry);

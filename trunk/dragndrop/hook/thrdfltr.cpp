@@ -11,7 +11,7 @@ void ThreadFilter::handle(MSG& msg)
         {
             if (_noDragging)
                 return;
-          
+
             checkDndUnderMouse(msg.hwnd);
         }
         else
@@ -41,7 +41,7 @@ void ThreadFilter::checkDragging(HWND hwnd)
         _noDragging = !isDndDropTarget(hwnd);
         if (_noDragging)
             hideDndWindow(hwnd);
-        
+
         _draggingChecked = true;
     }
 
@@ -64,13 +64,18 @@ void ThreadFilter::checkDndUnderMouse(HWND msgHwnd)
         return;
     }
 
-    res = HolderApi::instance()->isFarWindow(res);
+    HolderApi* holderApi = HolderApi::instance();
+    if (!holderApi)
+    {
+        return;
+    }
+    res = holderApi->isFarWindow(res);
     if (!res)
     {
         return;
     }
 
-    res = HolderApi::instance()->getActiveDnd(res);
+    res = holderApi->getActiveDnd(res);
     if (res && IsWindow(res))
     {
         showDndWindow(res);

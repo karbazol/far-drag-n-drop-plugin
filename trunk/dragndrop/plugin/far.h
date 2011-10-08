@@ -72,7 +72,7 @@ struct WindowInfoW
   MyStringW TypeName;
   MyStringW Name;
 
-  WindowInfoW(): TypeName(), Name(){}
+  WindowInfoW(): Pos(0), Type(0), Modified(0), Current(0), TypeName(), Name(){}
 };
 
 // Standard Far Functions

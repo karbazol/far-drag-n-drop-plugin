@@ -23,7 +23,14 @@ Dragging* Dragging::instance()
     if (!p)
     {
         p = new Dragging();
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(kill), p);
+        if (p)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(kill), p);
+            }
+        }
     }
 
     return p;
@@ -34,20 +41,26 @@ void Dragging::initialize()
     if (!_initialized)
     {
         _initialized = true;
-        WinThread::instance()->start();
+        WinThread* winThread = WinThread::instance();
+        if (winThread)
+        {
+            winThread->start();
+        }
     }
 }
 
 void Dragging::shutDown()
 {
-    WinThread::instance()->stop();
+    WinThread* winThread = WinThread::instance();
+    if (winThread)
+    {
+        winThread->stop();
+    }
 }
 
 bool Dragging::isReadyForDragging()
 {
     if (!_initialized)
-        return false;
-    if (_dragging)
         return false;
 
     if (_dragging)
@@ -85,19 +98,38 @@ bool Dragging::isReadyForDragging()
  * @brief Start dragging.
  *
  * The function checks the follwing conditions and decides
- * whether to start dragging.
+ * whether to start dragging:
+ * 1. Active Far window should be "Panels", not "Editor" and not "Viewer"
+ * 2. Mouse pointer should be over panels and not over status bar and console.
  */
 bool Dragging::start()
 {
     TRACE("Should we start dragging?\n");
 
+    if (_dragging)
+    {
+        return false;
+    }
+
+    WinThread* winThread = WinThread::instance();
+    InputProcessor* inputProcessor = InputProcessor::instance();
+
+    if (!winThread || !inputProcessor)
+    {
+        return false;
+    }
+
     PanelInfoW info;
     if (!FarGetActivePanelInfo(info) || info.Plugin && !(info.Flags & PFLAGS_REALNAMES))
+    {
         return false;
+    }
 
-    if (!InputProcessor::instance()->isMouseWithinRect(info.PanelRect.left, info.PanelRect.top,
+    if (!inputProcessor->isMouseWithinRect(info.PanelRect.left, info.PanelRect.top,
          info.PanelRect.right, info.PanelRect.bottom))
+    {
         return false;
+    }
 
     MyStringW dir = FarGetActivePanelDirectory();
     PluginPanelItemsW items = FarGetActivePanelItems(true);
@@ -105,15 +137,21 @@ bool Dragging::start()
     ShPtr<IDataObject> dataObj;
     DataContainer data(dir, items);
 
-    if (WinThread::instance()->startDragging(data))
+    /* WinThread::startDragging will post a message for tool window.
+       When the messages will be picked up in the windows thread the
+       ToolWindow::prepareForDragging will be called. */
+    if (winThread->startDragging(data))
+    {
         _dragging = true;
+    }
 
     return _dragging;
 }
 
 bool Dragging::showPopupMenu()
 {
-    if (Config::instance()->showMenu())
+    Config* config = Config::instance();
+    if (config && config->showMenu())
     {
         DataContainer data(FarGetActivePanelDirectory(), FarGetActivePanelItems(true));
 

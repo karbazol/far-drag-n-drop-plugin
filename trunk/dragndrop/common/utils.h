@@ -8,6 +8,10 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__UTILS_H__
 #define __KARBAZOL_DRAGNDROP_2_0__UTILS_H__
 
+#ifndef TARGET_ARCH
+#define TARGET_ARCH L""
+#endif
+
 /**
  * Return length of staticly defined array
  */
@@ -16,7 +20,7 @@
 
 void* getModuleBaseAddress(void* moduleItem);
 /**
- * Returns base address of exectable from which it is called.
+ * Returns base address of executable from which it is called.
  */
 inline void* getMyModuleBaseAddress()
 {

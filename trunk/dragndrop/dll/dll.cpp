@@ -76,7 +76,10 @@ Dll* Dll::instance()
     if (!dll)
     {
         dll = new Dll();
-        dll->registerProcessEndCallBack(endDll, dll);
+        if (dll)
+        {
+            dll->registerProcessEndCallBack(endDll, dll);
+        }
     }
 
     return dll;
@@ -89,7 +92,9 @@ Dll* Dll::instance()
 void Dll::endDll(void* dll)
 {
     if (dll)
+    {
         delete reinterpret_cast<Dll*>(dll);
+    }
 }
 
 /**
@@ -139,6 +144,12 @@ extern "C" int __sse2_available_init();
 
 BOOL Dll::Main(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpvReserved*/)
 {
+    Dll* dll = Dll::instance();
+    if (!dll)
+    {
+        return FALSE;
+    }
+
     switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH:
@@ -148,19 +159,18 @@ BOOL Dll::Main(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpvReserved*/)
 #endif
 #endif
 
-        Dll::instance();
         InitDbgTrace();
         return TRUE;
     case DLL_PROCESS_DETACH:
         FreeDbgTrace();
-        Dll::instance()->callProcessEnd();
+        dll->callProcessEnd();
         return TRUE;
     case DLL_THREAD_ATTACH:
-        Dll::instance()->callThreadStart();
+        dll->callThreadStart();
         return TRUE;
     case DLL_THREAD_DETACH:
         FreeDbgThreadBuff();
-        Dll::instance()->callThreadEnd();
+        dll->callThreadEnd();
         return TRUE;
     default:
         return FALSE;

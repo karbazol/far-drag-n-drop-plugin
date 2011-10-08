@@ -5,13 +5,14 @@ env.PartVersion('2.0.0')
 
 env.DependsOn([
     Component('common', '*', REQ.DEFAULT),
+#    Component('hook', '*'),
 ])
 
 sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
 headers = Pattern(includes=['*.h', '*.hpp'], recursive=False)
 
 env.SdkInclude(headers)
-env.SdkLib(env.StaticLibrary(target='dllutils', source=sources))
+env.SdkLib(env.StaticLibrary(target='${PART_NAME}_${TARGET_ARCH}', source=sources))
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

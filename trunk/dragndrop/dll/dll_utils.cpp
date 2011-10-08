@@ -19,12 +19,13 @@ MyStringW getErrorDesc(unsigned int e)
 
     if (msg)
     {
-        res = msg;
-
+        MyStringW tmp = msg;
         LocalFree(msg);
+
+        res = strip(tmp);
     }
 
-    return strip(res);
+    return res;
 }
 
 MyStringW getLastErrorDesc()

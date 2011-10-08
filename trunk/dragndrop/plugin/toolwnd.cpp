@@ -1,7 +1,7 @@
 /**
  * @file: toolwnd.cpp
  * The file contains implementation of ToolWindow class.
- * 
+ *
  * $Id$
  */
 
@@ -43,7 +43,7 @@ ToolWindow::~ToolWindow()
 void ToolWindow::onCreate()
 {
     RegisterDragDrop(hwnd(), static_cast<IDropTarget*>(this));
-    
+
     if (FAILED(CoCreateInstance(CLSID_DragDropHelper, NULL, CLSCTX_INPROC_SERVER,
                     IID_IDropTargetHelper, (void**)&_dropHelper)))
     {
@@ -53,9 +53,14 @@ void ToolWindow::onCreate()
 
     HolderApi::instance()->windowsCreated(parent(), hwnd());
 
-    if (Config::instance()->allowDrop())
+    Config* config = Config::instance();
+    if (config && config->allowDrop())
     {
-        HolderApi::instance()->setHook(true);
+        HolderApi* holderApi = HolderApi::instance();
+        if (holderApi)
+        {
+            holderApi->setHook(true);
+        }
     }
 }
 
@@ -84,7 +89,7 @@ LRESULT ToolWindow::handle(UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_MEASUREITEM:
     case WM_DRAWITEM:
         return onMenuMessage(msg, wParam, lParam);
-    
+
     case WM_ISACTIVEDND:
         return onIsActiveFar();
     case WM_HLDR_ISDNDWND:
@@ -175,21 +180,35 @@ LRESULT ToolWindow::prepareForDragging(const DataContainer& data)
 {
 #ifdef _DEBUG
     dumpConsoleFont();
-#endif 
-    
+#endif
+
     _data = 0;
-    createDataObject(data, &_data, Config::instance()->useShellObject());
+    Config* config = Config::instance();
+    HolderApi* holderApi = HolderApi::instance();
+    if (!config || !holderApi)
+    {
+        return 0;
+    }
+
+    createDataObject(data, &_data, config->useShellObject());
 
     if (!show())
+    {
         return 0;
+    }
 
     // make sure we'll get all mouse events
     setCapture();
 
-    if (HolderApi::instance()->isLeftButtonDown())
+    if (holderApi->isLeftButtonDown())
+    {
         mouse_event(MOUSEEVENTF_MOVE|MOUSEEVENTF_LEFTDOWN,  0, 0, 0, NULL);
-    if (HolderApi::instance()->isRightButtonDown())
+    }
+
+    if (holderApi->isRightButtonDown())
+    {
         mouse_event(MOUSEEVENTF_MOVE|MOUSEEVENTF_RIGHTDOWN,  0, 0, 0, NULL);
+    }
 
     return 1;
 }
@@ -200,7 +219,7 @@ LRESULT ToolWindow::showPopupMenu(const DataContainer& data)
     HRESULT hr;
     ShPtr<IContextMenu> pMenu;
 
-    hr = getShellUIObject(data, IID_IContextMenu, 
+    hr = getShellUIObject(data, IID_IContextMenu,
             reinterpret_cast<void**>(&pMenu));
     if (FAILED(hr))
         return 0;
@@ -378,7 +397,7 @@ LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
 #endif
             TRACE("Dragging ended\n");
         }
-        
+
         MainThread::instance()->setDragging(false);
 
         _data = NULL;
@@ -405,14 +424,14 @@ void ToolWindow::onDestroy()
 bool ToolWindow::show()
 {
     RECT rect;
-    
+
     if (!GetWindowRect(parent(), &rect))
     {
         LASTERROR();
         return false;
     }
 
-    if (!SetWindowPos(hwnd(), HWND_TOP, rect.left, rect.top, 
+    if (!SetWindowPos(hwnd(), HWND_TOP, rect.left, rect.top,
             rect.right - rect.left, rect.bottom - rect.top,
             SWP_SHOWWINDOW|SWP_NOACTIVATE)||
         !SetWindowPos(hwnd(), HWND_TOP, rect.left, rect.top,
@@ -422,7 +441,7 @@ bool ToolWindow::show()
         LASTERROR();
         return false;
     }
-    
+
     return true;
 }
 
@@ -464,7 +483,7 @@ HRESULT ToolWindow::DragOver(DWORD keyState, POINTL pt, DWORD* effect)
     {
         _dropHelper->DragOver((POINT*)&pt, *effect);
     }
-    
+
     return S_OK;
 }
 

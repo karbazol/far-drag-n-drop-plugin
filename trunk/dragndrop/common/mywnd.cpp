@@ -15,14 +15,14 @@ bool MyWindow::create(HWND parent)
 {
     ASSERT(_hwnd == NULL && _parent == NULL);
 
-    if (!createClass())                              
+    if (!createClass())
         return false;
 
     _parent = parent;
     DWORD styleEx = WS_EX_TOOLWINDOW|WS_EX_NOACTIVATE;
     DWORD style = WS_POPUP;
     beforeCreation(style, styleEx);
-    _hwnd = CreateWindowExW(styleEx, getClassName(), L"", style, 
+    _hwnd = CreateWindowExW(styleEx, getClassName(), L"", style,
             0, 0, 50, 50, parent, 0, GetModuleHandle(NULL), this);
 
     return _hwnd?true:false;
@@ -70,7 +70,7 @@ bool MyWindow::createClass()
 
     if (!initClass(cls))
         return false;
-    
+
     return RegisterClassExW(&cls)?true:false;
 }
 
@@ -84,22 +84,24 @@ MyWindow* MyWindow::getThis(HWND hwnd)
 
 LRESULT MyWindow::wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    MyWindow* This;
     if (msg == WM_CREATE)
     {
         LPCREATESTRUCTW info = reinterpret_cast<LPCREATESTRUCTW>(lParam);
-        MyWindow* This = reinterpret_cast<MyWindow*>(info->lpCreateParams);
+        This = reinterpret_cast<MyWindow*>(info->lpCreateParams);
         This->_hwnd = hwnd;
         SetWindowLongPtr(hwnd, 0, reinterpret_cast<LONG_PTR>(This));
-        return This->handle(msg, wParam, lParam);
     }
     else
     {
-        MyWindow* This = getThis(hwnd);
-        if (This && This->_hwnd == hwnd)
-        {
-            return This->handle(msg, wParam, lParam);
-        }
+        This = getThis(hwnd);
     }
+
+    if (This && This->_hwnd == hwnd)
+    {
+        return This->handle(msg, wParam, lParam);
+    }
+
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 

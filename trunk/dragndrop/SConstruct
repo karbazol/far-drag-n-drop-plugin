@@ -4,6 +4,7 @@ from parts import *
 SetOptionDefault('LOGGER', '$TEXT_LOGGER')
 SetOptionDefault('PART_LOGGER', '$PART_TEXT_LOGGER')
 SetOptionDefault('CONFIG', 'release')
+SetOptionDefault('CPPDEFINES', [])
 #SetOptionDefault('PDB', '${TARGETS[0].filebase}.pdb')
 
 # By default we allways build 32-bit version
@@ -21,31 +22,61 @@ SetOptionDefault('A_OR_U', '${_ansiOrUnicodeShort(__env__)}')
 SetOptionDefault('CPPDEFINES', ['UNICODE', '_UNICODE'])
 
 SetOptionDefault('INSTALL_ROOT', '#install')
-SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/${CONFIG}_${ANSI_OR_UNICODE}/drgndrop/${TARGET_PLATFORM}')
-SetOptionDefault('SDK_LIB_ROOT', '${SDK_ROOT}/${CONFIG}_${TARGET_PLATFORM}/${ANSI_OR_UNICODE}/lib')
-SetOptionDefault('SDK_BIN_ROOT', '${SDK_ROOT}/${CONFIG}_${TARGET_PLATFORM}/${ANSI_OR_UNICODE}/bin')
+SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/${CONFIG}_${ANSI_OR_UNICODE}/drgndrop/')
+SetOptionDefault('SDK_LIB_ROOT', '${SDK_ROOT}/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/lib')
+SetOptionDefault('SDK_BIN_ROOT', '${SDK_ROOT}/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/bin')
 SetOptionDefault('BUILD_DIR','$BUILD_DIR_ROOT/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/$ALIAS')
 
-Part(
-    alias='common',
-    parts_file='common/common.parts'
-    )
-Part(
-    alias='dll',
-    parts_file='dll/dll.parts'
-    )
-Part(
-    alias='holder',
-    parts_file='holder/holder.parts'
-    )
-Part(
-    alias='hook',
-    parts_file='hook/hook.parts'
-    )
-Part(
-    alias='plugin',
-    parts_file='plugin/plugin.parts',
-    )
+def forArch(arch, **kw):
+    platform = SystemPlatform("win32", arch)
+    Part(
+        alias='common' + arch,
+        parts_file='common/common.parts',
+        TARGET_PLATFORM=platform,
+        **kw
+        )
+    Part(
+        alias='dll' + arch,
+        parts_file='dll/dll.parts',
+        TARGET_PLATFORM=platform,
+        **kw
+        )
+    Part(
+        alias='holder' + arch,
+        parts_file='holder/holder.parts',
+        TARGET_PLATFORM=platform,
+        **kw
+        )
+    Part(
+        alias='hook' + arch,
+        parts_file='hook/hook.parts',
+        TARGET_PLATFORM=platform,
+        **kw
+        )
+    Part(
+        alias='plugin' + arch,
+        parts_file='plugin/plugin.parts',
+        TARGET_PLATFORM=platform,
+        **kw
+        )
+
+forArch('x86')
+forArch('x86_64')
+
+##env = Environment(tools = ['default', 'packaging'])
+##inst = env.Install(r'c:\fardebug\plugins', DefaultEnvironment().Entry('$INSTALL_BIN'))
+##for item in inst:
+##    print item.abspath
+##pack = env.Package(
+##        NAME = 'dragndrop',
+##        VERSION = '2.0.0',
+##        DESCRIPTION = 'Empty',
+##        SUMMARY = 'Summary',
+##        VENDOR = 'Karbazol',
+##        X_MSI_LANGUAGE = 'en',
+##        PACKAGETYPE = 'msi'
+##        )
+##env.Alias('pack', pack)
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

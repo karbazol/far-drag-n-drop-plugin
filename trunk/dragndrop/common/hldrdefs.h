@@ -3,11 +3,30 @@
 
 #include <windows.h>
 
+#if defined(TARGET_ARCH_x86)
+#   ifndef TARGET_ARCH
+#       define TARGET_ARCH L"x86"
+#   endif
+#   ifndef OTHER_ARCH
+#       define OTHER_ARCH L"x86_64"
+#   endif
+#elif defined(TARGET_ARCH_x86_64)
+#   ifndef TARGET_ARCH
+#       define TARGET_ARCH L"x86_64"
+#   endif
+#   ifndef OTHER_ARCH
+#       define OTHER_ARCH L"x86"
+#   endif
+#else
+#   error "Either TARGET_ARCH_x86 or TARGET_ARCH_x86_64 must be defined"
+#endif
+
 // Holder window class name
-#define HOLDER_CLASS_NAME L"Karbazol_dragndrop_hook_holder_window"
-#define HOLDER_MUTEX L"Karbazol_dragndrop_hook_holder_mutex"
-#define HOLDER_LEFT_EVENT L"Karbazol_dragndrop_hook_holder_left_event"
-#define HOLDER_RIGHT_EVENT L"Karbazol_dragndrop_hook_holder_right_event"
+#define HOLDER_CLASS_NAME L"Karbazol_dragndrop_hook_holder_window" TARGET_ARCH
+#define HOLDER_MUTEX L"Karbazol_dragndrop_hook_holder_mutex" TARGET_ARCH
+#define HOLDER_LEFT_EVENT L"Karbazol_dragndrop_hook_holder_left_event" TARGET_ARCH
+#define HOLDER_RIGHT_EVENT L"Karbazol_dragndrop_hook_holder_right_event" TARGET_ARCH
+#define HOLDER_EXECUTABLE L"holder_" TARGET_ARCH L".dnd"
 
 // Holder window will answer either
 

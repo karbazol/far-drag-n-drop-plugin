@@ -18,15 +18,14 @@ env.Append(
 if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS = ['/entry:WinMain'])
     if env.get('TARGET_ARCH') == 'x86_64':
-        env.Append(LIBS = ['libcmt'])
+        env.Append(LIBS=['libcmt'])
 
-sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
+sources = env.Glob('*.cpp') + env.Glob('*.c')
 
 
 env.InstallBin(
-    filter(lambda x: fnmatch.fnmatch(x.name, '*.dnd'),
-        env.Program(target='holder', source=sources)
-    ))
+        env.Program(target='${PART_NAME}_${TARGET_ARCH}', source=sources)
+    )
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

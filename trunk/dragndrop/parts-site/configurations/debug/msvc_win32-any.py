@@ -8,7 +8,7 @@ import SCons.Script
 
 def map_default_version(env):
     return env['MSVC_VERSION']
-    
+
 
 config=configuration(map_default_version)
 
@@ -23,8 +23,9 @@ config.VersionRange("7-*",
                     append=ConfigValues(
                         CCFLAGS=['/nologo','/Od','/MTd','/W3','/RTC1', '/Z7'],
                         CXXFLAGS=['/EHs-', '/EHc-', '/GR-'],
-                        CPPDEFINES=['DEBUG'],
-                        PDB=['${TARGETS[0].filebase}.pdb'],
+                        CPPDEFINES=['DEBUG', r'TARGET_ARCH=L\"${TARGET_ARCH}\"',
+                            'TARGET_ARCH_${TARGET_ARCH}'],
+                        PDB=['${TARGETS[0]}.pdb'],
                         LINKFLAGS=['/INCREMENTAL:NO']
                         )
                     )

@@ -10,6 +10,12 @@ DataContainer::DataContainer(const wchar_t* dir, const PluginPanelItemsW& items)
     {
         size_t i;
         _files = new MyStringW[_count];
+        if (!_files)
+        {
+            _count = 0;
+            /** @todo Raise some exception here */
+            return;
+        }
         for (i = 0; i < _count; i++)
         {
             _files[i] = items[i].FindData.cFileName;
@@ -24,11 +30,19 @@ DataContainer::DataContainer(const DataContainer& r):
     if (_count > 0)
     {
         _files = new MyStringW[_count];
-        size_t i;
-
-        for (i = 0; i < _count; i++)
+        if (_files)
         {
-            _files[i] = r._files[i];
+            size_t i;
+
+            for (i = 0; i < _count; i++)
+            {
+                _files[i] = r._files[i];
+            }
+        }
+        else
+        {
+            /** @todo Raise some exception here */
+            _count = 0;
         }
     }
 

@@ -28,40 +28,40 @@ private:
 public:
     DataObject(const DataContainer& data): _data(data), _async(VARIANT_TRUE),
     _operating(VARIANT_FALSE){}
-    
+
     DEFINE_UNKNOWN
-        
-    HRESULT WINAPI QueryInterface ( 
+
+    HRESULT WINAPI QueryInterface (
             /* [in] */ REFIID riid,
             /* [iid_is][out] */ void **ppvObject);
-    HRESULT WINAPI GetData( 
+    HRESULT WINAPI GetData(
             /* [unique][in] */ FORMATETC* /*pformatetcIn*/,
             /* [out] */ STGMEDIUM* /*pmedium*/);
-    virtual HRESULT WINAPI GetDataHere( 
+    virtual HRESULT WINAPI GetDataHere(
         /* [unique][in] */ FORMATETC* /*pformatetc*/,
         /* [out][in] */ STGMEDIUM* /*pmedium*/)
     {
         NYI();
         return E_NOTIMPL;
     }
-    
-    HRESULT WINAPI QueryGetData( 
+
+    HRESULT WINAPI QueryGetData(
         /* [unique][in] */ FORMATETC* /*pformatetc*/);
-    
-    virtual HRESULT WINAPI GetCanonicalFormatEtc( 
+
+    virtual HRESULT WINAPI GetCanonicalFormatEtc(
         /* [unique][in] */ FORMATETC* /*pformatectIn*/,
         /* [out] */ FORMATETC* /*pformatetcOut*/)
     {
         NYI();
         return E_NOTIMPL;
     }
-    
-    HRESULT WINAPI SetData ( 
+
+    HRESULT WINAPI SetData (
         /* [unique][in] */ FORMATETC* /*pformatetc*/,
         /* [unique][in] */ STGMEDIUM* /*pmedium*/,
         /* [in] */ BOOL /*fRelease*/);
-    
-    virtual HRESULT WINAPI DAdvise( 
+
+    virtual HRESULT WINAPI DAdvise(
         /* [in] */ FORMATETC* /*pformatetc*/,
         /* [in] */ DWORD /*advf*/,
         /* [unique][in] */ IAdviseSink* /*pAdvSink*/,
@@ -70,21 +70,21 @@ public:
         NYI();
         return E_NOTIMPL;
     }
-    
-    virtual HRESULT WINAPI DUnadvise( 
+
+    virtual HRESULT WINAPI DUnadvise(
         /* [in] */ DWORD /*dwConnection*/)
     {
         NYI();
         return E_NOTIMPL;
     }
-    
-    virtual HRESULT WINAPI EnumDAdvise( 
+
+    virtual HRESULT WINAPI EnumDAdvise(
         /* [out] */ IEnumSTATDATA** /*ppenumAdvise*/)
     {
         NYI();
         return E_NOTIMPL;
     }
-    HRESULT WINAPI EnumFormatEtc ( 
+    HRESULT WINAPI EnumFormatEtc (
     /* [in] */ DWORD dwDirection,
     /* [out] */ IEnumFORMATETC** ppenumFormatEtc);
 
@@ -137,7 +137,7 @@ HRESULT getShellUIObject(const DataContainer& data, REFIID iid, void** dataObjec
 
     LPITEMIDLIST il;
     ULONG eaten;
-    res = desktop->ParseDisplayName(NULL, NULL, 
+    res = desktop->ParseDisplayName(NULL, NULL,
             const_cast<LPOLESTR>(static_cast<const wchar_t*>(data.dir())), &eaten, &il, NULL);
     if (FAILED(res))
     {
@@ -156,7 +156,7 @@ HRESULT getShellUIObject(const DataContainer& data, REFIID iid, void** dataObjec
     int i;
     for (i = 0; i < static_cast<int>(data.fileCount()); i++)
     {
-        res = folder->ParseDisplayName(NULL, NULL, 
+        res = folder->ParseDisplayName(NULL, NULL,
                 const_cast<LPOLESTR>(static_cast<const wchar_t*>(data.files()[i])), &eaten, &files[i], NULL);
 
         if (FAILED(res))
@@ -172,7 +172,7 @@ HRESULT getShellUIObject(const DataContainer& data, REFIID iid, void** dataObjec
         }
     }
 
-    res = folder->GetUIObjectOf(NULL, static_cast<UINT>(data.fileCount()), 
+    res = folder->GetUIObjectOf(NULL, static_cast<UINT>(data.fileCount()),
             const_cast<LPCITEMIDLIST*>(files), iid, NULL, dataObject);
     for (i = 0; i < static_cast<int>(data.fileCount()); i++)
     {
@@ -203,7 +203,7 @@ HRESULT createDataObject(const DataContainer& data, IDataObject** dataObject, bo
     return res;
 }
 
-HRESULT DataObject::QueryInterface ( 
+HRESULT DataObject::QueryInterface (
         /* [in] */ REFIID riid,
         /* [iid_is][out] */ void **ppvObject)
 {
@@ -226,7 +226,7 @@ HRESULT DataObject::QueryInterface (
         return Unknown::QueryInterface(riid, ppvObject);
 }
 
-HRESULT DataObject::EnumFormatEtc ( 
+HRESULT DataObject::EnumFormatEtc (
     /* [in] */ DWORD dwDirection,
     /* [out] */ IEnumFORMATETC** ppenumFormatEtc)
 {
@@ -249,8 +249,8 @@ HRESULT DataObject::EnumFormatEtc (
                 {CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL},
                 /*{CF_SHELLIDLIST, NULL, DVASPECT_CONTENT, -1 , TYMED_HGLOBAL},*/
             };
-            *ppenumFormatEtc = 
-                static_cast<IEnumFORMATETC*>(new EnumFORMATETC(fmt, LENGTH(fmt), 
+            *ppenumFormatEtc =
+                static_cast<IEnumFORMATETC*>(new EnumFORMATETC(fmt, LENGTH(fmt),
                             _data.custom(), _data.customCount()));
             return S_OK;
         }
@@ -273,11 +273,11 @@ HRESULT DataObject::QueryGetCustomData(FORMATETC* fmt)
         return DV_E_LINDEX;
     else if (!(p->fmt.tymed & fmt->tymed))
         return DV_E_TYMED;
-    
+
     return S_OK;
 }
-    
-HRESULT DataObject::QueryGetData( 
+
+HRESULT DataObject::QueryGetData(
     /* [unique][in] */ FORMATETC* pformatetcIn)
 {
     if (IsBadReadPtr(pformatetcIn, sizeof(*pformatetcIn)))
@@ -309,7 +309,7 @@ HRESULT DataObject::QueryGetData(
         return DV_E_CLIPFORMAT;
 }
 
-HRESULT WINAPI DataObject::GetData( 
+HRESULT WINAPI DataObject::GetData(
         /* [unique][in] */ FORMATETC* pformatetcIn,
         /* [out] */ STGMEDIUM* pmedium)
 {
@@ -338,7 +338,7 @@ HRESULT WINAPI DataObject::GetData(
         if (pformatetcIn->cfFormat == CF_DRAGIMAGEBITS)
         {
             TRACE("Getting DragImageBits\n");
-        }     
+        }
         else if (pformatetcIn->cfFormat == CF_DRAGCONTEXT)
         {
             TRACE("Getting CF_DRAGCONTEXT\n");
@@ -353,8 +353,8 @@ HRESULT WINAPI DataObject::GetData(
 
     return DV_E_CLIPFORMAT;
 }
-        
-HRESULT WINAPI DataObject::SetData ( 
+
+HRESULT WINAPI DataObject::SetData (
     /* [unique][in] */ FORMATETC* pformatetc,
     /* [unique][in] */ STGMEDIUM* pmedium,
     /* [in] */ BOOL fRelease)
@@ -381,20 +381,23 @@ HRESULT WINAPI DataObject::SetData (
         if (pformatetc->cfFormat == CF_DRAGIMAGEBITS)
         {
             TRACE("Setting DragImageBits\n");
-        }     
+        }
         else if (pformatetc->cfFormat == CF_DRAGCONTEXT)
         {
             TRACE("Setting CF_DRAGCONTEXT\n");
         }
         CustomData* p = _data.findCustom(pformatetc->cfFormat, true);
-        p->fmt = *pformatetc;
+        if (p)
+        {
+            p->fmt = *pformatetc;
 
-        if (p->mdm.hGlobal)
-            ReleaseStgMedium(&p->mdm);
+            if (p->mdm.hGlobal)
+                ReleaseStgMedium(&p->mdm);
 
-        CopyMedium(p->mdm, *pmedium, pformatetc->cfFormat);
-        if (fRelease)
-            ReleaseStgMedium(pmedium);
+            CopyMedium(p->mdm, *pmedium, pformatetc->cfFormat);
+            if (fRelease)
+                ReleaseStgMedium(pmedium);
+        }
     }
 
     return S_OK;

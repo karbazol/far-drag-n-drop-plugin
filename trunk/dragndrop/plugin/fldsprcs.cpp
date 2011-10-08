@@ -30,22 +30,45 @@ HRESULT FileDescriptorProcessor::operator()(IDataObject* obj, DWORD*)
 
 HRESULT FileDescriptorProcessor::handleDir(FileDescriptorIterator& file)
 {
-    if (dir().ensureDirectory(file.name(), file.value()->dwFileAttributes))
+    FILEDESCRIPTOR* value = file.value();
+    if (!value)
+    {
+        return E_POINTER;
+    }
+
+    if (dir().ensureDirectory(file.name(), value->dwFileAttributes))
+    {
         return S_OK;
+    }
+
     return HRESULT_FROM_WIN32(GetLastError());
 }
-    
+
 HRESULT FileDescriptorProcessor::copyItem(IDataObject* obj, FileDescriptorIterator& file, int index)
 {
     if (!file.name())
+    {
         return E_FAIL;
+    }
 
-    if (file.value()->dwFlags & FD_ATTRIBUTES
-        && file.value()->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    if (!obj)
+    {
+        return E_INVALIDARG;
+    }
+
+    FILEDESCRIPTOR* value = file.value();
+
+    if (!value)
+    {
+        return E_POINTER;
+    }
+
+    if (value->dwFlags & FD_ATTRIBUTES
+        && value->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
     {
         return handleDir(file);
     }
-    
+
     TRACE("Copying %S file\n", file.name());
     FORMATETC fmt = {CF_FILECONTENTS, 0, DVASPECT_CONTENT, (LONG)index, (DWORD)-1};
     STGMEDIUM stg = {0};
@@ -94,18 +117,25 @@ HRESULT FileDescriptorProcessor::updateItemTimes(FileDescriptorIterator& file)
 {
     HRESULT hr = S_OK;
 
+    FILEDESCRIPTOR* value = file.value();
+
+    if (!value)
+    {
+        return E_POINTER;
+    }
+
     FILETIME *c(0),*a(0),*m(0);
-    if (file.value()->dwFlags & FD_CREATETIME)
+    if (value->dwFlags & FD_CREATETIME)
     {
-        c = &file.value()->ftCreationTime;
+        c = &value->ftCreationTime;
     }
-    if (file.value()->dwFlags & FD_ACCESSTIME)
+    if (value->dwFlags & FD_ACCESSTIME)
     {
-        a = &file.value()->ftLastAccessTime;
+        a = &value->ftLastAccessTime;
     }
-    if (file.value()->dwFlags & FD_WRITESTIME)
+    if (value->dwFlags & FD_WRITESTIME)
     {
-        m = &file.value()->ftLastWriteTime;
+        m = &value->ftLastWriteTime;
     }
     if (c || a || m)
     {
@@ -203,10 +233,20 @@ HRESULT FileDescriptorProcessor::handle(IStream* stm, FileDescriptorIterator& fi
         // is not fatal. We can try to determine the value
         // using FILDESCRIPTOR::nFileSize(Low|High) fields.
         // If the fields are not filled this is the problem.
-        if (hr == E_NOTIMPL && (file.value()->dwFlags & FD_FILESIZE))
+        if (hr == E_NOTIMPL)
         {
-            size.LowPart = file.value()->nFileSizeLow;
-            size.HighPart = file.value()->nFileSizeHigh;
+            FILEDESCRIPTOR* value = file.value();
+
+            if (!value)
+            {
+                return E_POINTER;
+            }
+
+            if ((value->dwFlags & FD_FILESIZE))
+            {
+                size.LowPart = value->nFileSizeLow;
+                size.HighPart = value->nFileSizeHigh;
+            }
         }
         else
         {

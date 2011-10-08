@@ -34,7 +34,15 @@ InputProcessor* InputProcessor::instance()
     if (!pInst)
     {
         pInst = new InputProcessor();
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(killInputProcessor), pInst);
+        if (pInst)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(
+                    reinterpret_cast<PdllCallBack>(killInputProcessor), pInst);
+            }
+        }
     }
 
     return pInst;
@@ -95,7 +103,7 @@ DWORD InputProcessor::readBuffer(PINPUT_RECORD buffer, DWORD records, bool unico
 {
     DWORD res = static_cast<DWORD>(min(records, _userSize));
     memmove(buffer, _buffer, res*sizeof(*buffer));
-    
+
     if (!unicode)
     {
         DWORD cp = GetConsoleCP();
@@ -103,7 +111,7 @@ DWORD InputProcessor::readBuffer(PINPUT_RECORD buffer, DWORD records, bool unico
         for (DWORD i = 0; i < res; i++)
         {
             buffer[i] = _buffer[i];
-            
+
             if (buffer[i].EventType == KEY_EVENT)
             {
                 WideCharToMultiByte(cp, 0, &buffer[i].Event.KeyEvent.uChar.UnicodeChar, 1,
@@ -216,8 +224,9 @@ bool InputProcessor::checkKeyBoard(INPUT_RECORD& record)
 {
     if (record.EventType != MOUSE_EVENT)
         return true;
-    if ((record.Event.MouseEvent.dwControlKeyState & Config::instance()->checkKey()) 
-            != Config::instance()->checkKey())
+    Config* config = Config::instance();
+    if (config && (record.Event.MouseEvent.dwControlKeyState & config->checkKey())
+            != config->checkKey())
         return true;
     return false;
 }
@@ -294,7 +303,6 @@ void InputProcessor::processBuffer()
     if (_userSize)
         return;
 
-    /** See ToolWindow::prepareForDragging for refernce. */
     for (;_userSize < _buffSize; _userSize++)
     {
         if (checkEvent(_buffer[_userSize])||
@@ -304,8 +312,8 @@ void InputProcessor::processBuffer()
             )
         {
             continue;
-        }    
-        
+        }
+
         if (checkMouseButtons(_buffer[_userSize]))
         {
             _userSize++;
@@ -349,13 +357,24 @@ BOOL InputProcessor::ProcessConsoleInput(HANDLE console, PINPUT_RECORD buffer,
         bool isUnicode, bool removeFromInput)
 {
     // Process messages in asynchronous queue
-    MainThread::instance()->processMessage(false);
+    MainThread* mainThread = MainThread::instance();
+    if (mainThread)
+    {
+        mainThread->processMessage(false);
+    }
 
-    if (!Dragging::instance()->isReadyForDragging())
+    Dragging* dragging = Dragging::instance();
+    InputProcessor* processor = InputProcessor::instance();
+
+    if (!processor || !dragging || !dragging->isReadyForDragging())
     {
         return ProcessDirectInput(console, buffer, buffLength, readCount, isUnicode, removeFromInput);
     }
 
+    // We do not validate input pointers before call to ProcessDirectInput
+    // because the function calls Read/PeekConsoleInput system function
+    // which perform the same validations. We only need to check buffers only if
+    // we process the input our selves
     if (IsBadWritePtr(readCount, sizeof(*readCount))||
         IsBadWritePtr(buffer, buffLength*sizeof(*buffer)))
     {
@@ -363,12 +382,13 @@ BOOL InputProcessor::ProcessConsoleInput(HANDLE console, PINPUT_RECORD buffer,
         return FALSE;
     }
 
-    InputProcessor* processor = InputProcessor::instance();
-
+    ASSERT(processor);
     if (!processor->readFromSystem(console, removeFromInput))
+    {
         return FALSE;
+    }
 
-    // Analyze the buffer contents and if it contains
+    // Analyze the buffer content and if it contains
     // appropriate keyboard/mouse states sequence start dragging
     processor->processBuffer();
 
