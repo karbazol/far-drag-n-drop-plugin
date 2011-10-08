@@ -201,5 +201,7 @@ HWND HolderApi::getActiveDnd(HWND hFar)
             SendMessage(res, WM_HLDR_GETDNDWND, reinterpret_cast<WPARAM>(hFar), 0));
 }
 
+bool HolderApi::isLeftButtonDown() const {return WaitForSingleObject(_leftEvent, 0) == WAIT_OBJECT_0;}
+bool HolderApi::isRightButtonDown()const {return WaitForSingleObject(_rightEvent, 0) == WAIT_OBJECT_0;}
 // vim: set et ts=4 ai :
 

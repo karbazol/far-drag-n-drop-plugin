@@ -5,6 +5,7 @@ env.PartVersion('2.0.0')
 
 env.DependsOn([
     Component('dll'),
+    Component('hook'),
 ])
 
 env.Append(
