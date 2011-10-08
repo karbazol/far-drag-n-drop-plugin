@@ -20,11 +20,17 @@ static void InitDialogItems(
        int ItemsNumber
 )
 {
-    int I;      
+    int I;
     const struct InitDialogItem *PInit=Init;
     struct FarDialogItem *PItem=Item;
+    if (!PInit || !PItem)
+    {
+        return;
+    }
+
     for (I=0; I < ItemsNumber; I++,PItem++,PInit++)
     {
+        memset(PItem, 0, sizeof(*PItem));
         PItem->Type=PInit->Type;
         PItem->X1=PInit->X1;
         PItem->Y1=PInit->Y1;
@@ -35,10 +41,10 @@ static void InitDialogItems(
         PItem->Flags=PInit->Flags;
         PItem->DefaultButton=PInit->DefaultButton;
         if ((unsigned int)PInit->Data < 2000)
-            WideCharToMultiByte(CP_OEMCP, 0, GetMsg((int)PInit->Data), -1, PItem->Data, 
+            WideCharToMultiByte(CP_OEMCP, 0, GetMsg((int)PInit->Data), -1, PItem->Data,
                     LENGTH(PItem->Data), 0, 0);
         else
-            WideCharToMultiByte(CP_OEMCP, 0, PInit->Data, -1, PItem->Data, 
+            WideCharToMultiByte(CP_OEMCP, 0, PInit->Data, -1, PItem->Data,
                     LENGTH(PItem->Data), 0, 0);
     }
 }
@@ -59,11 +65,11 @@ int FarDialog::run(void*& farItems)
 void FarDialog::restoreItems()
 {
     InitDialogItem* initItems = items();
-    FarDialogItem item;
     if (initItems)
     {
         for (int i = 0; i < itemsCount(); i++)
         {
+            FarDialogItem item = {0};
             if (sendMessage(DM_GETDLGITEM, i, reinterpret_cast<LONG_PTR>(&item)))
             {
                 initItems[i].Selected = item.Selected;

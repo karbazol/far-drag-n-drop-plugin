@@ -14,7 +14,14 @@ DropProcessor* DropProcessor::instance()
     if (!p)
     {
         p = new DropProcessor;
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+        if (p)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+            }
+        }
     }
 
     return p;
@@ -23,7 +30,9 @@ DropProcessor* DropProcessor::instance()
 void DropProcessor::kill(DropProcessor* p)
 {
     if (p)
+    {
         delete p;
+    }
 }
 
 HRESULT DropProcessor::processDrop(IDataObject* obj, DWORD* effect, const wchar_t* destDir)
@@ -31,7 +40,7 @@ HRESULT DropProcessor::processDrop(IDataObject* obj, DWORD* effect, const wchar_
     HRESULT hr = handleAsync(obj, effect, destDir);
     if (SUCCEEDED(hr))
         return hr;
-    
+
     FormatProcessor* process = FormatProcessor::create(obj, destDir);
     if (process)
     {
@@ -39,7 +48,7 @@ HRESULT DropProcessor::processDrop(IDataObject* obj, DWORD* effect, const wchar_
         delete process;
         return hr;
     }
-    
+
     return E_INVALIDARG;
 }
 

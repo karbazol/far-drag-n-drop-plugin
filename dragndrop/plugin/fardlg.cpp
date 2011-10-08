@@ -17,14 +17,23 @@ LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2);
 FarDialog::FarDialog(): _hwnd(0), _running(0)
 {
     _running = CreateEvent(NULL, TRUE, TRUE, NULL);
-    RunningDialogs::instance()->registerDialog(this);
+    RunningDialogs* runningDialogs = RunningDialogs::instance();
+    if (runningDialogs)
+    {
+        runningDialogs->registerDialog(this);
+    }
 }
 
 FarDialog::~FarDialog()
 {
     hide();
     WaitForSingleObject(_running, INFINITE);
-    RunningDialogs::instance()->unregisterDialog(this);
+    CloseHandle(_running);
+    RunningDialogs* runningDialogs = RunningDialogs::instance();
+    if (runningDialogs)
+    {
+        runningDialogs->unregisterDialog(this);
+    }
 
     TRACE("Leaving FarDialog::~FarDialog\n");
 }
@@ -41,7 +50,8 @@ InitDialogItem* FarDialog::items()
 
 LONG_PTR FarDialog::dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2)
 {
-    FarDialog* This;
+    FarDialog* This = 0;
+    RunningDialogs* runningDialogs = RunningDialogs::instance();
     if (msg == DN_INITDIALOG)
     {
         This = reinterpret_cast<FarDialog*>(param2);
@@ -49,18 +59,28 @@ LONG_PTR FarDialog::dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2)
         {
             This->_hwnd = dlg;
             This->sendMessage(DM_SETDLGDATA, 0, (LONG_PTR)This);
-            RunningDialogs::instance()->notifyDialog(This, true);
+            if (runningDialogs)
+            {
+                runningDialogs->notifyDialog(This, true);
+            }
         }
     }
     else
     {
-        This = (FarDialog*)RunningDialogs::instance()->sendSafeMessage(dlg, DM_GETDLGDATA, 0, 0);
-        if (This && !RunningDialogs::instance()->lockDialog(This))
-            This = 0;
+        if (runningDialogs)
+        {
+            This = (FarDialog*)runningDialogs->sendSafeMessage(dlg, DM_GETDLGDATA, 0, 0);
+            if (This && !runningDialogs->lockDialog(This))
+            {
+                This = 0;
+            }
+        }
     }
 
     if (!This)
+    {
         return DefDlgProc(dlg, msg, param1, param2);
+    }
 
     LONG_PTR res = This->handle(msg, param1, param2);
 
@@ -68,11 +88,18 @@ LONG_PTR FarDialog::dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2)
     {
         This->restoreItems();
         //This->_hwnd = 0;
-        RunningDialogs::instance()->notifyDialog(This, false);
+        if (runningDialogs)
+        {
+            runningDialogs->notifyDialog(This, false);
+        }
 
         return res;
     }
-    RunningDialogs::instance()->unlockDialog(This);
+
+    if (runningDialogs)
+    {
+        runningDialogs->unlockDialog(This);
+    }
 
     return res;
 }
@@ -112,14 +139,15 @@ int FarDialog::hide()
     int res = static_cast<int>(sendMessage(DM_CLOSE, 0, 0));
 
     _hwnd = 0;
-    
+
     return res;
 }
 
 int FarDialog::doShow()
 {
     int res = -1;
-    if (RunningDialogs::instance()->lockDialog(this))
+    RunningDialogs* runningDialogs = RunningDialogs::instance();
+    if (runningDialogs && runningDialogs->lockDialog(this))
     {
         CONSOLE_SCREEN_BUFFER_INFO consoleInfo = {0};
         GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &consoleInfo);
@@ -132,11 +160,11 @@ int FarDialog::doShow()
         freeFarItems(farItems);
         releaseItems();
 
-        RunningDialogs::instance()->unlockDialog(this);
+        runningDialogs->unlockDialog(this);
     }
 
     SetEvent(_running);
-                                                  
+
     return res;
 }
 
@@ -163,12 +191,20 @@ public:
 
 int FarDialog::show(bool modal)
 {
+    MainThread* mainThread = MainThread::instance();
+    if (!mainThread)
+    {
+        return -1;
+    }
+
     ResetEvent(_running);
     DialogShower* d = new DialogShower(this);
     if (modal)
-        return reinterpret_cast<int>(MainThread::instance()->callIt(d));
+    {
+        return reinterpret_cast<int>(mainThread->callIt(d));
+    }
 
-    MainThread::instance()->callItAsync(d);
+    mainThread->callItAsync(d);
     return -1;
 }
 
@@ -186,7 +222,9 @@ int FarDialog::right()
 {
     InitDialogItem* pitems = items();
     if (pitems)
+    {
         return pitems->X2 + 4;
+    }
     return 0;
 }
 
@@ -194,7 +232,9 @@ int FarDialog::bottom()
 {
     InitDialogItem* pitems = items();
     if (pitems)
+    {
         return pitems->Y2+2;
+    }
     return 0;
 }
 
@@ -210,12 +250,22 @@ DWORD FarDialog::flags()
 
 LONG_PTR FarDialog::sendMessage(int msg, int param1, LONG_PTR param2)
 {
-    return RunningDialogs::instance()->sendMessage(this, msg, param1, param2);
+    RunningDialogs* runningDialogs = RunningDialogs::instance();
+    if (runningDialogs)
+    {
+        return runningDialogs->sendMessage(this, msg, param1, param2);
+    }
+
+    return 0;
 }
 
 void FarDialog::postMessage(int msg, int param1, LONG_PTR param2)
 {
-    RunningDialogs::instance()->postMessage(this, msg, param1, param2);
+    RunningDialogs* runningDialogs = RunningDialogs::instance();
+    if (runningDialogs)
+    {
+        runningDialogs->postMessage(this, msg, param1, param2);
+    }
 }
 
 /**
@@ -283,12 +333,23 @@ int FarDialog::checkState(int id)
 
 bool FarDialog::lock()
 {
-    return RunningDialogs::instance()->lockDialog(this);
+    RunningDialogs* runningDialogs = RunningDialogs::instance();
+
+    if (!runningDialogs)
+    {
+        return false;
+    }
+
+    return runningDialogs->lockDialog(this);
 }
 
 void FarDialog::unlock()
 {
-    RunningDialogs::instance()->unlockDialog(this);
+    RunningDialogs* runningDialogs = RunningDialogs::instance();
+    if (runningDialogs)
+    {
+        runningDialogs->unlockDialog(this);
+    }
 }
 
 // vim: set et ts=4 ai :

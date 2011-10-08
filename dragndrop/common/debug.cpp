@@ -69,7 +69,10 @@ static DebugBuffs* GetDbgThreadBuff()
     if (!res)
     {
         res = new DebugBuffs;
-        TlsSetValue(tlsBuffIdx, res);
+        if (res)
+        {
+            TlsSetValue(tlsBuffIdx, res);
+        }
     }
     return res;
 }
@@ -82,7 +85,9 @@ void FreeDbgThreadBuff()
 {
     DebugBuffs* p = reinterpret_cast<DebugBuffs*>(TlsGetValue(tlsBuffIdx));
     if (p)
+    {
         delete GetDbgThreadBuff();
+    }
     TlsSetValue(tlsBuffIdx, 0);
 }
 

@@ -1,7 +1,15 @@
+#include "hldrapi.h"
 #include "hook.h"
 #include "utils.h"
 #include "dll.h"
 #include "thrdfltr.h"
+#include "mystring.h"
+
+void Hook::makeSureHolderRun(const wchar_t* holderMutex, const wchar_t* holderExecutable)
+{
+    ::makeSureHolderRun(holderMutex, holderExecutable);
+}
+
 
 Hook::~Hook()
 {
@@ -14,9 +22,17 @@ Hook* Hook::instance()
     if (!p)
     {
         p = new Hook();
-        p->_tlsId = TlsAlloc();
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
-        Dll::instance()->registerThreadEndCallBack(reinterpret_cast<PdllCallBack>(&thrdEnd), p);
+        if (p)
+        {
+            p->_tlsId = TlsAlloc();
+
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+                dll->registerThreadEndCallBack(reinterpret_cast<PdllCallBack>(&thrdEnd), p);
+            }
+        }
     }
 
     return p;
@@ -60,7 +76,9 @@ void Hook::kill(Hook* p)
 bool Hook::setGetMsgProcHook()
 {
     if (_hook)
+    {
         return false;
+    }
 
     _hook = SetWindowsHookEx(WH_GETMESSAGE, &getMsgProc, 
             (HINSTANCE)getMyModuleBaseAddress(), 0);
@@ -100,7 +118,15 @@ LRESULT Hook::getMsgProc(int code, WPARAM wParam, LPARAM lParam)
 {
     if (HC_ACTION == code && wParam == PM_REMOVE)
     {
-        instance()->filter()->handle(*reinterpret_cast<MSG*>(lParam));
+        Hook* This = instance();
+        if (This)
+        {
+            ThreadFilter* filter = This->filter();
+            if (filter)
+            {
+                filter->handle(*reinterpret_cast<MSG*>(lParam));
+            }
+        }
     }
     return CallNextHookEx((HHOOK)-1, code, wParam, lParam);
 }

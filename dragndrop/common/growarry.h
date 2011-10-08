@@ -8,6 +8,8 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__GROWARRY_H__
 #define __KARBAZOL_DRAGNDROP_2_0__GROWARRY_H__
 
+#include <utils.h>
+
 /**
  * Class represants container of T type.
  */
@@ -18,12 +20,17 @@ private:
     T* _values;
     size_t _count;
     size_t _capacity;
-    void grow()
+    bool grow()
     {
         if (_count == _capacity)
         {
             _capacity += 16;
             T* newValues = new T[_capacity];
+
+            if (!newValues)
+            {
+                return false;
+            }
 
             size_t i;
             for (i = 0; i < _count; i++)
@@ -32,12 +39,15 @@ private:
             }
 
             if (_values)
+            {
                 delete [] _values;
+            }
 
             _values = newValues;
         }
 
         _count++;
+        return true;
     }
 public:
     /**
@@ -52,10 +62,17 @@ public:
         if (_capacity)
         {
             _values = new T[_capacity];
-            size_t i;
-            for (i = 0; i < _count; i++)
+            if (_values)
             {
-                _values[i] = r._values[i];
+                size_t i;
+                for (i = 0; i < _count; i++)
+                {
+                    _values[i] = r._values[i];
+                }
+            }
+            else
+            {
+                _count = _capacity = 0;
             }
         }
     }
@@ -68,12 +85,35 @@ public:
         {
             _capacity = r._capacity;
             if (_values)
+            {
                 delete [] _values;
 
-            _values = new T[_capacity];
+                _values = new T[_capacity];
+
+                if (!_values)
+                {
+                    _capacity = _count = 0;
+                    return *this;
+                }
+            }
+        }
+
+        if (!r._values)
+        {
+            if (_values)
+            {
+                delete [] _values;
+                _values = 0;
+            }
+
+            _count = 0;
+            return *this;
         }
 
         _count = r._count;
+        ASSERT(_capacity >= r._capacity);
+        ASSERT(_values);
+
         size_t i;
         for (i = 0; i < _count; i++)
         {
@@ -86,7 +126,10 @@ public:
         if (_values)
         {
             delete [] _values;
+            _values = 0;
         }
+
+        _count = _capacity = 0;
     }
     /**
      * Returns number of elements stored in the container.
@@ -99,16 +142,23 @@ public:
     /**
      * Allows to modify a size of an array
      */
-    void size(size_t value)
+    size_t size(size_t value)
     {
         while (value > size())
-            grow();
+        {
+            if (!grow())
+            {
+                return _count;
+            }
+        }
+
         size_t i;
         for (i = value; i < size(); i++)
         {
             _values[i] = T();
         }
         _count = value;
+        return _count;
     }
 
     /**
@@ -156,7 +206,11 @@ public:
     T& append(const T& item)
     {
         size_t i = _count;
-        grow();
+        if (!grow())
+        {
+            /** @todo raise "Out of memory" exception */
+            return _values[0];
+        }
         _values[i] = item;
         return _values[i];
     }

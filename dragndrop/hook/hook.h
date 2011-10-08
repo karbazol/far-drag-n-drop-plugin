@@ -2,6 +2,7 @@
 #define __KARBAZOL_DRAGNDROP_2_0__HOOK_H__
 
 #include <windows.h>
+#include "hldrdefs.h"
 
 #ifdef _HOOK_EXPORTS
 #define _HOOK_SPEC __declspec(dllexport)
@@ -41,7 +42,14 @@ public:
      * Removes system-wide GetMsgProc hook.
      */
     virtual bool resetGetMsgProcHook();
+
+    /**
+     * Function used to run specified holder_XXX.dnd process synchronized with specific mutex.
+     */
+    static _HOOK_SPEC void makeSureHolderRun(const wchar_t* holderMutex = HOLDER_MUTEX,
+            const wchar_t* holderExecutable = HOLDER_EXECUTABLE);
 };
+
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__HOOK_H__
 

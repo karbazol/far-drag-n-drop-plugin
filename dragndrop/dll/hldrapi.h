@@ -13,7 +13,7 @@
 /**
  * @brief Holder API
  *
- * Class provieds entry points for Holder API
+ * Class provides entry points for Holder API
  */
 class HolderApi
 {
@@ -41,5 +41,7 @@ public:
     inline bool isRightButtonDown()const {return WaitForSingleObject(_rightEvent, 0) == WAIT_OBJECT_0;}
 };
 
+void makeSureHolderRun(const wchar_t* holderMutex,
+        const wchar_t* holderExecutable);
 #endif // __KARBAZOL_DRAGNDROP_2_0__HLDRAPI_H__
 

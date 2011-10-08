@@ -5,9 +5,9 @@
 #include "dll.h"
 #include "mystring.h"
 
-static bool checkMutex()
+static bool checkMutex(const wchar_t* holderMutex)
 {
-    HANDLE mutex = OpenMutex(MUTEX_MODIFY_STATE, FALSE, HOLDER_MUTEX);
+    HANDLE mutex = OpenMutex(MUTEX_MODIFY_STATE, FALSE, holderMutex);
     if (mutex)
     {
         CloseHandle(mutex);
@@ -15,20 +15,22 @@ static bool checkMutex()
     }
 
     if (GetLastError() != ERROR_FILE_NOT_FOUND)
+    {
         return true;
+    }
 
     return false;
 }
 
-static MyStringW getHolderFileName()
+static MyStringW getHolderFileName(const wchar_t* holderExecutable)
 {
     size_t chars = MAX_PATH;
     MyStringW res;
     res.length(chars);
 
-    while (chars == 
+    while (chars ==
             GetModuleFileName(
-                reinterpret_cast<HMODULE>(getMyModuleBaseAddress()), res, 
+                reinterpret_cast<HMODULE>(getMyModuleBaseAddress()), res,
                 static_cast<DWORD>(chars)))
     {
         chars += MAX_PATH;
@@ -46,14 +48,14 @@ static MyStringW getHolderFileName()
 
     res.length(file - res);
 
-    res /= L"holder.dnd";
+    res /= holderExecutable;
 
     return res;
 }
 
-static bool runHolder()
+static bool runHolder(const wchar_t* holderExecutable)
 {
-    MyStringW holder = getHolderFileName();
+    MyStringW holder = getHolderFileName(holderExecutable);
 
     if (!holder)
         return false;
@@ -82,15 +84,17 @@ static bool runHolder()
     return res;
 }
 
-static void makeSureHolderRun()
+void makeSureHolderRun(const wchar_t* holderMutex, const wchar_t* holderExecutable)
 {
-    if (!checkMutex())
-        runHolder();
+    if (!checkMutex(holderMutex))
+    {
+        runHolder(holderExecutable);
+    }
 }
 
 HolderApi::HolderApi()
 {
-    makeSureHolderRun();
+    makeSureHolderRun(HOLDER_MUTEX, HOLDER_EXECUTABLE);
     _leftEvent = OpenEvent(SYNCHRONIZE, FALSE, HOLDER_LEFT_EVENT);
     _rightEvent = OpenEvent(SYNCHRONIZE, FALSE, HOLDER_RIGHT_EVENT);
 }
@@ -108,7 +112,14 @@ HolderApi* HolderApi::instance()
     if (!p)
     {
         p = new HolderApi;
-        Dll::instance()->registerProcessEndCallBack((PdllCallBack)&kill, p);
+        if (p)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack((PdllCallBack)&kill, p);
+            }
+        }
     }
 
     return p;
@@ -128,7 +139,7 @@ HWND HolderApi::window()
     if (HOLDER_YES == SendMessage(hldr, WM_ARE_YOU_HOLDER, 0, 0))
         return hldr;
 
-    makeSureHolderRun();
+    makeSureHolderRun(HOLDER_MUTEX, HOLDER_EXECUTABLE);
 
     hldr = FindWindow(HOLDER_CLASS_NAME, NULL);
     if (HOLDER_YES != SendMessage(hldr, WM_ARE_YOU_HOLDER, 0, 0))
@@ -141,7 +152,7 @@ LRESULT HolderApi::windowsCreated(HWND f, HWND dnd)
 {
     HWND hldr = window();
     if (hldr)
-        return SendMessage(hldr, WM_FARWINDOWSCREATED, 
+        return SendMessage(hldr, WM_FARWINDOWSCREATED,
                 reinterpret_cast<WPARAM>(f), reinterpret_cast<LPARAM>(dnd));
     return HOLDER_NOT;
 }
@@ -173,7 +184,7 @@ HWND HolderApi::isFarWindow(HWND hwnd)
     // should find the window which has no parent and it will be far window.
     //
     for(HWND hParent; NULL != (hParent = GetParent(hwnd)); hwnd = hParent);
-    
+
     if (HOLDER_YES == SendMessage(hldr, WM_HLDR_ISFARWND, reinterpret_cast<WPARAM>(hwnd), 0))
         return hwnd;
 

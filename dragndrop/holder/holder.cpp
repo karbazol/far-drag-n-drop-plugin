@@ -3,7 +3,7 @@
 #include "dndcmnct.h"
 #include "hook.h"
 
-Holder::Holder(): _window(), _mutex(0), _fars()
+Holder::Holder(): _window(), _mutex(0), _fars(), _hookIsSet(false)
 {
     ASSERT(_instance == 0);
     _instance = this;
@@ -117,7 +117,7 @@ bool Holder::setupCurDir()
     WCHAR *currDir = new WCHAR[buff];
 
     bool res = false;
-    if (ExpandEnvironmentStrings(L"%SystemRoot%", currDir, 
+    if (ExpandEnvironmentStrings(L"%SystemRoot%", currDir,
                 static_cast<DWORD>(buff)))
     {
         res = SetCurrentDirectory(currDir)?true:false;
@@ -139,7 +139,7 @@ bool Holder::createMutex()
     };
 
     _mutex = CreateMutex(&sec, TRUE, HOLDER_MUTEX);
-    
+
     freeEveryOneDescriptor(sec.lpSecurityDescriptor);
 
     if (!_mutex)
@@ -153,38 +153,35 @@ bool Holder::createMutex()
 
 void Holder::registerDND(HWND hFar, HWND dnd)
 {
-    FarItem* item = findFar(hFar, true);
+    size_t dndIndex = 0;
+    FarItem* item = findDnd(dnd, hFar, &dndIndex);
 
-    item->hwnd(hFar);
-    item->dnds().append(dnd);
+    if (!item)
+    {
+        item = &_fars.append(hFar);
+    }
+
+    ASSERT(item && item->hwnd() == hFar);
+
+    if (item)
+    {
+        item->hwnd(hFar);
+        item->dnds().append(dnd);
+    }
 }
 
 void Holder::unregisterDND(HWND dnd)
 {
-    size_t i;
-    for (i = 0 ; i < _fars.size(); i++)
+    size_t dndIndex;
+    FarItem* item = findDnd(dnd, NULL, &dndIndex);
+
+    if (item)
     {
-        while (!IsWindow(_fars[i].hwnd()))
+        ASSERT(dndIndex < item->dnds().size());
+
+        if (!item->dnds().deleteItem(dndIndex))
         {
-            if (i >= _fars.deleteItem(i))
-                return;
-        }
-
-        size_t j;
-
-        for (j = 0; j < _fars[i].dnds().size(); j++)
-        {
-            while (!IsWindow(_fars[i].dnds()[j])||dnd == _fars[i].dnds()[j])
-            {
-                if (j >= _fars[i].dnds().deleteItem(j))
-                    break;
-            }
-
-            if (!_fars[i].dnds().size())
-            {
-                if (i >= _fars.deleteItem(i))
-                    return;
-            }
+            _fars.deleteItem(item - &_fars[0]);
         }
     }
 }
@@ -196,7 +193,9 @@ FarItem* Holder::findFar(HWND hFar, bool append)
     for (i = 0; i < _fars.size(); i++)
     {
         if (_fars[i].hwnd() == hFar)
+        {
             return &_fars[i];
+        }
     }
 
     if (append)
@@ -207,9 +206,43 @@ FarItem* Holder::findFar(HWND hFar, bool append)
     return NULL;
 }
 
-FarItem* Holder::findDnd(HWND dnd, size_t* dndIndex)
+FarItem* Holder::findDnd(HWND dnd, HWND hFar, size_t* dndIndex)
 {
     size_t i;
+
+    if (dndIndex)
+    {
+        *dndIndex = 0;
+    }
+
+    if (hFar)
+    {
+        FarItem* item = findFar(hFar, false);
+
+        if (item)
+        {
+            for (i = 0; i <item->dnds().size(); i++)
+            {
+                if (item->dnds()[i] == dnd)
+                {
+                    if (dndIndex)
+                    {
+                        *dndIndex = i;
+                    }
+
+                    return item;
+                }
+            }
+
+            if (dndIndex)
+            {
+                *dndIndex = i;
+                return item;
+            }
+        }
+
+        return NULL;
+    }
 
     for (i = 0; i < _fars.size(); i++)
     {
@@ -219,7 +252,9 @@ FarItem* Holder::findDnd(HWND dnd, size_t* dndIndex)
             if (_fars[i].dnds()[j] == dnd)
             {
                 if (dndIndex)
+                {
                     *dndIndex = j;
+                }
                 return &_fars[i];
             }
         }
@@ -232,14 +267,28 @@ bool Holder::setHook(bool value)
 {
     if (value)
     {
-        TRACE("Setting the hook\n");
-        return Hook::instance()->setGetMsgProcHook();
+        if (!_hookIsSet)
+        {
+            TRACE("Setting the hook\n");
+            _hookIsSet = Hook::instance()->setGetMsgProcHook();
+
+            return _hookIsSet;
+        }
+
     }
     else
     {
-        TRACE("Removing the hook\n");
-        return Hook::instance()->resetGetMsgProcHook();
+        if (_hookIsSet)
+        {
+            TRACE("Removing the hook\n");
+            _hookIsSet = !Hook::instance()->resetGetMsgProcHook();
+
+            return !_hookIsSet;
+        }
+
     }
+
+    return false;
 }
 
 bool Holder::isFarWindow(HWND hwnd)
@@ -251,12 +300,16 @@ HWND Holder::getActiveDnd(HWND hFar)
 {
     FarItem* f = findFar(hFar);
     if (!f)
+    {
         return 0;
+    }
     size_t i;
     for (i = 0; i < f->dnds().size(); i++)
     {
         if (isDndWindow(f->dnds()[i]))
+        {
             return f->dnds()[i];
+        }
     }
     return 0;
 }

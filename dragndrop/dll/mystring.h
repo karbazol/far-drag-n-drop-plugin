@@ -120,7 +120,9 @@ StringType rstrip(const StringType& s)
 template<class StringType>
 StringType strip(const StringType& s)
 {
-    return lstrip<StringType>(rstrip<StringType>(s));
+    StringType tmp = rstrip<StringType>(s);
+    StringType res = lstrip<StringType>(tmp);
+    return res;
 }
 
 template<class StringType>
@@ -258,13 +260,26 @@ private:
     {
         size_t totalLen = sizeof(StringData) + len * sizeof(CharType);
 
+        /*
+         * The following case is impossible I guess, but
+         * Intel Source Checkers thinks it is possible because integer overflow.
+         */
+        if (totalLen < sizeof(StringData))
+        {
+            len = 0;
+            totalLen = sizeof(StringData);
+        }
+
         StringData* res = reinterpret_cast<StringData*>(::malloc(totalLen));
 
-        res->cookie = MYSTRING_COOKIE;
-        res->refCount = 1;
-        res->allocated = len;
-        res->len = 0;
-        res->data[0] = 0;
+        if (res)
+        {
+            res->cookie = MYSTRING_COOKIE;
+            res->refCount = 1;
+            res->allocated = len;
+            res->len = 0;
+            res->data[0] = 0;
+        }
 
         return res;
     }
@@ -276,8 +291,11 @@ private:
         if (len)
         {
             res = newData(len);
-            Traits::strcpy(res->data, s);
-            res->len = len;
+            if (res)
+            {
+                Traits::strcpy(res->data, s);
+                res->len = len;
+            }
         }
         else
         {
@@ -300,6 +318,10 @@ private:
             {
                 size_t totalLen = sizeof(StringData) + newLen * sizeof(CharType);
                 p = reinterpret_cast<StringData*>(::realloc(p, totalLen));
+                if (!p)
+                {
+                    return p;
+                }
                 p->allocated = newLen;
             }
 
@@ -336,7 +358,7 @@ private:
                 old->refCount--;
                 data = newData(data->allocated);
 
-                if (old->len)
+                if (data && old->len)
                 {
                     ::memmove(data->data, old->data, old->len*sizeof(CharType));
                     data->len = old->len;
@@ -551,8 +573,11 @@ public:
             data = reallocData(data, value);
         }
 
-        data->len = value;
-        data->data[value] = 0;
+        if (data)
+        {
+            data->len = value;
+            data->data[value] = 0;
+        }
     }
 };
 

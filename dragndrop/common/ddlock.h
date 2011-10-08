@@ -8,8 +8,6 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DDLOCK_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DDLOCK_H__
 
-#include <windows.h>
-
 /**
  * General lock interface
  */
@@ -28,14 +26,23 @@ public:
 class CriticalSection : public Lock
 {
 private:
-    CRITICAL_SECTION _lock;
+    Lock* _lock;
+    static Lock* create();
+    static void destroy(Lock* lock);
 public:
-    CriticalSection();
-    ~CriticalSection();
+    CriticalSection(): _lock(0)
+    {
+        _lock = create();
+    }
+    ~CriticalSection()
+    {
+        destroy(_lock);
+        _lock = 0;
+    }
 
-    void lock();
-    bool tryLock();
-    void unlock();
+    void lock() {_lock?_lock->lock():(void)0;}
+    bool tryLock() {return _lock?_lock->tryLock():false;}
+    void unlock() {_lock?_lock->unlock():(void)0;}
 };
 
 /**
@@ -49,12 +56,16 @@ public:
     ScopeLock(Lock* lock): _lock(lock)
     {
         if (_lock)
+        {
             _lock->lock();
+        }
     }
     ~ScopeLock()
     {
         if (_lock)
+        {
             _lock->unlock();
+        }
     }
 };
 

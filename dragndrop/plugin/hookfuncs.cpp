@@ -35,8 +35,13 @@ BOOL WINAPI MyGetNumberOfConsoleInputEvents(
         SetLastError(ERROR_INVALID_DATA);
         return FALSE;
     }
-    if (!Dragging::instance()->isReadyForDragging())
+
+    Dragging* dragging = Dragging::instance();
+    if (!dragging || !dragging->isReadyForDragging() || !InputProcessor::instance())
+    {
         return GetNumberOfConsoleInputEvents(hConsoleInput, lpcNumberOfEvents);
+    }
+
     if (!InputProcessor::instance()->readFromSystem(hConsoleInput, false))
         return FALSE;
     *lpcNumberOfEvents = static_cast<DWORD>(InputProcessor::instance()->size());
@@ -55,8 +60,11 @@ BOOL WINAPI MyWriteConsoleInputW(HANDLE h, const INPUT_RECORD *b, DWORD l, LPDWO
 
 BOOL WINAPI MyFlushConsoleInputBuffer(HANDLE h)
 {
-    if (Dragging::instance()->isReadyForDragging())
+    Dragging* dragging = Dragging::instance();
+    if (dragging && dragging->isReadyForDragging())
+    {
         InputProcessor::instance()->clear();
+    }
     return FlushConsoleInputBuffer(h);
 }
 

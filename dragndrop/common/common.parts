@@ -3,11 +3,11 @@ Import('*')
 env.PartName('common')
 env.PartVersion('2.0.0')
 
-sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
-headers = Pattern(includes=['*.h', '*.hpp'], recursive=False).files()
+sources = env.Glob('*.cpp') + env.Glob('*.c')
+headers = env.Glob('*.hpp') + env.Glob('*.h')
 
 env.SdkInclude(headers)
-env.SdkLib(env.StaticLibrary(target='common', source=sources))
+env.SdkLib(env.StaticLibrary(target='${PART_NAME}_${TARGET_ARCH}', source=sources))
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

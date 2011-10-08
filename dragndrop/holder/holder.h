@@ -18,7 +18,7 @@ typedef GrowOnlyArray<FarItem> FarItems;
 /**
  * Represents an instance of the holder process
  */
-class Holder 
+class Holder
 {
 private:
     HolderWindow _window;
@@ -27,6 +27,7 @@ private:
     HANDLE _leftEvent;
     HANDLE _rightEvent;
     HHOOK _llMouse;
+    bool _hookIsSet;
     static Holder* _instance;
     static LRESULT CALLBACK mouseHook(int,WPARAM,LPARAM);
     bool setupCurDir();
@@ -43,9 +44,9 @@ public:
     bool setHook(bool value);
     bool isFarWindow(HWND hwnd);
     HWND getActiveDnd(HWND hFar);
-    
+
     FarItem* findFar(HWND hFar, bool append=false);
-    FarItem* findDnd(HWND dnd, size_t* dndIndex=NULL);
+    FarItem* findDnd(HWND dnd, HWND hFar=NULL, size_t* dndIndex=NULL);
     inline size_t farsCount() const {return _fars.size();}
 };
 

@@ -40,9 +40,13 @@ LRESULT HolderWindow::handle(UINT msg, WPARAM wParam, LPARAM lParam)
 LRESULT HolderWindow::onSetTheHook(bool value)
 {
     if (_holder->setHook(value))
+    {
         return HOLDER_YES;
+    }
     else
+    {
         return HOLDER_NOT;
+    }
 }
 
 LRESULT HolderWindow::onFarWindowsCreated(HWND hFar, HWND dnd)
@@ -61,7 +65,9 @@ LRESULT HolderWindow::onDndWindowDestroy(HWND dnd)
     _holder->unregisterDND(dnd);
 
     if (!_holder->farsCount())
+    {
         postMessage(WM_QUIT);
+    }
 
     return HOLDER_NOT;
 }

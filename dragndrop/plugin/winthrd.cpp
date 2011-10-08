@@ -12,7 +12,14 @@ WinThread* WinThread::instance()
     if (!p)
     {
         p = new WinThread;
-        Dll::instance()->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+        if (p)
+        {
+            Dll* dll = Dll::instance();
+            if (dll)
+            {
+                dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
+            }
+        }
     }
     return p;
 }
@@ -25,16 +32,17 @@ void WinThread::kill(WinThread* p)
 
 bool WinThread::start()
 {
-    if (_handle)
+    MainThread* mainThread = MainThread::instance();
+    if (!mainThread || _handle)
         return false;
-    
+
     _handle = CreateThread(NULL, 0,
             reinterpret_cast<LPTHREAD_START_ROUTINE>(&runInstnace),
             this, 0, &_id);
 
     if (_handle)
     {
-        MainThread::instance()->waitForMessage(MTM_WINTHRSTARTED);
+        mainThread->waitForMessage(MTM_WINTHRSTARTED);
         return true;
     }
     else
@@ -70,27 +78,33 @@ void WinThread::run()
 {
     OleInitialize(NULL);
 
-    _window.create(GetFarWindow());
-
-    MainThread::instance()->winThreadStarted();
-
-    for (;;)
+    __try
     {
-        MSG msg;
-        DWORD res;
 
-        res = GetMessageW(&msg, 0, 0, 0);
-        if (!res || res == -1)
+        _window.create(GetFarWindow());
+
+        MainThread::instance()->winThreadStarted();
+
+        for (;;)
         {
-            _window.destroy();
-            break;
-        }
-        
-        TranslateMessage(&msg);
-        DispatchMessageW(&msg);
-    }
+            MSG msg;
+            DWORD res;
 
-    OleUninitialize();
+            res = GetMessageW(&msg, 0, 0, 0);
+            if (!res || res == -1)
+            {
+                _window.destroy();
+                break;
+            }
+
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
+        }
+    }
+    __finally
+    {
+        OleUninitialize();
+    }
 }
 
 /**
@@ -98,18 +112,31 @@ void WinThread::run()
  */
 bool WinThread::startDragging(const DataContainer& data)
 {
-    if (HolderApi::instance()->isLeftButtonDown())
+    HolderApi* holderApi = HolderApi::instance();
+    MainThread* mainThread = MainThread::instance();
+    Dragging* dragging = Dragging::instance();
+    if (!holderApi || !mainThread || !dragging)
+    {
+        return false;
+    }
+
+    if (holderApi->isLeftButtonDown())
+    {
         mouse_event(MOUSEEVENTF_LEFTUP,  0, 0, 0, NULL);
-    if (HolderApi::instance()->isRightButtonDown())
+    }
+
+    if (holderApi->isRightButtonDown())
+    {
         mouse_event(MOUSEEVENTF_RIGHTUP,  0, 0, 0, NULL);
+    }
 
     /** See ToolWindow::prepareForDragging for refernce. */
     if (_window.sendMessage(WM_PREPAREFORDRAGGING, 0, (LPARAM)&data))
     {
         //mouse_event(MOUSEEVENTF_LEFTDOWN,  0, 0, 0, NULL);
 
-        MainThread::instance()->waitForMessage(MTM_SETDRAGGING);
-        return Dragging::instance()->dragging();
+        mainThread->waitForMessage(MTM_SETDRAGGING);
+        return dragging->dragging();
     }
 
     return false;

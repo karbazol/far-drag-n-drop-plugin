@@ -17,7 +17,7 @@ static HANDLE getMyHeap()
     static HANDLE heap = 0;
     if (!heap)
     {
-        heap = HeapCreate(0, 1024*1024, 0);
+        heap = HeapCreate(HEAP_GENERATE_EXCEPTIONS, 1024*1024, 0);
         HeapSetInformation(heap,
                        HeapCompatibilityInformation,
                        &HeapFragValue,
@@ -37,7 +37,7 @@ void* malloc(size_t size)
 }
 
 #if _MSC_VER >= 1400
-__declspec(noalias) 
+__declspec(noalias)
 #endif
 void free(void* p)
 {
@@ -55,11 +55,11 @@ void* realloc(void* p, size_t size)
 {
     if (p)
     {
-        return HeapReAlloc(getMyHeap(), 0, p, size);
+        return HeapReAlloc(getMyHeap(), HEAP_GENERATE_EXCEPTIONS, p, size);
     }
     else
     {
-        return HeapAlloc(getMyHeap(), 0, size);
+        return HeapAlloc(getMyHeap(), HEAP_GENERATE_EXCEPTIONS, size);
     }
 //    return CoTaskMemRealloc(p, size);
 }

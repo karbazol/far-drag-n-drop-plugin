@@ -1,5 +1,6 @@
 // $Id$
 
+#include <windows.h>
 #include "ddlock.h"
 
 bool Lock::tryLock()
@@ -8,29 +9,48 @@ bool Lock::tryLock()
     return true;
 }
 
-CriticalSection::CriticalSection()
+class CriticalSectionImpl: public Lock
 {
-    InitializeCriticalSection(&_lock);
+private:
+    CRITICAL_SECTION _lock;
+public:
+    CriticalSectionImpl()
+    {
+        InitializeCriticalSection(&_lock);
+    }
+
+    ~CriticalSectionImpl()
+    {
+        DeleteCriticalSection(&_lock);
+    }
+
+    void lock()
+    {
+        EnterCriticalSection(&_lock);
+    }
+
+    bool tryLock()
+    {
+        return !!TryEnterCriticalSection(&_lock);
+    }
+
+    void unlock()
+    {
+        LeaveCriticalSection(&_lock);
+    }
+};
+
+Lock* CriticalSection::create()
+{
+    return new CriticalSectionImpl();
 }
 
-CriticalSection::~CriticalSection()
+void CriticalSection::destroy(Lock* lock)
 {
-    DeleteCriticalSection(&_lock);
-}
-
-void CriticalSection::lock()
-{
-    EnterCriticalSection(&_lock);
-}
-
-bool CriticalSection::tryLock()
-{
-    return !!TryEnterCriticalSection(&_lock);
-}
-
-void CriticalSection::unlock()
-{
-    LeaveCriticalSection(&_lock);
+    if (lock)
+    {
+        delete lock;
+    }
 }
 
 // vim: set et ts=4 ai :

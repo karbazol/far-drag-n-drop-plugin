@@ -29,10 +29,15 @@ HRESULT HdropProcessor::operator()(IDataObject* obj, DWORD* /*effect*/)
         return E_FAIL;
     }
 
-    if (Config::instance()->shellCopy())
+    Config* config = Config::instance();
+    if (config && config->shellCopy())
+    {
         hr = shellCopyHDrop(files);
+    }
     else
+    {
         hr = farCopyHDrop(files);
+    }
 
     if (FAILED(hr))
     {
