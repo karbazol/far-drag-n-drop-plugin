@@ -65,6 +65,16 @@ const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::tab = L"\t";
 const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::cr = L"\r";
 const MyStringTraits<wchar_t>::type* MyStringTraits<wchar_t>::lf = L"\n";
 
+bool isBadReadPtr(void* p, size_t size)
+{
+    return !!IsBadReadPtr(p, size);
+}
+
+bool isBadWritePtr(void* p, size_t size)
+{
+    return !!IsBadWritePtr(p, size);
+}
+
 #endif
 
 /**

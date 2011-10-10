@@ -9,6 +9,7 @@
 
 #include "hldrwnd.h"
 #include "faritem.h"
+#include "hldrapi.h"
 
 /**
  * Array of FarItem objects
@@ -18,7 +19,7 @@ typedef GrowOnlyArray<FarItem> FarItems;
 /**
  * Represents an instance of the holder process
  */
-class Holder
+class Holder: public IHolder
 {
 private:
     HolderWindow _window;
@@ -32,6 +33,14 @@ private:
     static LRESULT CALLBACK mouseHook(int,WPARAM,LPARAM);
     bool setupCurDir();
     bool createMutex();
+    void validateFarItems();
+private:
+    // IHolder interface implementation
+    const wchar_t* getHolderWindowClassName();
+    const wchar_t* getHolderFileName();
+    const wchar_t* getHolderMutexName();
+    HANDLE getLeftButtonEvent();
+    HANDLE getRightButtonEvent();
 public:
     Holder();
     ~Holder();

@@ -84,7 +84,7 @@ static bool runHolder(const wchar_t* holderExecutable)
     return res;
 }
 
-void makeSureHolderRun(const wchar_t* holderMutex, const wchar_t* holderExecutable)
+static void makeSureHolderRun(const wchar_t* holderMutex, const wchar_t* holderExecutable)
 {
     if (!checkMutex(holderMutex))
     {
@@ -92,32 +92,170 @@ void makeSureHolderRun(const wchar_t* holderMutex, const wchar_t* holderExecutab
     }
 }
 
-HolderApi::HolderApi()
+class HolderApiImpl: public HolderApi
 {
-    makeSureHolderRun(HOLDER_MUTEX, HOLDER_EXECUTABLE);
-    _leftEvent = OpenEvent(SYNCHRONIZE, FALSE, HOLDER_LEFT_EVENT);
-    _rightEvent = OpenEvent(SYNCHRONIZE, FALSE, HOLDER_RIGHT_EVENT);
-}
+    IHolder* _holder;
 
-HolderApi::~HolderApi()
-{
-    CloseHandle(_leftEvent);
-    CloseHandle(_rightEvent);
-}
+    HolderApiImpl(): _holder(0)
+    {
+    }
+
+    ~HolderApiImpl()
+    {
+        //CloseHandle(_leftEvent);
+        //CloseHandle(_rightEvent);
+        _holder = NULL;
+    }
+
+    bool setHolder(IHolder* holder)
+    {
+        _holder = holder;
+
+        if (_holder)
+        {
+            makeSureHolderRun(_holder->getHolderMutexName(), _holder->getHolderFileName());
+        }
+
+        return !!_holder;
+    }
+
+    static void kill(HolderApiImpl* p)
+    {
+        if (p)
+        {
+            delete p;
+        }
+    }
+
+    HWND window()
+    {
+        static HWND hldr = NULL;
+        if (HOLDER_YES == SendMessage(hldr, WM_ARE_YOU_HOLDER, 0, 0))
+        {
+            return hldr;
+        }
+
+        const wchar_t* windowClassName = HOLDER_CLASS_NAME;
+
+        if (_holder)
+        {
+            makeSureHolderRun(_holder->getHolderMutexName(), _holder->getHolderFileName());
+            windowClassName = _holder->getHolderWindowClassName();
+        }
+
+        hldr = FindWindow(windowClassName, NULL);
+        if (HOLDER_YES != SendMessage(hldr, WM_ARE_YOU_HOLDER, 0, 0))
+        {
+            hldr = NULL;
+        }
+
+        return hldr;
+    }
+
+    LRESULT windowsCreated(HWND f, HWND dnd)
+    {
+        HWND hldr = window();
+        if (hldr)
+        {
+            return SendMessage(hldr, WM_FARWINDOWSCREATED,
+                    reinterpret_cast<WPARAM>(f), reinterpret_cast<LPARAM>(dnd));
+        }
+
+        return HOLDER_NOT;
+    }
+
+    LRESULT windowsDestroy(HWND dnd)
+    {
+        HWND hldr = window();
+        if (hldr)
+        {
+            return SendMessage(hldr, WM_DNDWINDOWDESTROY, reinterpret_cast<WPARAM>(dnd), 0);
+        }
+
+        return HOLDER_NOT;
+    }
+
+    LRESULT setHook(bool value)
+    {
+        HWND hldr = window();
+        if (hldr)
+        {
+            return SendMessage(hldr, WM_HLDR_SETHOOK, value?1:0, 0);
+        }
+
+        return HOLDER_NOT;
+    }
+
+    HWND isFarWindow(HWND hwnd)
+    {
+        HWND hldr = window();
+        if (!hldr)
+        {
+            return NULL;
+        }
+
+        //
+        // The wfx2far adds a child window to far window and when a mouse is over it we
+        // should find the window which has no parent and it will be far window.
+        //
+        for(HWND hParent; NULL != (hParent = GetParent(hwnd)); hwnd = hParent);
+
+        if (HOLDER_YES == SendMessage(hldr, WM_HLDR_ISFARWND, reinterpret_cast<WPARAM>(hwnd), 0))
+        {
+            return hwnd;
+        }
+
+        return NULL;
+    }
+
+    HWND getActiveDnd(HWND hFar)
+    {
+        HWND res = window();
+        if (!res)
+        {
+            return NULL;
+        }
+
+        return reinterpret_cast<HWND>(
+                SendMessage(res, WM_HLDR_GETDNDWND, reinterpret_cast<WPARAM>(hFar), 0));
+    }
+
+    bool isLeftButtonDown() const
+    {
+        if (!_holder)
+        {
+            return false;
+        }
+
+        return WaitForSingleObject(_holder->getLeftButtonEvent(), 0) == WAIT_OBJECT_0;
+    }
+
+    bool isRightButtonDown() const
+    {
+        if (!_holder)
+        {
+            return false;
+        }
+
+        return WaitForSingleObject(_holder->getRightButtonEvent(), 0) == WAIT_OBJECT_0;
+    }
+
+    friend static HolderApi* HolderApi::instance();
+};
 
 HolderApi* HolderApi::instance()
 {
-    static HolderApi* p = 0;
+    static HolderApiImpl* p = 0;
 
     if (!p)
     {
-        p = new HolderApi;
+        p = new HolderApiImpl;
         if (p)
         {
             Dll* dll = Dll::instance();
             if (dll)
             {
-                dll->registerProcessEndCallBack((PdllCallBack)&kill, p);
+                dll->registerProcessEndCallBack((PdllCallBack)&HolderApiImpl::kill, p);
             }
         }
     }
@@ -125,83 +263,5 @@ HolderApi* HolderApi::instance()
     return p;
 }
 
-void HolderApi::kill(HolderApi* p)
-{
-    if (p)
-    {
-        delete p;
-    }
-}
-
-HWND HolderApi::window()
-{
-    static HWND hldr = NULL;
-    if (HOLDER_YES == SendMessage(hldr, WM_ARE_YOU_HOLDER, 0, 0))
-        return hldr;
-
-    makeSureHolderRun(HOLDER_MUTEX, HOLDER_EXECUTABLE);
-
-    hldr = FindWindow(HOLDER_CLASS_NAME, NULL);
-    if (HOLDER_YES != SendMessage(hldr, WM_ARE_YOU_HOLDER, 0, 0))
-        hldr = NULL;
-
-    return hldr;
-}
-
-LRESULT HolderApi::windowsCreated(HWND f, HWND dnd)
-{
-    HWND hldr = window();
-    if (hldr)
-        return SendMessage(hldr, WM_FARWINDOWSCREATED,
-                reinterpret_cast<WPARAM>(f), reinterpret_cast<LPARAM>(dnd));
-    return HOLDER_NOT;
-}
-
-LRESULT HolderApi::windowsDestroy(HWND dnd)
-{
-    HWND hldr = window();
-    if (hldr)
-        return SendMessage(hldr, WM_DNDWINDOWDESTROY, reinterpret_cast<WPARAM>(dnd), 0);
-    return HOLDER_NOT;
-}
-
-LRESULT HolderApi::setHook(bool value)
-{
-    HWND hldr = window();
-    if (hldr)
-        return SendMessage(hldr, WM_HLDR_SETHOOK, value?1:0, 0);
-    return HOLDER_NOT;
-}
-
-HWND HolderApi::isFarWindow(HWND hwnd)
-{
-    HWND hldr = window();
-    if (!hldr)
-        return NULL;
-
-    //
-    // The wfx2far adds a child window to far window and when a mouse is over it we
-    // should find the window which has no parent and it will be far window.
-    //
-    for(HWND hParent; NULL != (hParent = GetParent(hwnd)); hwnd = hParent);
-
-    if (HOLDER_YES == SendMessage(hldr, WM_HLDR_ISFARWND, reinterpret_cast<WPARAM>(hwnd), 0))
-        return hwnd;
-
-    return NULL;
-}
-
-HWND HolderApi::getActiveDnd(HWND hFar)
-{
-    HWND res = window();
-    if (!res)
-        return NULL;
-
-    return reinterpret_cast<HWND>(
-            SendMessage(res, WM_HLDR_GETDNDWND, reinterpret_cast<WPARAM>(hFar), 0));
-}
-
-bool HolderApi::isLeftButtonDown() const {return WaitForSingleObject(_leftEvent, 0) == WAIT_OBJECT_0;}
-bool HolderApi::isRightButtonDown()const {return WaitForSingleObject(_rightEvent, 0) == WAIT_OBJECT_0;}
 // vim: set et ts=4 ai :
 

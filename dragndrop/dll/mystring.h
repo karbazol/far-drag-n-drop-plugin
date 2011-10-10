@@ -21,6 +21,9 @@
  */
 #define MYSTRING_COOKIE 0x4b43534b
 
+bool isBadReadPtr(void* p, size_t size);
+bool isBadWritePtr(void* p, size_t size);
+
 /**
  * Template class representing traits of string element.
  */
@@ -240,21 +243,24 @@ private:
     StringData* tryData(const CharType* s)
     {
         if (!s)
-            return 0;
-        __try
-        {
-            StringData* res = reinterpret_cast<StringData*>(
-                    const_cast<char*>(
-                    reinterpret_cast<const char*>(s) - offsetof(StringData,data)));
-            if (res->cookie == MYSTRING_COOKIE)
-                return res;
-            else
-                return 0;
-        }
-        __except(EXCEPTION_EXECUTE_HANDLER)
         {
             return 0;
         }
+        StringData* res = reinterpret_cast<StringData*>(
+                const_cast<char*>(
+                reinterpret_cast<const char*>(s) - offsetof(StringData,data)));
+        if (isBadReadPtr(res, sizeof(*res))||isBadWritePtr(res, sizeof(*res)))
+        {
+            return 0;
+        }
+
+        if (res->cookie != MYSTRING_COOKIE ||
+            isBadReadPtr(res->data, res->len)||isBadWritePtr(res->data, res->len))
+        {
+            return 0;
+        }
+
+        return res;
     }
     StringData* newData(size_t len)
     {

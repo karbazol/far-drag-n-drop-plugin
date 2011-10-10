@@ -18,7 +18,7 @@ env.Append(
     LIBS=['kernel32', 'user32', 'shlwapi', 'ole32', 'advapi32'],
     )
 
-headers=['hook.h', 'dndcmnct.h', 'hldrapi.h']
+headers=['hook.h', 'dndcmnct.h', 'hldrapi.h', 'hldrintf.h']
 sources = env.Glob('*.cpp') + env.Glob('*.c')
 
 if env.isConfigBasedOn('release'):

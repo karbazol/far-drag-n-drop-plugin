@@ -48,7 +48,9 @@ static void checkConman()
         IsActiveFar = (BOOL (*)())GetProcAddress(conman, "IsConsoleActive");
     }
     if (!IsActiveFar)
+    {
         IsActiveFar = &alwaysTrue;
+    }
 }
 
 static void freeRegistry(MyStringA* registry)

@@ -11,27 +11,34 @@
 #include "toolwnd.h"
 #include "datacont.h"
 #include "dndmsgs.h"
+#include "hldrapi.h"
 
 /**
  * @brief Window thread singleton.
  *
  * Singleton. Represents the window thread. This thread performs dragging and dropping.
  */
-class WinThread
+class WinThread: public IHolder
 {
 private:
     HANDLE _handle;
+    HANDLE _leftButtonEvent;
+    HANDLE _rightButtonEvent;
     DWORD _id;
     ToolWindow _window;
-    WinThread(): _handle(0), _id(0), _window(){}
+    WinThread();
     WinThread(const WinThread&);
-    ~WinThread()
-    {
-        stop();
-    }
+    ~WinThread();
     static DWORD WINAPI runInstnace(WinThread* p);
     static void kill(WinThread* p);
     void run();
+private:
+    // IHolder implementation
+    const wchar_t* getHolderWindowClassName();
+    const wchar_t* getHolderFileName();
+    const wchar_t* getHolderMutexName();
+    HANDLE getLeftButtonEvent();
+    HANDLE getRightButtonEvent();
 public:
     static WinThread* instance();
     bool start();

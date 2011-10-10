@@ -23,10 +23,18 @@ Holder::Holder(): _window(), _mutex(0), _fars(), _hookIsSet(false)
     _llMouse = SetWindowsHookEx(WH_MOUSE_LL, &mouseHook, (HMODULE)getMyModuleBaseAddress(), 0);
 
     freeEveryOneDescriptor(sec.lpSecurityDescriptor);
+
 }
 
 Holder::~Holder()
 {
+    HolderApi* holderApi = HolderApi::instance();
+
+    if (holderApi)
+    {
+        holderApi->setHolder(NULL);
+    }
+
     UnhookWindowsHookEx(_llMouse);
     CloseHandle(_leftEvent);
     CloseHandle(_rightEvent);
@@ -37,6 +45,31 @@ Holder::~Holder()
     }
 
     _instance = 0;
+}
+
+const wchar_t* Holder::getHolderWindowClassName()
+{
+    return HOLDER_OTHER_CLASS_NAME;
+}
+
+const wchar_t* Holder::getHolderFileName()
+{
+    return HOLDER_OTHER_EXECUTABLE;
+}
+
+const wchar_t* Holder::getHolderMutexName()
+{
+    return HOLDER_OTHER_MUTEX;
+}
+
+HANDLE Holder::getLeftButtonEvent()
+{
+    return _leftEvent;
+}
+
+HANDLE Holder::getRightButtonEvent()
+{
+    return _rightEvent;
 }
 
 Holder* Holder::_instance = 0;
@@ -77,13 +110,26 @@ LRESULT Holder::mouseHook(int nCode, WPARAM wParam, LPARAM lParam)
 bool Holder::initialize()
 {
     if (!setupCurDir())
+    {
         return false;
+    }
 
     if (!createMutex())
+    {
         return false;
+    }
 
     if (!_window.create(NULL))
+    {
         return false;
+    }
+
+    HolderApi* holderApi = HolderApi::instance();
+
+    if (holderApi)
+    {
+        holderApi->setHolder(this);
+    }
 
     return true;
 }
@@ -151,8 +197,47 @@ bool Holder::createMutex()
     return true;
 }
 
+void Holder::validateFarItems()
+{
+    size_t i, j;
+
+    TRACE("Entering validateFarItems. _far.size() == %d\n", _fars.size());
+
+    for (i = 0; i < _fars.size(); ++i)
+    {
+        while (!IsWindow(_fars[i].hwnd()))
+        {
+            if (i >= _fars.deleteItem(i))
+            {
+                TRACE("Leaving validateFarItems. _far.size() == %d\n", _fars.size());
+                return;
+            }
+        }
+
+        HwndsArray& dnds = _fars[i].dnds();
+        for (j = 0; j < dnds.size(); ++j)
+        {
+            while (!IsWindow(dnds[j]))
+            {
+                if (j >= dnds.deleteItem(j))
+                {
+                    break;
+                }
+            }
+        }
+
+        if (dnds.size() == 0)
+        {
+            _fars.deleteItem(i);
+        }
+    }
+    TRACE("Leaving validateFarItems. _far.size() == %d\n", _fars.size());
+}
+
 void Holder::registerDND(HWND hFar, HWND dnd)
 {
+    validateFarItems();
+
     size_t dndIndex = 0;
     FarItem* item = findDnd(dnd, hFar, &dndIndex);
 
@@ -163,10 +248,15 @@ void Holder::registerDND(HWND hFar, HWND dnd)
 
     ASSERT(item && item->hwnd() == hFar);
 
-    if (item)
+    if (dndIndex == item->dnds().size())
     {
-        item->hwnd(hFar);
         item->dnds().append(dnd);
+
+        HolderApi* holderApi = HolderApi::instance();
+        if (holderApi)
+        {
+            holderApi->windowsCreated(hFar, dnd);
+        }
     }
 }
 
@@ -183,7 +273,16 @@ void Holder::unregisterDND(HWND dnd)
         {
             _fars.deleteItem(item - &_fars[0]);
         }
+
+        HolderApi* holderApi = HolderApi::instance();
+
+        if (holderApi)
+        {
+            holderApi->windowsDestroy(dnd);
+        }
     }
+
+    validateFarItems();
 }
 
 FarItem* Holder::findFar(HWND hFar, bool append)
@@ -265,6 +364,13 @@ FarItem* Holder::findDnd(HWND dnd, HWND hFar, size_t* dndIndex)
 
 bool Holder::setHook(bool value)
 {
+    HolderApi* holderApi = HolderApi::instance();
+
+    if (holderApi)
+    {
+        holderApi->setHook(value);
+    }
+
     if (value)
     {
         if (!_hookIsSet)

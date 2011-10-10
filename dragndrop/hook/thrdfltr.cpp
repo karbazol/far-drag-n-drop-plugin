@@ -55,7 +55,9 @@ void ThreadFilter::checkDndUnderMouse(HWND msgHwnd)
     HWND res = WindowFromPoint(pt);
 
     if (res == msgHwnd)
+    {
         return;
+    }
 
     if (isDndWindow(res))
     {
