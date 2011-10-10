@@ -4,7 +4,58 @@
 #include "dragging.h"
 #include "mainthrd.h"
 #include "dndmsgs.h"
-#include "hldrapi.h"
+
+WinThread::WinThread(): _handle(0), _leftButtonEvent(0), _rightButtonEvent(0),
+    _id(0), _window()
+{
+    HolderApi* holderApi = HolderApi::instance();
+    if (holderApi)
+    {
+        _leftButtonEvent = OpenEvent(SYNCHRONIZE, FALSE, HOLDER_LEFT_EVENT);
+        _rightButtonEvent = OpenEvent(SYNCHRONIZE, FALSE, HOLDER_RIGHT_EVENT);
+        holderApi->setHolder(static_cast<IHolder*>(this));
+    }
+}
+
+WinThread::~WinThread()
+{
+    stop();
+
+    HolderApi* holderApi = HolderApi::instance();
+
+    if (holderApi)
+    {
+        holderApi->setHolder(NULL);
+    }
+
+    CloseHandle(_leftButtonEvent);
+    CloseHandle(_rightButtonEvent);
+}
+
+const wchar_t* WinThread::getHolderWindowClassName()
+{
+    return HOLDER_CLASS_NAME;
+}
+
+const wchar_t* WinThread::getHolderFileName()
+{
+    return HOLDER_EXECUTABLE;
+}
+
+const wchar_t* WinThread::getHolderMutexName()
+{
+    return HOLDER_MUTEX;
+}
+
+HANDLE WinThread::getLeftButtonEvent()
+{
+    return _leftButtonEvent;
+}
+
+HANDLE WinThread::getRightButtonEvent()
+{
+    return _rightButtonEvent;
+}
 
 WinThread* WinThread::instance()
 {
@@ -27,7 +78,9 @@ WinThread* WinThread::instance()
 void WinThread::kill(WinThread* p)
 {
     if (p)
+    {
         delete p;
+    }
 }
 
 bool WinThread::start()

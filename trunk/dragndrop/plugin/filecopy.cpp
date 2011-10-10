@@ -31,7 +31,10 @@ DWORD FileCopier::winCallBack(LARGE_INTEGER /*totalSize*/, LARGE_INTEGER transfe
     __int64 step = transferred.QuadPart - This->_copied;
     This->_copied = transferred.QuadPart;
     if (This->_notify && !This->_notify->onFileStep(step))
+    {
         return PROGRESS_CANCEL;
+    }
+
     return PROGRESS_CONTINUE;
 }
 

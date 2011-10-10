@@ -9,6 +9,7 @@
 #define __KARBAZOL_DRAGNDROP_2_0__HLDRAPI_H__
 
 #include "hldrdefs.h"
+#include "hldrintf.h"
 #include "hook.h"
 
 /**
@@ -16,33 +17,25 @@
  *
  * Class provides entry points for Holder API
  */
-class HolderApi
+struct HolderApi
 {
-private:
-    HANDLE _leftEvent;
-    HANDLE _rightEvent;
-    HWND window();
-    HolderApi();
-    virtual ~HolderApi();
-    static void kill(HolderApi* p);
-public:
     static _HOOK_SPEC HolderApi* instance();
 
-    virtual LRESULT windowsCreated(HWND far, HWND dnd);
-    virtual LRESULT windowsDestroy(HWND dnd);
-    virtual LRESULT setHook(bool value);
+    virtual bool setHolder(IHolder* holder) = 0;
+
+    virtual LRESULT windowsCreated(HWND far, HWND dnd) = 0;
+    virtual LRESULT windowsDestroy(HWND dnd) = 0;
+    virtual LRESULT setHook(bool value) = 0;
 
     // Returns far window on success otherwise NULL
-    virtual HWND isFarWindow(HWND hwnd);
+    virtual HWND isFarWindow(HWND hwnd) = 0;
 
     // Returns dragndrop window on success otherwise NULL
-    virtual HWND getActiveDnd(HWND hFar);
+    virtual HWND getActiveDnd(HWND hFar) = 0;
 
-    virtual bool isLeftButtonDown() const;
-    virtual bool isRightButtonDown()const;
+    virtual bool isLeftButtonDown() const = 0;
+    virtual bool isRightButtonDown()const = 0;
 };
 
-void makeSureHolderRun(const wchar_t* holderMutex,
-        const wchar_t* holderExecutable);
 #endif // __KARBAZOL_DRAGNDROP_2_0__HLDRAPI_H__
 
