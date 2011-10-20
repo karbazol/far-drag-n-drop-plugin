@@ -1,0 +1,12 @@
+Import('*')
+
+env.PartName('texts')
+env.PartVersion('$PRODUCT_VERSION_STRING')
+
+env.Lng('dndlng.py')
+env.SdkInclude('ddlng.h')
+env.InstallBin('dndrus.lng')
+env.InstallBin('dndeng.lng')
+
+# vim: set et ts=4 sw=4 ai ft=python :
+

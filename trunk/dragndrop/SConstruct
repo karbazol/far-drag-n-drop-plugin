@@ -1,11 +1,16 @@
 from parts import *
 
+# Set up version information
+SetOptionDefault('COMPANY_NAME', 'Eugene Leskinen')
+SetOptionDefault('PRODUCT_NAME', 'Drag & drop plug-in for FAR manage')
+SetOptionDefault('LEGAL_COPYRIGHT', '2005-2011 Eugene Leskinen')
+SetOptionDefault('PRODUCT_VERSION_STRING', '2.0.0.${SVN_REVISION}')
+
 # Enable smart logging
 SetOptionDefault('LOGGER', '$TEXT_LOGGER')
 SetOptionDefault('PART_LOGGER', '$PART_TEXT_LOGGER')
 SetOptionDefault('CONFIG', 'release')
 SetOptionDefault('CPPDEFINES', [])
-#SetOptionDefault('PDB', '${TARGETS[0].filebase}.pdb')
 
 # By default we allways build 32-bit version
 # SetOptionDefault('TARGET_PLATFORM', SystemPlatform(os='win32',arch='x86'))
@@ -30,35 +35,42 @@ SetOptionDefault('BUILD_DIR','$BUILD_DIR_ROOT/${CONFIG}_${TARGET_PLATFORM}_${ANS
 def forArch(arch, **kw):
     platform = SystemPlatform("win32", arch)
     Part(
-        alias='common' + arch,
+        alias='common_' + arch,
         parts_file='common/common.parts',
         TARGET_PLATFORM=platform,
         **kw
         )
     Part(
-        alias='dll' + arch,
+        alias='dll_' + arch,
         parts_file='dll/dll.parts',
         TARGET_PLATFORM=platform,
         **kw
         )
     Part(
-        alias='holder' + arch,
+        alias='holder_' + arch,
         parts_file='holder/holder.parts',
         TARGET_PLATFORM=platform,
         **kw
         )
     Part(
-        alias='hook' + arch,
+        alias='hook_' + arch,
         parts_file='hook/hook.parts',
         TARGET_PLATFORM=platform,
         **kw
         )
     Part(
-        alias='plugin' + arch,
+        alias='plugin_' + arch,
         parts_file='plugin/plugin.parts',
         TARGET_PLATFORM=platform,
         **kw
         )
+Part(
+    alias='texts_',
+    parts_file='texts/texts.parts',
+    platform_independent=True,
+#    TARGET_PLATFORM=SystemPlatform('win32', 'any'),
+    )
+
 
 forArch('x86')
 forArch('x86_64')

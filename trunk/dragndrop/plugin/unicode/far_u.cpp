@@ -434,6 +434,32 @@ MyStringW FarGetPassivePanelDirectory()
     return FarGetPanelDirectory(false);
 }
 
+static bool FarGetPanelItem(HANDLE panel, int command, int itemIndex, PluginPanelItemW& item)
+{
+    int size = theFar.Control(panel, command, itemIndex, 0);
+
+    if (size < static_cast<int>(sizeof(PluginPanelItem)))
+    {
+        return false;
+    }
+
+    PluginPanelItem* tmp = reinterpret_cast<PluginPanelItem*>(
+            malloc(size));
+
+    if (!tmp)
+    {
+        return false;
+    }
+
+    theFar.Control(panel, command, itemIndex, reinterpret_cast<LONG_PTR>(tmp));
+
+    copy(item, *tmp);
+
+    free(tmp);
+
+    return true;
+}
+
 PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
 {
     PluginPanelItemsW res;
@@ -448,31 +474,25 @@ PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
         if (theFar.Control(h, FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&pi)))
         {
             int count = selected?pi.SelectedItemsNumber:pi.ItemsNumber;
-            int i;
 
-            res.size(count);
-
-            if (count > 1)
+            if (count > 0)
             {
+                res.size(count);
 
-                for (i = 0; i < count; ++i)
+                if (count > 1)
                 {
-                    PluginPanelItem item;
-                    theFar.Control(h, command, i, reinterpret_cast<LONG_PTR>(&item));
+                    int i;
 
-                    copy(res[i], item);
+                    for (i = 0; i < count; ++i)
+                    {
+                        FarGetPanelItem(h, command, i, res[i]);
 
-                    //theFar.Control(h, FCTL_FREEPANELITEM, 0, reinterpret_cast<LONG_PTR>(&item));
+                    }
                 }
-            }
-            else
-            {
-                PluginPanelItem item;
-                theFar.Control(h, FCTL_GETPANELITEM, pi.CurrentItem, reinterpret_cast<LONG_PTR>(&item));
-
-                copy(res[0], item);
-
-                //theFar.Control(h, FCTL_FREEPANELITEM, 0, reinterpret_cast<LONG_PTR>(&item));
+                else
+                {
+                    FarGetPanelItem(h, command, selected?0:pi.CurrentItem, res[0]);
+                }
             }
         }
     }
@@ -605,5 +625,5 @@ MyStringW TruncPathStr(const MyStringW& s, int maxLen)
     return MyStringW(theFar.FSF->TruncPathStr(res, maxLen));
 }
 
-// vim: set et ts=4 ai :
+// vim: set et ts=4 sw=4 ai :
 
