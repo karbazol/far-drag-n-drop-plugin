@@ -1,11 +1,12 @@
 Import('*')
 
 env.PartName('plugin')
-env.PartVersion('2.0.0')
+env.PartVersion('${PRODUCT_VERSION_STRING}')
 
 env.DependsOn([
     Component('dll'),
     Component('hook'),
+    Component('texts'),
 ])
 
 env.Append(
@@ -19,27 +20,18 @@ if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS=['/entry:DllMain'])
     env.Append(LIBS=['libcmt'])
 
-#determine build number
-import subprocess
-import xml.dom.minidom as xml
-
-try:
-    so, se = subprocess.Popen('svn info --xml %s' % env.subst('$SRC_DIR'),
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    d = xml.parseString(so)
-    buildstr = d.getElementsByTagName('entry')[0].getAttribute('revision')
-    env.Append(RCFLAGS=[x % buildstr for x in [r'-DBUILDNUMBER=%s', r'-DBUILDSTRING=\"%s\"']])
-except Exception, e:
-    print "Faild to setup RCFLAGS", e
-
 sources  = env.Glob('*.cpp') + env.Glob('*.c')
 sources += env.Glob('$ANSI_OR_UNICODE/*.cpp')
 sources += env.Glob('$ANSI_OR_UNICODE/*.c')
 sources += env.Glob('$ANSI_OR_UNICODE/*.def')
 
-sources += env.RES(target='plugin.res', source='plugin.rc')
+sources += env.RES(target='plugin.res', source=env.VersionInfo(
+    FILE_DESCRIPTION = 'FAR manager plug-in module.',
+    INTERNAL_NAME = '${ALIAS}${SHLIBSUFFIX}',
+    )
+)
 
-env.InstallTarget(env.SharedLibrary(target='drgndrop_${TARGET_ARCH}', source=sources))
+env.InstallTarget(env.SharedLibrary(target='${ALIAS}', source=sources))
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

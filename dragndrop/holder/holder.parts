@@ -9,8 +9,6 @@ env.DependsOn([
     Component('hook')
 ])
 
-env.Replace(PROGSUFFIX='.dnd')
-
 env.Append(
     LIBS=['user32', 'gdi32', 'shlwapi', 'ole32', 'advapi32', 'kernel32']
 )
@@ -20,11 +18,17 @@ if env.isConfigBasedOn('release'):
     if env.get('TARGET_ARCH') == 'x86_64':
         env.Append(LIBS=['libcmt'])
 
-sources = env.Glob('*.cpp') + env.Glob('*.c')
-
+sources  = env.Glob('*.cpp') + env.Glob('*.c')
+sources += env.RES(
+    source=env.VersionInfo(
+        FILE_DESCRIPTION = 'Global windows hook holder for ${TARGET_ARCH} architecture',
+        INTERNAL_NAME = '${ALIAS}${PROGSUFFIX}'
+    )
+)
 
 env.InstallBin(
-        env.Program(target='${PART_NAME}_${TARGET_ARCH}', source=sources)
+        env.Program(
+            target='${ALIAS}', source=sources)
     )
 
 # vim: set et ts=4 sw=4 ai ft=python :
