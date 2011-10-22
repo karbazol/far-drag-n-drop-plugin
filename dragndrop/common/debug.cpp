@@ -283,7 +283,9 @@ void DumpIid(const char* fileName, int line, const char* function, const void* g
     DbgTrace("[%s:%d:%s] GUID: %S\n", fileName, line, function, str?str:L"Unknown");
 
     if (str)
+    {
         CoTaskMemFree(str);
+    }
 }
 
 /**
