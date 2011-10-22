@@ -45,7 +45,9 @@ public:
     {
         InterlockedIncrement(&_instanceCount);
         if (_maxCount < _instanceCount)
+        {
             _maxCount = _instanceCount;
+        }
     }
     void DecRef()
     {
@@ -69,8 +71,8 @@ ULONG Unknown::AddRef()
 #ifdef _DEBUG
     UnknownRefCounter::instance()->AddRef();
 #endif
-    InterlockedIncrement(reinterpret_cast<LONG*>(&_refCount));
-    return _refCount;
+    
+    return InterlockedIncrement(reinterpret_cast<LONG*>(&_refCount));
 }
 
 /**
@@ -81,10 +83,12 @@ ULONG Unknown::Release()
 #ifdef _DEBUG
     UnknownRefCounter::instance()->DecRef();
 #endif
-    InterlockedDecrement(reinterpret_cast<LONG*>(&_refCount));
-    ULONG res = _refCount;
-    if (!res)
+
+    ULONG res;
+    if (!(res = InterlockedDecrement(reinterpret_cast<LONG*>(&_refCount))))
+    {
         delete this;
+    }
 
     return res;
 }
