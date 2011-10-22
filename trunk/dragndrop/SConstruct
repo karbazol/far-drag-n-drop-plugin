@@ -20,7 +20,7 @@ SetOptionDefault('_ansiOrUnicodeShort', _ansiOrUnicodeShort)
 SetOptionDefault('ANSI_OR_UNICODE', '${_ansiOrUnicode(__env__)}')
 SetOptionDefault('A_OR_U', '${_ansiOrUnicodeShort(__env__)}')
 
-# The plugin uses unicode inside. When MBCS is used it specified explicitly
+# The plugin uses unicode inside. When MBCS is used it is specified explicitly
 SetOptionDefault('CPPDEFINES', ['UNICODE', '_UNICODE'])
 
 SetOptionDefault('INSTALL_ROOT', '#install')
@@ -60,20 +60,20 @@ Part(
     platform_independent=True,
     )
 
-##env = Environment(tools = ['default', 'packaging'])
-##inst = env.Install(r'c:\fardebug\plugins', DefaultEnvironment().Entry('$INSTALL_BIN'))
-##for item in inst:
-##    print item.abspath
-##pack = env.Package(
-##        NAME = 'dragndrop',
-##        VERSION = '2.0.0',
-##        DESCRIPTION = 'Empty',
-##        SUMMARY = 'Summary',
-##        VENDOR = 'Karbazol',
-##        X_MSI_LANGUAGE = 'en',
-##        PACKAGETYPE = 'msi'
-##        )
-##env.Alias('pack', pack)
+env = Environment(tools = ['default', 'packaging'])
+#inst = env.Install(r'c:\fardebug\plugins', DefaultEnvironment().Entry('$INSTALL_BIN'))
+#for item in inst:
+#    print item.abspath
+pack = env.Package(
+        NAME = 'dragndrop',
+        VERSION = '2.0.0',
+        DESCRIPTION = 'Empty',
+        SUMMARY = 'Summary',
+        VENDOR = 'Karbazol',
+        X_MSI_LANGUAGE = 'en',
+        PACKAGETYPE = 'msi'
+        )
+env.Alias('pack', pack)
 
 # vim: set et ts=4 sw=4 ai ft=python :
 
