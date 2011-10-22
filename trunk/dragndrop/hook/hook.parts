@@ -1,38 +1,13 @@
 Import('*')
 
-import fnmatch
-
 env.PartName('hook')
 env.PartVersion('2.0.0')
 
-env.DependsOn([
-    Component('dll'),
-])
-
-env.Append(
-    CPPDEFINES=['_HOOK_EXPORTS'],
-    LIBS=['kernel32', 'user32', 'shlwapi', 'ole32', 'advapi32'],
-    )
-
-headers=['hook.h', 'dndcmnct.h', 'hldrapi.h', 'hldrintf.h']
-sources  = env.Glob('*.cpp') + env.Glob('*.c')
-
-sources += env.RES(source = env.VersionInfo(
-    FILE_DESCRIPTION = 'Global Windows hook site module',
-    INTERNAL_NAME = '${ALIAS}${SHLIBSUFFIX}',
-    )
-)
-
-if env.isConfigBasedOn('release'):
-    env.Append(LINKFLAGS=['/entry:DllMain'])
-    env.Append(LIBS=['libcmt'])
-
-env.SdkInclude(headers)
-dll = lambda x: not fnmatch.fnmatch(x.name, '*.lib')
-staff = lambda x: fnmatch.fnmatch(x.name, '*.lib') 
-targets = env.SharedLibrary(target='${ALIAS}', source=sources)
-env.InstallBin(filter(dll, targets))
-env.SdkLib(filter(staff, targets))
+env.Part(alias = 'headers', parts_file = 'headers.parts', platform_independent = True)
+env.Part(alias = 'code_x86', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86')
+env.Part(alias = 'code_x86_64', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86_64')
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

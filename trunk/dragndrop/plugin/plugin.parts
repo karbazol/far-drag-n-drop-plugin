@@ -3,35 +3,10 @@ Import('*')
 env.PartName('plugin')
 env.PartVersion('${PRODUCT_VERSION_STRING}')
 
-env.DependsOn([
-    Component('dll'),
-    Component('hook'),
-    Component('texts'),
-])
-
-env.Append(
-    CPPPATH=['#/../common_${A_OR_U}', '.'],
-    CPPDEFINES=['_FAR_USE_FARFINDDATA'],
-    LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32',
-        'kernel32', 'uuid'],
-    )
-
-if env.isConfigBasedOn('release'):
-    env.Append(LINKFLAGS=['/entry:DllMain'])
-    env.Append(LIBS=['libcmt'])
-
-sources  = env.Glob('*.cpp') + env.Glob('*.c')
-sources += env.Glob('$ANSI_OR_UNICODE/*.cpp')
-sources += env.Glob('$ANSI_OR_UNICODE/*.c')
-sources += env.Glob('$ANSI_OR_UNICODE/*.def')
-
-sources += env.RES(target='plugin.res', source=env.VersionInfo(
-    FILE_DESCRIPTION = 'FAR manager plug-in module.',
-    INTERNAL_NAME = '${ALIAS}${SHLIBSUFFIX}',
-    )
-)
-
-env.InstallTarget(env.SharedLibrary(target='${ALIAS}', source=sources))
+env.Part(alias = 'code_x86', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86')
+env.Part(alias = 'code_x86_64', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86_64')
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

@@ -6,16 +6,16 @@
  */
 
 #include <shlwapi.h>
-#include "dll.h"
-#include "far.h"
-#include "configure.hpp"
+#include <dll/dll.h>
+#include "../far.h"
+#include "../configure.hpp"
 #include "ddlng.h"
-#include "utils.h"
-#include "hookfuncs.h"
-#include "dragging.h"
-#include "mainthrd.h"
-#include "thrdpool.h"
-#include "mystring.h"
+#include <common/utils.h>
+#include "../hookfuncs.h"
+#include "../dragging.h"
+#include "../mainthrd.h"
+#include "../thrdpool.h"
+#include <dll/mystring.h>
 
 static struct PluginStartupInfo theFar={0};
 static struct FarStandardFunctions farFuncs={0};

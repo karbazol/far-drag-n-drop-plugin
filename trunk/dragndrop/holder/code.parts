@@ -1,0 +1,33 @@
+Import('*')
+
+env.PartName(env.subst('code_${TARGET_ARCH}'))
+
+env.DependsOn([
+        Component(env.subst('hook.code_${TARGET_ARCH}')),
+        Component(env.subst('common.headers')),
+        ])
+
+env.Append(
+    LIBS=['user32', 'gdi32', 'shlwapi', 'ole32', 'advapi32', 'kernel32']
+)
+
+if env.isConfigBasedOn('release'):
+    env.Append(LINKFLAGS = ['/entry:WinMain'])
+    if env.get('TARGET_ARCH') == 'x86_64':
+        env.Append(LIBS=['libcmt'])
+
+source  = env.Glob('src/*.cpp') + env.Glob('src/*.c')
+source += env.RES(source = env.VersionInfo(
+    FILE_DESCRIPTION = 'Global windows hook holder for ${TARGET_ARCH} architecture',
+    INTERNAL_NAME = '${PART_PARENT_NAME}_${TARGET_ARCH}${PROGSUFFIX}',
+    )
+)
+
+env.InstallTarget(
+    env.Program(
+        target = '${PART_PARENT_NAME}_${TARGET_ARCH}', source = source
+    )
+)
+
+# vim: set et ts=4 sw=4 ft=python :
+

@@ -9,7 +9,7 @@
 
 #include "hldrwnd.h"
 #include "faritem.h"
-#include "hldrapi.h"
+#include <hook/hldrapi.h>
 
 /**
  * Array of FarItem objects

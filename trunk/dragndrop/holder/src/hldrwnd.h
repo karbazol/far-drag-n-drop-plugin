@@ -1,8 +1,8 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__HLDRWND_H__
 #define __KARBAZOL_DRAGNDROP_2_0__HLDRWND_H__
 
-#include "mywnd.h"
-#include "hldrdefs.h"
+#include <common/mywnd.h>
+#include <common/hldrdefs.h>
 
 class Holder;
 

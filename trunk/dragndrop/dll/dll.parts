@@ -4,15 +4,14 @@ env.PartName('dll')
 env.PartVersion('2.0.0')
 
 env.DependsOn([
-    Component('common', '*', REQ.DEFAULT),
-#    Component('hook', '*'),
+    Component('common.headers'),
 ])
 
-sources = Pattern(includes=['*.cpp', '*.c'], recursive=False).files()
-headers = Pattern(includes=['*.h', '*.hpp'], recursive=False)
-
-env.SdkInclude(headers)
-env.SdkLib(env.StaticLibrary(target='${PART_NAME}_${TARGET_ARCH}', source=sources))
+env.Part(alias = 'headers', parts_file = 'headers.parts', platform_independent = True)
+env.Part(alias = 'code_x86', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86')
+env.Part(alias = 'code_x86_64', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86_64')
 
 # vim: set et ts=4 sw=4 ai ft=python :
 
