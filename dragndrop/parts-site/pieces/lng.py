@@ -1,4 +1,5 @@
 import SCons.Builder
+import os
 from parts import api
 from codecs import open
 
@@ -40,6 +41,8 @@ def lngBuilder(target, source, env):
         for name, lng, desc in templ.LANGUAGES:
             assert target[index].name == name
             file = open(target[index].abspath, "w", encoding = templ.ENCODING)
+            if templ.ENCODING.lower() == 'utf-8':
+                os.write(file.fileno(), '\xef\xbb\xbf')
             print >> file, u".Language=%s,%s\n" % (lng, desc)
             lngs.append(file)
             index += 1
