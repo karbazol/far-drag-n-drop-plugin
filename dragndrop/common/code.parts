@@ -1,0 +1,16 @@
+Import('*')
+
+env.PartName(env.subst('code_${TARGET_ARCH}'))
+
+env.DependsOn([Component('common.headers')])
+
+source = env.Glob('src/*.cpp') + env.Glob('src/*.c')
+
+env.SdkLib(
+    env.StaticLibrary(
+        target = '${PART_PARENT_NAME}_${TARGET_ARCH}', source = source
+    )
+)
+
+# vim: set et ts=4 sw=4 ft=python :
+

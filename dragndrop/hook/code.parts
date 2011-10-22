@@ -1,0 +1,34 @@
+Import('*')
+
+env.PartName(env.subst('code_${TARGET_ARCH}'))
+
+env.DependsOn([
+        Component('hook.headers'),
+        Component(env.subst('common.code_${TARGET_ARCH}')),
+        Component(env.subst('dll.code_${TARGET_ARCH}')),
+        ])
+
+env.Append(
+    CPPDEFINES=['_HOOK_EXPORTS'],
+    LIBS=['kernel32', 'user32', 'shlwapi', 'ole32', 'advapi32'],
+    )
+
+if env.isConfigBasedOn('release'):
+    env.Append(LINKFLAGS=['/entry:DllMain'])
+    env.Append(LIBS=['libcmt'])
+
+source  = env.Glob('src/*.cpp') + env.Glob('src/*.c')
+source += env.RES(source = env.VersionInfo(
+    FILE_DESCRIPTION = 'Global Windows hook site module',
+    INTERNAL_NAME = '${ALIAS}${SHLIBSUFFIX}',
+    )
+)
+
+env.InstallTarget(
+    env.SharedLibrary(
+        target = '${PART_PARENT_NAME}_${TARGET_ARCH}', source = source
+    )
+)
+
+# vim: set et ts=4 sw=4 ft=python :
+

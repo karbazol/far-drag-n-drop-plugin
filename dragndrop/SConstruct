@@ -12,9 +12,6 @@ SetOptionDefault('PART_LOGGER', '$PART_TEXT_LOGGER')
 SetOptionDefault('CONFIG', 'release')
 SetOptionDefault('CPPDEFINES', [])
 
-# By default we allways build 32-bit version
-# SetOptionDefault('TARGET_PLATFORM', SystemPlatform(os='win32',arch='x86'))
-
 _ansiOrUnicode = lambda env: 'unicode' if env.get('UNICODE') else 'ansi'
 _ansiOrUnicodeShort = lambda env: _ansiOrUnicode(env)[0]
 
@@ -30,50 +27,38 @@ SetOptionDefault('INSTALL_ROOT', '#install')
 SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/${CONFIG}_${ANSI_OR_UNICODE}/drgndrop/')
 SetOptionDefault('SDK_LIB_ROOT', '${SDK_ROOT}/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/lib')
 SetOptionDefault('SDK_BIN_ROOT', '${SDK_ROOT}/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/bin')
-SetOptionDefault('BUILD_DIR','$BUILD_DIR_ROOT/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/$ALIAS')
+SetOptionDefault('BUILD_DIR','$BUILD_DIR_ROOT/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/${ALIAS}')
 
-def forArch(arch, **kw):
-    platform = SystemPlatform("win32", arch)
-    Part(
-        alias='common_' + arch,
-        parts_file='common/common.parts',
-        TARGET_PLATFORM=platform,
-        **kw
-        )
-    Part(
-        alias='dll_' + arch,
-        parts_file='dll/dll.parts',
-        TARGET_PLATFORM=platform,
-        **kw
-        )
-    Part(
-        alias='holder_' + arch,
-        parts_file='holder/holder.parts',
-        TARGET_PLATFORM=platform,
-        **kw
-        )
-    Part(
-        alias='hook_' + arch,
-        parts_file='hook/hook.parts',
-        TARGET_PLATFORM=platform,
-        **kw
-        )
-    Part(
-        alias='plugin_' + arch,
-        parts_file='plugin/plugin.parts',
-        TARGET_PLATFORM=platform,
-        **kw
-        )
 Part(
-    alias='texts_',
+    alias='plugin',
+    parts_file='plugin/plugin.parts',
+    platform_independent=True,
+    )
+Part(
+    alias='common',
+    parts_file='common/common.parts',
+    platform_independent=True,
+    )
+Part(
+    alias='dll',
+    parts_file='dll/dll.parts',
+    platform_independent=True,
+    )
+Part(
+    alias='hook',
+    parts_file='hook/hook.parts',
+    platform_independent=True,
+    )
+Part(
+    alias='holder',
+    parts_file='holder/holder.parts',
+    platform_independent=True,
+    )
+Part(
+    alias='texts',
     parts_file='texts/texts.parts',
     platform_independent=True,
-#    TARGET_PLATFORM=SystemPlatform('win32', 'any'),
     )
-
-
-forArch('x86')
-forArch('x86_64')
 
 ##env = Environment(tools = ['default', 'packaging'])
 ##inst = env.Install(r'c:\fardebug\plugins', DefaultEnvironment().Entry('$INSTALL_BIN'))

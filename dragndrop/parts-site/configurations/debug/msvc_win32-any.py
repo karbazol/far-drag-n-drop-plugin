@@ -16,7 +16,7 @@ config.VersionRange("6.0",
                     append=ConfigValues(
                         CCFLAGS=['/nologo','/Od','/MDd','/W3','/GZ'],
                         CXXFLAGS=['/EHsc','/GR'],
-                        CPPDEFINES=['DEBUG']
+                        CPPDEFINES=['DEBUG', '_DEBUG']
                         )
                     )
 config.VersionRange("7-*",

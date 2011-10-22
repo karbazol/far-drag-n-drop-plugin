@@ -3,11 +3,11 @@ Import('*')
 env.PartName('common')
 env.PartVersion('2.0.0')
 
-sources = env.Glob('*.cpp') + env.Glob('*.c')
-headers = env.Glob('*.hpp') + env.Glob('*.h')
-
-env.SdkInclude(headers)
-env.SdkLib(env.StaticLibrary(target='${PART_NAME}_${TARGET_ARCH}', source=sources))
+env.Part(alias = 'headers', parts_file = 'headers.parts', platform_independent = True)
+env.Part(alias = 'code_x86', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86')
+env.Part(alias = 'code_x86_64', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86_64')
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

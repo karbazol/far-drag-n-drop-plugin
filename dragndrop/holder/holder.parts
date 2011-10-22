@@ -5,31 +5,10 @@ Import('*')
 env.PartName('holder')
 env.PartVersion('2.0.0')
 
-env.DependsOn([
-    Component('hook')
-])
-
-env.Append(
-    LIBS=['user32', 'gdi32', 'shlwapi', 'ole32', 'advapi32', 'kernel32']
-)
-
-if env.isConfigBasedOn('release'):
-    env.Append(LINKFLAGS = ['/entry:WinMain'])
-    if env.get('TARGET_ARCH') == 'x86_64':
-        env.Append(LIBS=['libcmt'])
-
-sources  = env.Glob('*.cpp') + env.Glob('*.c')
-sources += env.RES(
-    source=env.VersionInfo(
-        FILE_DESCRIPTION = 'Global windows hook holder for ${TARGET_ARCH} architecture',
-        INTERNAL_NAME = '${ALIAS}${PROGSUFFIX}'
-    )
-)
-
-env.InstallBin(
-        env.Program(
-            target='${ALIAS}', source=sources)
-    )
+env.Part(alias = 'code_x86', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86')
+env.Part(alias = 'code_x86_64', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86_64')
 
 # vim: set et ts=4 sw=4 ai ft=python :
 
