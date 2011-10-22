@@ -33,47 +33,39 @@ Part(
     alias='plugin',
     parts_file='plugin/plugin.parts',
     platform_independent=True,
+    package_group='plugin',
     )
 Part(
     alias='common',
     parts_file='common/common.parts',
     platform_independent=True,
+    package_group='plugin',
     )
 Part(
     alias='dll',
     parts_file='dll/dll.parts',
     platform_independent=True,
+    package_group='plugin',
     )
 Part(
     alias='hook',
     parts_file='hook/hook.parts',
     platform_independent=True,
+    package_group='plugin',
     )
 Part(
     alias='holder',
     parts_file='holder/holder.parts',
     platform_independent=True,
+    package_group='plugin',
     )
 Part(
     alias='texts',
     parts_file='texts/texts.parts',
     platform_independent=True,
+    package_group='plugin',
     )
 
-env = Environment(tools = ['default', 'packaging'])
-#inst = env.Install(r'c:\fardebug\plugins', DefaultEnvironment().Entry('$INSTALL_BIN'))
-#for item in inst:
-#    print item.abspath
-pack = env.Package(
-        NAME = 'dragndrop',
-        VERSION = '2.0.0',
-        DESCRIPTION = 'Empty',
-        SUMMARY = 'Summary',
-        VENDOR = 'Karbazol',
-        X_MSI_LANGUAGE = 'en',
-        PACKAGETYPE = 'msi'
-        )
-env.Alias('pack', pack)
-
+#Alias('pack', DefaultEnvironment().ZipPackage('drgndrop', ['plugin']))
 # vim: set et ts=4 sw=4 ai ft=python :
 
