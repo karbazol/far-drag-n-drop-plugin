@@ -48,6 +48,7 @@ public:
 /**
  * Utility class representing a scope-lock guard.
  */
+template<class Lock>
 class ScopeLock
 {
 private:
@@ -72,7 +73,7 @@ public:
 /**
  * Utility macro used by LOCKIT
  */
-#define LOCKITSUFFIX(x,s) ScopeLock l##s(&x)
+#define LOCKITSUFFIX(x,s) ScopeLock<Lock> l##s(&x)
 
 /**
  * Macro to simplify ScopeLock objects usage.

@@ -355,7 +355,14 @@ LONG_PTR RunningDialogs::sendMessage(FarDialog* dlg, int msg, int param0, LONG_P
         m.param1 = param0;
         m.param2 = param1;
     }
-    return MainThread::instance()->sendDlgMessage(&m);
+    MainThread* mainThread = MainThread::instance();
+
+    if (!mainThread)
+    {
+        return 0;
+    }
+
+    return mainThread->sendDlgMessage(&m);
 }
 
 void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
@@ -370,6 +377,7 @@ void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
         return;
 
     int i;
+    SendDlgMessage(dlg->hwnd(), DM_ENABLEREDRAW, FALSE, 0);
     for (i = 0; i < dlg->itemsCount(); i++)
     {
         MyStringW s;
@@ -377,10 +385,10 @@ void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
         if (e->getControlText(i, s))
         {
             wchar_t* str = s;
-            //e->setControlText(i, s);
             SendDlgMessage(dlg->hwnd(), DM_SETTEXTPTR, i, (LONG_PTR)str);
         }
     }
+    SendDlgMessage(dlg->hwnd(), DM_ENABLEREDRAW, TRUE, 0);
 
     for (i = 0; i < (int)e->messages().size(); i++)
     {

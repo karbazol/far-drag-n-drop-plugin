@@ -14,7 +14,7 @@
 
 LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2);
 
-FarDialog::FarDialog(): _hwnd(0), _running(0)
+FarDialog::FarDialog(): _hwnd(0), _running(0), _destructing(0)
 {
     _running = CreateEvent(NULL, TRUE, TRUE, NULL);
     RunningDialogs* runningDialogs = RunningDialogs::instance();
@@ -26,6 +26,7 @@ FarDialog::FarDialog(): _hwnd(0), _running(0)
 
 FarDialog::~FarDialog()
 {
+    InterlockedExchange(&_destructing, 1L);
     hide();
     WaitForSingleObject(_running, INFINITE);
     CloseHandle(_running);
@@ -57,7 +58,7 @@ LONG_PTR FarDialog::dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2)
         This = reinterpret_cast<FarDialog*>(param2);
         if (This)
         {
-            This->_hwnd = dlg;
+            InterlockedExchangePointer(&This->_hwnd, dlg);
             This->sendMessage(DM_SETDLGDATA, 0, (LONG_PTR)This);
             if (runningDialogs)
             {
@@ -82,6 +83,15 @@ LONG_PTR FarDialog::dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2)
         return DefDlgProc(dlg, msg, param1, param2);
     }
 
+    if (This->_destructing)
+    {
+        if (msg != DN_CLOSE)
+        {
+            This->sendMessage(DM_CLOSE, 0, 0);
+            return DefDlgProc(dlg, msg, param1, param2);
+        }
+        return TRUE;
+    }
     LONG_PTR res = This->handle(msg, param1, param2);
 
     if (msg == DN_CLOSE && res)
@@ -138,7 +148,10 @@ int FarDialog::hide()
 {
     int res = static_cast<int>(sendMessage(DM_CLOSE, 0, 0));
 
-    _hwnd = 0;
+    if (res)
+    {
+        InterlockedExchangePointer(&_hwnd, 0);
+    }
 
     return res;
 }

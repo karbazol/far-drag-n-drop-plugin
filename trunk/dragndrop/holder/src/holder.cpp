@@ -371,12 +371,18 @@ bool Holder::setHook(bool value)
         holderApi->setHook(value);
     }
 
+    Hook* theHook = Hook::instance();
+    if (!theHook)
+    {
+        return false;
+    }
+
     if (value)
     {
         if (!_hookIsSet)
         {
             TRACE("Setting the hook\n");
-            _hookIsSet = Hook::instance()->setGetMsgProcHook();
+            _hookIsSet = theHook->setGetMsgProcHook();
 
             return _hookIsSet;
         }
@@ -387,7 +393,7 @@ bool Holder::setHook(bool value)
         if (_hookIsSet)
         {
             TRACE("Removing the hook\n");
-            _hookIsSet = !Hook::instance()->resetGetMsgProcHook();
+            _hookIsSet = !theHook->resetGetMsgProcHook();
 
             return !_hookIsSet;
         }

@@ -21,7 +21,7 @@ public:
      * Interface used to notify about file copying progress
      */
     struct FileCopyNotify
-    {                                                      
+    {
         virtual ~FileCopyNotify(){};
         /**
          * @brief What to do if the file allready exists

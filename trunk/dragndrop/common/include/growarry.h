@@ -1,7 +1,7 @@
 /**
  * @file growarry.h
  * Contains declaration of GrowOnlyArray template class.
- * 
+ *
  * $Id$
  */
 

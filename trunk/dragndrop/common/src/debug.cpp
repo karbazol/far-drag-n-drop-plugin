@@ -113,6 +113,13 @@ void DbgTrace(const char* lpszFormat,...)
 
     DebugBuffs* p = GetDbgThreadBuff();
 
+    if (!p)
+    {
+        /** Something is wrong */
+        DebugBreak();
+        return;
+    }
+
     wvnsprintfA(p->pBuff, static_cast<int>(sizeof(p->buff0) - (p->pBuff - p->buff0)), lpszFormat, va);
     p->pBuff = p->buff0 + lstrlenA(p->buff0);
 

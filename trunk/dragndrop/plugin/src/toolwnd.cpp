@@ -51,13 +51,14 @@ void ToolWindow::onCreate()
         _dropHelper = NULL;
     }
 
-    HolderApi::instance()->windowsCreated(parent(), hwnd());
+    HolderApi* holderApi = HolderApi::instance();
 
-    Config* config = Config::instance();
-    if (config && config->allowDrop())
+    if (holderApi)
     {
-        HolderApi* holderApi = HolderApi::instance();
-        if (holderApi)
+        holderApi->windowsCreated(parent(), hwnd());
+
+        Config* config = Config::instance();
+        if (config && config->allowDrop())
         {
             holderApi->setHook(true);
         }
@@ -151,7 +152,13 @@ HWND ToolWindow::onGetActiveFar()
 
     hide();
 
-    return HolderApi::instance()->getActiveDnd(parent());
+    HolderApi* holderApi = HolderApi::instance();
+    if (!holderApi)
+    {
+        return NULL;
+    }
+
+    return holderApi->getActiveDnd(parent());
 }
 
 #ifdef _DEBUG
@@ -523,7 +530,14 @@ HRESULT ToolWindow::Drop(IDataObject* obj, DWORD keyState, POINTL ptl, DWORD* ef
 
     hide();
 
-    HRESULT hr = DropProcessor::instance()->processDrop(obj, effect, dir);
+    DropProcessor* dropProcessor = DropProcessor::instance();
+
+    if (!dropProcessor)
+    {
+        return E_OUTOFMEMORY;
+    }
+
+    HRESULT hr = dropProcessor->processDrop(obj, effect, dir);
 
     return hr;
 }

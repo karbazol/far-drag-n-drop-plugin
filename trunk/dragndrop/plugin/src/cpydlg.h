@@ -10,11 +10,14 @@
 
 #include "fardlg.h"
 #include "mystring.h"
+#include "filelist.h"
+#include "filecopy.h"
+
 
 /**
  * Implements Far-based copy progress dialog.
  */
-class CopyDialog : public FarDialog
+class CopyDialog : public FarDialog, public FileListNotify, public FileCopier::FileCopyNotify
 {
 private:
 #pragma pack(push, 1)
@@ -43,9 +46,9 @@ private:
     __int64 _currentSize;
     /*MyStringW _srcFile;
     MyStringW _destFile;*/
-    int _filesProcessed;
-    int _filesToProcess;
-    bool _fileListProcessed;
+    volatile long _filesProcessed;
+    volatile long _filesToProcess;
+    volatile long _fileListProcessed;
     LARGE_INTEGER _timeStart;
     int _speed;
     void updateTotalSize();
@@ -54,6 +57,13 @@ private:
     void updateProgressBar(int value, int controlId);
     void updateTimesAndSpeed();
     void calcSpeed();
+private: /* FileListNotify implementation */
+    bool onNextEntry(const int reason, const FileListEntry& e);
+    bool onAllProcessed();
+private: /* FileCopier::FileCopyNotify */
+    bool onFileExists(const wchar_t* src, const wchar_t* dest);
+    bool onFileStep(const __int64& step);
+    bool onFileError(const wchar_t* src, const wchar_t* dest, DWORD errorNumber);
 protected:
     InitDialogItem* items();
     int itemsCount();
@@ -69,7 +79,6 @@ public:
 
     bool appendFile(const __int64& size, bool lastOne);
     bool nextFile(const wchar_t* src, const wchar_t* dest, const __int64& size);
-    bool step(const __int64& step);
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__CPYDLG_H__

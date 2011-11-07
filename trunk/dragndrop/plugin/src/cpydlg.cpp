@@ -1,6 +1,7 @@
 // $Id$
 
 #include "cpydlg.h"
+#include "cperrdlg.h"
 #include "ddlng.h"
 #include "utils.h"
 
@@ -26,7 +27,7 @@ CopyDialog::CopyDialogItems CopyDialog::copyDialogItemsTemplate =
 CopyDialog::CopyDialog(): FarDialog(), _items(copyDialogItemsTemplate),
     _totalProcessedSize(0), _totalSize(0), _currentProcessedSize(0),
     _currentSize(0), /*_srcFile(), _destFile(),*/ _filesToProcess(0),
-    _filesProcessed(-1), _fileListProcessed(false), _speed(0)
+    _filesProcessed(-1), _fileListProcessed(0), _speed(0)
 {
     wsprintf(szFilesProcessed, GetMsg(MFilesProcessed), 0, 0);
 
@@ -133,10 +134,14 @@ void CopyDialog::updateFilesProcessed()
 static int calcPercents(const __int64& value, const __int64& base, int len)
 {
     if (!value)
+    {
         return 0;
+    }
 
-    if (!base)
+    if (value >= base)
+    {
         return len;
+    }
 
     return static_cast<int>(value * len / base);
 }
@@ -225,15 +230,18 @@ void CopyDialog::calcSpeed()
 bool CopyDialog::appendFile(const __int64& size, bool lastOne)
 {
     if (!running())
+    {
         return false;
+    }
+
     if (lastOne)
     {
-        _fileListProcessed = true;
+        InterlockedExchange(&_fileListProcessed, 1);
     }
     else
     {
-        _totalSize += size;
-        _filesToProcess++;
+        InterlockedExchangeAdd64(&_totalSize, size);
+        InterlockedIncrement(&_filesToProcess);
         if (hwnd())
         {
             updateTotalSize();
@@ -249,12 +257,12 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
 {
     if (running())
     {
-        _filesProcessed++;
+        InterlockedIncrement(&_filesProcessed);
         MyStringW srcFile = src;
         MyStringW destFile = dest;
 
         _totalProcessedSize += (_currentSize - _currentProcessedSize);
-        _currentProcessedSize = 0;
+        InterlockedExchange64(&_currentProcessedSize, 0);
         _currentSize = size;
 
         TruncPathStr(srcFile, 40);
@@ -269,23 +277,6 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
         return true;
     }
 
-    return false;
-}
-
-bool CopyDialog::step(const __int64& step)
-{
-    if (running())
-    {
-        _currentProcessedSize += step;
-        _totalProcessedSize += step;
-
-        calcSpeed();
-
-        updateTimesAndSpeed();
-        updatePercents();
-
-        return true;
-    }
     return false;
 }
 
@@ -312,6 +303,84 @@ int CopyDialog::bottom()
 DWORD CopyDialog::flags()
 {
     return 0x10;
+}
+
+bool CopyDialog::onNextEntry(const int /*reason*/, const FileListEntry& e)
+{
+    if (!this)
+    {
+        return true;
+    }
+
+    LARGE_INTEGER size;
+    size.LowPart  = e.data().nFileSizeLow;
+    size.HighPart = e.data().nFileSizeHigh;
+
+    if (FILE_ATTRIBUTE_DIRECTORY != (e.data().dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+            && !appendFile(size.QuadPart, false))
+        return false;
+
+    return true;
+}
+
+bool CopyDialog::onAllProcessed()
+{
+    if (!this)
+    {
+        return true;
+    }
+
+    if (!appendFile(0, true))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool CopyDialog::onFileExists(const wchar_t* src, const wchar_t* dest)
+{
+    src;
+    dest;
+
+    /** @todo Ask user whether to overwrite files bug #3 */
+    return true;
+}
+
+bool CopyDialog::onFileStep(const __int64& step)
+{
+    if (running())
+    {
+        _currentProcessedSize += step;
+        _totalProcessedSize += step;
+
+        calcSpeed();
+
+        updateTimesAndSpeed();
+        updatePercents();
+
+        return true;
+    }
+    return false;
+}
+
+bool CopyDialog::onFileError(const wchar_t* src, const wchar_t* dest, DWORD errorNumber)
+{
+    /** @todo Implement error check */
+    if (running())
+    {
+        // give the _dialog a chance to appear
+        while (sendMessage(DM_GETTEXTPTR, 0, 0) == 0)
+        {
+            Sleep(1);
+        }
+    }
+    CopyErrorDialog dlg;
+    if (CopyErrorDialog::cancel == dlg.show(src, dest, errorNumber))
+    {
+        return true;
+    }
+    return false;
 }
 
 // vim: set et ts=4 ai :

@@ -24,6 +24,9 @@ MainThread::MainThread():_posted(), _sendGuard(), _postGuard()
     _threadId = GetCurrentThreadId();
     _eventMessage = CreateEvent(NULL, FALSE, FALSE, NULL);
     _eventProcessed = CreateEvent(NULL, FALSE, FALSE, NULL);
+
+    // Initialize the stuff which must be run in mainthread
+    RunningDialogs::instance();
 }
 
 MainThread::~MainThread()

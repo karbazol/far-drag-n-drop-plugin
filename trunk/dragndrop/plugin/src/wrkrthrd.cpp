@@ -14,7 +14,7 @@ HRESULT WorkerThread::execute(IDataObject* obj, const wchar_t* destDir)
     }
 
     DWORD id;
-    HANDLE hThread = CreateThread(NULL, 0, 
+    HANDLE hThread = CreateThread(NULL, 0,
             reinterpret_cast<LPTHREAD_START_ROUTINE>(&thread), this, 0, &id);
 
     if (!hThread)

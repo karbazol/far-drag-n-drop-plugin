@@ -89,5 +89,10 @@ void FarDialog::freeFarItems(void* farItems)
     delete [] reinterpret_cast<FarDialogItem*>(farItems);
 }
 
+bool FarDialog::checked(int id)
+{
+    return checkState(id) != BSTATE_UNCHECKED;
+}
+
 // vim: set et ts=4 sw=4 ai :
 

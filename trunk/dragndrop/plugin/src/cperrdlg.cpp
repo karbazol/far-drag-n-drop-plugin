@@ -47,6 +47,11 @@ void CopyErrorDialog::prepareItems(int consoleWidth, int consoleHeight)
 {
     consoleHeight;
 
+    if (!_items)
+    {
+        return;
+    }
+
     int maxStrLen = consoleWidth - 8;
     _srcFileName = TruncPathStr(_srcFileName, maxStrLen);
     _dstFileName = TruncPathStr(_dstFileName, maxStrLen);

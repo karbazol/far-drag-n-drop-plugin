@@ -32,6 +32,8 @@ def lngBuilder(target, source, env):
     index = 0
     for src in source:
         templ = LngTemplate(src)
+        # Override encoding with one from env
+        templ.ENCODING = env.get('ENCODING', templ.ENCODING)
         assert target[index].name == templ.HEADER_NAME
         header = open(target[index].abspath, "w", encoding = 'mbcs')
         index += 1

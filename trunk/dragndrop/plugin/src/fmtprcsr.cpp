@@ -6,11 +6,11 @@
 
 FormatProcessor* FormatProcessor::create(IDataObject* obj, const wchar_t* destDir)
 {
-    static struct 
+    static struct
     {
         CLIPFORMAT fmt;
         FormatCreator creator;
-    } fmts[] = 
+    } fmts[] =
     {
         {CF_HDROP, &HdropProcessor::create},
         {CF_FILEDESCRIPTORW, &FileDescriptorProcessor::create},
