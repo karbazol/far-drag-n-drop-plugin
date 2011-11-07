@@ -16,6 +16,7 @@
 #include "../mainthrd.h"
 #include "../thrdpool.h"
 #include <dll/mystring.h>
+#include <common/ddlock.h>
 
 static struct PluginStartupInfo theFar={0};
 static struct FarStandardFunctions farFuncs={0};
@@ -187,44 +188,57 @@ struct MessageInfo
     MessageInfo(): wMessage(), aMessage(0){}
 };
 
-typedef GrowOnlyArray<MessageInfo> Messages;
-
-static void killMessages(Messages* p)
+class Messages: public GrowOnlyArray<MessageInfo>, public Lock
 {
-    delete p;
-}
-
-static Messages* messagesInstance()
-{
-    static Messages* m = 0;
-    if (!m)
+private:
+    CriticalSection _lock;
+    Messages(): GrowOnlyArray<MessageInfo>(), _lock() {}
+    ~Messages(){}
+    static void killMessages(Messages* p)
     {
-        m = new Messages;
-
-        if (m)
+        delete p;
+    }
+private:
+    /* Lock interface implementation */
+    void lock() {_lock.lock();}
+    bool tryLock() {return _lock.tryLock();}
+    void unlock() {_lock.unlock();}
+public:
+    static Messages* instance()
+    {
+        static Messages* m = 0;
+        if (!m)
         {
-            Dll* dll = Dll::instance();
-            if (dll)
+            m = new Messages;
+
+            if (m)
             {
-                dll->registerProcessEndCallBack(
-                    reinterpret_cast<PdllCallBack>(&killMessages), m);
+                Dll* dll = Dll::instance();
+                if (dll)
+                {
+                    dll->registerProcessEndCallBack(
+                        reinterpret_cast<PdllCallBack>(&killMessages), m);
+                }
             }
         }
-    }
 
-    return m;
-}
+        return m;
+    }
+};
 
 /**
  * Reads a message from the plug-in's language file
  */
 const wchar_t* GetMsg(int MsgId)
 {
-    Messages* messages = messagesInstance();
+    Messages* messages = Messages::instance();
     if (!messages)
     {
         return L"";
     }
+
+    LOCKIT(*messages);
+
     if (static_cast<unsigned int>(MsgId) >= messages->size())
     {
         messages->size(MsgId+1);

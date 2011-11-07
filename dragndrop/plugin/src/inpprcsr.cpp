@@ -300,8 +300,10 @@ bool InputProcessor::readFromSystem(HANDLE h, bool waitForInput)
 
 void InputProcessor::processBuffer()
 {
-    if (_userSize)
+    if (_userSize || !_buffer)
+    {
         return;
+    }
 
     for (;_userSize < _buffSize; _userSize++)
     {

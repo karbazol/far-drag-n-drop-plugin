@@ -4,7 +4,7 @@
 
 #include "fmtprcsr.h"
 #include "filelist.h"
-#include "dlgnotfy.h"
+#include "cpydlg.h"
 
 /**
  * Class to process data of CF_HDROP clipboard format.
@@ -17,7 +17,7 @@ private:
     HRESULT farCopyHDrop(MyStringW& files);
     bool initStringInfo(MyStringW& s, HGLOBAL hDrop);
     HRESULT processDir(const FileListEntry& e);
-    HRESULT processFile(const FileListEntry& e, CopyDialogNotify* notify);
+    HRESULT processFile(const FileListEntry& e, CopyDialog* dialog);
 public:
     HRESULT operator()(IDataObject*, DWORD*);
     static inline FormatProcessor* create(){return new HdropProcessor();}

@@ -39,7 +39,9 @@ HRESULT DropProcessor::processDrop(IDataObject* obj, DWORD* effect, const wchar_
 {
     HRESULT hr = handleAsync(obj, effect, destDir);
     if (SUCCEEDED(hr))
+    {
         return hr;
+    }
 
     FormatProcessor* process = FormatProcessor::create(obj, destDir);
     if (process)
@@ -88,9 +90,16 @@ HRESULT DropProcessor::handleAsync(IDataObject* obj, DWORD* /*effect*/, const wc
     hr = op->StartOperation(NULL);
     if (FAILED(hr)) return hr;
 
-    ThreadPool::instance()->newThread(obj, destDir);
+    ThreadPool* threadPool = ThreadPool::instance();
 
-    return S_OK;
+    if (!threadPool)
+    {
+        return E_OUTOFMEMORY;
+    }
+
+    hr = threadPool->newThread(obj, destDir);
+
+    return hr;
 }
 
 // vim: set et ts=4 ai :

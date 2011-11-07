@@ -10,8 +10,8 @@
 #pragma warning(push, 3)
 #include "plugin.hpp"
 #pragma warning(pop)
-#include "mystring.h"
-#include "growarry.h"
+#include <dll/mystring.h>
+#include <common/growarry.h>
 
 struct FAR_FIND_DATA_W
 {
@@ -41,7 +41,7 @@ struct PluginPanelItemW
     DWORD_PTR       UserData;
     DWORD           CRC32;
     DWORD_PTR       Reserved[2];
-    PluginPanelItemW(): Description(), Owner(), CustomColumnData(){}
+    PluginPanelItemW(): FindData(), Description(), Owner(), CustomColumnData(){}
 };
 
 typedef GrowOnlyArray<PluginPanelItemW> PluginPanelItemsW;

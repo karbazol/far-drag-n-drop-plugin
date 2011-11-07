@@ -4,7 +4,6 @@
 #include "utils.h"
 #include "configure.hpp"
 #include "filelist.h"
-#include "dlgnotfy.h"
 #include "filecopy.h"
 #include "cpydlg.h"
 
@@ -49,15 +48,26 @@ HRESULT HdropProcessor::operator()(IDataObject* obj, DWORD* /*effect*/)
 
 HRESULT HdropProcessor::farCopyHDrop(MyStringW& files)
 {
-    CopyDialog dlg;
-    dlg.show(false);
-    CopyDialogNotify n(this, &dlg);
-    FileList list(files, &n);
+    CopyDialog* dlg = new CopyDialog();
+    if (!dlg)
+    {
+        return E_OUTOFMEMORY;
+    }
+
+    dlg->show(false);
+    FileList* list = new FileList(files, dlg);
+    if (!list)
+    {
+        delete dlg;
+        return E_OUTOFMEMORY;
+    }
+
     FileListEntry e;
 
-    while (list.next(e))
+    HRESULT hr = S_OK;
+
+    while (hr == S_OK && list->next(e))
     {
-        HRESULT hr;
         if ((e.data().dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ==
                 FILE_ATTRIBUTE_DIRECTORY)
         {
@@ -65,13 +75,15 @@ HRESULT HdropProcessor::farCopyHDrop(MyStringW& files)
         }
         else
         {
-            hr = processFile(e, &n);
+            hr = processFile(e, dlg);
         }
 
-        if (hr != S_OK)
-            return hr;
     }
-    return S_OK;
+
+    delete dlg;
+    delete list;
+
+    return hr;
 }
 
 HRESULT HdropProcessor::processDir(const FileListEntry& e)
@@ -83,7 +95,7 @@ HRESULT HdropProcessor::processDir(const FileListEntry& e)
     return S_OK;
 }
 
-HRESULT HdropProcessor::processFile(const FileListEntry& e, CopyDialogNotify* n)
+HRESULT HdropProcessor::processFile(const FileListEntry& e, CopyDialog* dialog)
 {
     MyStringW destPath = dir().root() / e.subpath();
 
@@ -91,10 +103,12 @@ HRESULT HdropProcessor::processFile(const FileListEntry& e, CopyDialogNotify* n)
     size.LowPart = e.data().nFileSizeLow;
     size.HighPart = e.data().nFileSizeHigh;
 
-    if (n && n->dialog() && !n->dialog()->nextFile(e.srcpath(), destPath, size.QuadPart))
+    if (dialog && !dialog->nextFile(e.srcpath(), destPath, size.QuadPart))
+    {
         return S_FALSE;
+    }
 
-    FileCopier copier(e.srcpath(), destPath, n);
+    FileCopier copier(e.srcpath(), destPath, dialog);
     if (!copier.result())
     {
         return HRESULT_FROM_WIN32(GetLastError());

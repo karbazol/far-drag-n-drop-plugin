@@ -34,8 +34,9 @@ class DialogShower;
 class FarDialog
 {
 private:
-    HANDLE volatile _hwnd;
+    HANDLE _hwnd;
     HANDLE _running;
+    volatile long _destructing;
     static LONG_PTR WINAPI dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2);
     int doShow();
     int run(void*& farItems);
@@ -62,7 +63,7 @@ protected:
 public:
     FarDialog();
     virtual ~FarDialog();
-   
+
     /**
      * Allows to get Far dialog handle.
      * @return value of underlaying Far dialog handle.
@@ -81,7 +82,7 @@ public:
 
     int show(bool modal);
     int hide();
-    
+
     LONG_PTR sendMessage(int msg, int param1, LONG_PTR param2);
     void postMessage(int msg, int param1, LONG_PTR param2);
 
@@ -90,10 +91,7 @@ public:
     bool disable(int id);
     int switchCheckBox(int id, int state);
     int checkState(int id);
-    inline bool checked(int id)
-    {
-        return checkState(id) != BSTATE_UNCHECKED;
-    }
+    bool checked(int id);
     friend class DialogShower;
 };
 

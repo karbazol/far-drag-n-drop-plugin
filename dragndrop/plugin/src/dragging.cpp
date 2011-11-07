@@ -135,15 +135,22 @@ bool Dragging::start()
     PluginPanelItemsW items = FarGetActivePanelItems(true);
 
     ShPtr<IDataObject> dataObj;
-    DataContainer data(dir, items);
+    DataContainer* data = new DataContainer(dir, items);
+
+    if (!data)
+    {
+        return false;
+    }
 
     /* WinThread::startDragging will post a message for tool window.
        When the messages will be picked up in the windows thread the
        ToolWindow::prepareForDragging will be called. */
-    if (winThread->startDragging(data))
+    if (winThread->startDragging(*data))
     {
         _dragging = true;
     }
+
+    delete data;
 
     return _dragging;
 }
@@ -155,7 +162,12 @@ bool Dragging::showPopupMenu()
     {
         DataContainer data(FarGetActivePanelDirectory(), FarGetActivePanelItems(true));
 
-        return WinThread::instance()->showPopupMenu(data);
+        WinThread* winThread = WinThread::instance();
+        if (!winThread)
+        {
+            return false;
+        }
+        return winThread->showPopupMenu(data);
     }
     return false;
 }
