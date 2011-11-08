@@ -1,0 +1,27 @@
+Import('*')
+
+env.PartName(env.subst('tests_${TARGET_ARCH}'))
+
+env.DependsOn([
+        Component('tut'),
+#        Component('texts'),
+        Component('dll.headers'),
+        Component(env.subst('common.code_${TARGET_ARCH}')),
+        ])
+
+env.Append(
+#    CPPPATH=['#/../common_${A_OR_U}', '.', 'src'],
+    CXXFLAGS=['/EHsc', '/GR'],
+#    CPPDEFINES=['_FAR_USE_FARFINDDATA'],
+    LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32',
+        'kernel32', 'uuid'],
+    )
+
+env.UnitTest('mystring_test', [
+        'tests/mystring_test.cpp',
+        'tests/mystring_stubs.cpp',
+        'src/mystring.cpp',
+        'tests/main.cpp'], make_pdb = True)
+
+# vim: set et ts=4 sw=4 ft=python :
+

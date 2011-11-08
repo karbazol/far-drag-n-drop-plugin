@@ -9,10 +9,10 @@ env.Part(alias = 'code_x86_64', parts_file = 'code.parts',
         TARGET_PLATFORM = 'win32-x86_64')
 
 env.Part(alias = 'tests_x86', parts_file = 'tests.parts',
-#        TARGET_PLATFORM = 'win32-x86'
+        TARGET_PLATFORM = 'win32-x86'
         )
-#env.Part(alias = 'tests_x86_64', parts_file = 'tests.parts',
-#        TARGET_PLATFORM = 'win32-x86_64')
+env.Part(alias = 'tests_x86_64', parts_file = 'tests.parts',
+        TARGET_PLATFORM = 'win32-x86_64')
 
 # vim: set et ts=4 sw=4 ai ft=python :
 
