@@ -7,8 +7,6 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__CONFIGURE_HPP__
 #define __KARBAZOL_DRAGNDROP_2_0__CONFIGURE_HPP__
 
-#include <windows.h>
-
 /**
  * The class is used to manipulate with configuration settings
  */
@@ -22,7 +20,7 @@ private:
     static const wchar_t* _showMenuName;
     static const wchar_t* _useShellObjectName;
 private:
-    DWORD _checkKey;
+    unsigned int _checkKey;
     bool _allowDrop;
     bool _shellCopy;
     bool _showMenu;
@@ -34,8 +32,8 @@ private:
     static void kill(Config* p);
 public:
     static Config* instance();
-    inline DWORD checkKey() const {return _checkKey;}
-    void checkKey(DWORD value);
+    inline unsigned int checkKey() const {return _checkKey;}
+    void checkKey(unsigned int value);
     inline bool allowDrop() const {return _allowDrop;}
     void allowDrop(bool value);
     inline bool shellCopy() const {return _shellCopy;}
