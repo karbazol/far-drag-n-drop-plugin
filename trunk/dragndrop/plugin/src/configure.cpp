@@ -13,26 +13,26 @@
 
 /**
  * @brief Configuration dialog items.
- * 
+ *
  * Represents configuration dialog items
  */
 struct ConfigDlgItems
 {
     InitDialogItem configTitle;
-    
+
     InitDialogItem checkKeyToStartDrag;
     InitDialogItem radioLeftCtl;
     InitDialogItem radioLeftAlt;
     InitDialogItem radioShift;
     InitDialogItem radioRightCtl;
     InitDialogItem radioRightAlt;
-    
+
     InitDialogItem sepPanels;
     InitDialogItem checkEnableDrop;
     InitDialogItem edtPixelsPassed;
     InitDialogItem txtPixelsPassed0;
     InitDialogItem txtPixelsPassed1;
-    
+
     InitDialogItem sepOptions;
     InitDialogItem checkUseShellCopy;
     InitDialogItem checkShowMenu;
@@ -106,7 +106,7 @@ public:
         else
         {
             switchCheckBox(getMyItemId(checkKeyToStartDrag), BSTATE_CHECKED);
-            
+
             int key;
             switch (value)
             {
@@ -128,7 +128,7 @@ public:
             default:
                 key = getMyItemId(radioLeftCtl);
             }
-            
+
             enable(key);
             switchCheckBox(key, BSTATE_CHECKED);
 
@@ -144,7 +144,7 @@ public:
                 enable(i);
                 switchCheckBox(i, BSTATE_UNCHECKED);
             }
-            
+
         }
     }
 
@@ -274,7 +274,7 @@ void Config::kill(Config* p)
     delete p;
 }
 
-void Config::checkKey(DWORD value)
+void Config::checkKey(unsigned int value)
 {
     if (value != _checkKey)
     {
