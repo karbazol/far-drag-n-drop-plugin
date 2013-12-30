@@ -1,0 +1,36 @@
+Import('*')
+
+env.PartName(env.subst('code_${TARGET_ARCH}'))
+
+env.DependsOn([
+        Component('texts'),
+        Component(env.subst('dll.code_${TARGET_ARCH}')),
+        Component(env.subst('hook.code_${TARGET_ARCH}')),
+        ])
+
+env.Append(
+    CPPPATH=['#/../common_${A_OR_U}', '.'],
+    CPPDEFINES=['_FAR_USE_FARFINDDATA'],
+    LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32',
+        'kernel32', 'uuid'],
+    )
+
+if env.isConfigBasedOn('release'):
+    env.Append(LINKFLAGS=['/entry:DllMain'])
+    env.Append(LIBS=['libcmt'])
+
+sources  = env.Glob('src/*.cpp') + env.Glob('src/*.c')
+sources += env.Glob('src/$ANSI_OR_UNICODE/*.cpp')
+sources += env.Glob('src/$ANSI_OR_UNICODE/*.c')
+sources += env.Glob('src/$ANSI_OR_UNICODE/*.def')
+
+sources += env.RES(target='plugin.res', source=env.VersionInfo(
+    FILE_DESCRIPTION = 'FAR manager plug-in module.',
+    INTERNAL_NAME = '${PART_PARENT_NAME}_${TARGET_ARCH}${SHLIBSUFFIX}',
+    )
+)
+
+env.InstallTarget(env.SharedLibrary(target='${PART_PARENT_NAME}_${TARGET_ARCH}', source=sources))
+
+# vim: set et ts=4 sw=4 ft=python :
+

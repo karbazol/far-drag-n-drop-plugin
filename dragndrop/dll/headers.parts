@@ -1,0 +1,12 @@
+Import('*')
+
+env.PartName('headers')
+
+env.DependsOn([
+        Component('common.headers')
+        ])
+
+source = env.Glob('include/*.h') + env.Glob('include/*.hpp')
+env.SdkInclude(source, sub_dir = 'dll')
+
+# vim: set et ts=4 sw=4 ai ft=python :

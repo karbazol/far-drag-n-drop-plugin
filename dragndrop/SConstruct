@@ -1,0 +1,76 @@
+from parts import *
+
+# Set up version information
+SetOptionDefault('COMPANY_NAME', 'Eugene Leskinen')
+SetOptionDefault('PRODUCT_NAME', 'Drag & drop plug-in for FAR manage')
+SetOptionDefault('LEGAL_COPYRIGHT', '2005-2011 Eugene Leskinen')
+SetOptionDefault('PRODUCT_VERSION_STRING', '2.0.0.${SVN_REVISION}')
+
+# Enable smart logging
+SetOptionDefault('LOGGER', '$TEXT_LOGGER')
+SetOptionDefault('PART_LOGGER', '$PART_TEXT_LOGGER')
+SetOptionDefault('CONFIG', 'release')
+SetOptionDefault('CPPDEFINES', [])
+
+_ansiOrUnicode = lambda env: 'unicode' if env.get('UNICODE') else 'ansi'
+_ansiOrUnicodeShort = lambda env: _ansiOrUnicode(env)[0]
+
+SetOptionDefault('_ansiOrUnicode', _ansiOrUnicode)
+SetOptionDefault('_ansiOrUnicodeShort', _ansiOrUnicodeShort)
+SetOptionDefault('ANSI_OR_UNICODE', '${_ansiOrUnicode(__env__)}')
+SetOptionDefault('A_OR_U', '${_ansiOrUnicodeShort(__env__)}')
+
+# The plugin uses unicode inside. When MBCS is used it is specified explicitly
+SetOptionDefault('CPPDEFINES', ['UNICODE', '_UNICODE'])
+
+SetOptionDefault('INSTALL_ROOT', '#install')
+SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/${CONFIG}_${ANSI_OR_UNICODE}/drgndrop/')
+SetOptionDefault('SDK_LIB_ROOT', '${SDK_ROOT}/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/lib')
+SetOptionDefault('SDK_BIN_ROOT', '${SDK_ROOT}/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/bin')
+SetOptionDefault('BUILD_DIR','$BUILD_DIR_ROOT/${CONFIG}_${TARGET_PLATFORM}_${ANSI_OR_UNICODE}/${ALIAS}')
+
+Part(
+    alias='plugin',
+    parts_file='plugin/plugin.parts',
+    platform_independent=True,
+    package_group='plugin',
+    )
+Part(
+    alias='common',
+    parts_file='common/common.parts',
+    platform_independent=True,
+    package_group='plugin',
+    )
+Part(
+    alias='dll',
+    parts_file='dll/dll.parts',
+    platform_independent=True,
+    package_group='plugin',
+    )
+Part(
+    alias='hook',
+    parts_file='hook/hook.parts',
+    platform_independent=True,
+    package_group='plugin',
+    )
+Part(
+    alias='holder',
+    parts_file='holder/holder.parts',
+    platform_independent=True,
+    package_group='plugin',
+    )
+Part(
+    alias='texts',
+    parts_file='texts/texts.parts',
+    platform_independent=True,
+    package_group='plugin',
+    )
+Part(
+    alias='tut',
+    parts_file='tut.parts',
+    platform_independent=True,
+    )
+
+#Alias('pack', DefaultEnvironment().ZipPackage('drgndrop', ['plugin']))
+# vim: set et ts=4 sw=4 ai ft=python :
+

@@ -1,0 +1,191 @@
+# $Id: SConstruct.plain 61 2010-09-30 19:58:29Z Karbazol $
+import os
+import copy
+import string
+from SCons.Util import is_List
+
+opts = Variables(None, ARGUMENTS)
+opts.Add(BoolVariable('debug', 'enable debug build', 'no'))
+opts.Add(BoolVariable('unicode', 'build unicode version of the plugin', 'no'))
+opts.Add('plugdir', 'directory where to store the plugin', 'c:\\fardebug\\plugins\\drgndrop')
+optsenv = Environment(options=opts)
+Help(opts.GenerateHelpText(optsenv))
+
+osenv = os.environ.copy()
+osenv['PATH'] = osenv['PATH'] + ';' + os.path.abspath('tools')
+
+if optsenv['unicode']:
+    chardir = 'unicode'
+    suffix = '_u'
+else:
+    chardir = 'ansi'
+    suffix = '_a'
+
+if optsenv['debug']:
+    outDir = 'dbin'
+    objDir = 'dobj'
+else:
+    outDir = 'bin'
+    objDir = 'obj'
+
+def getCtagsSrc(source,env,res):
+    if is_List(source):
+        for s in source:
+            getCtagsSrc(s,env,res)
+        return None
+    strSource = str(source)
+    (f, e) = os.path.splitext(strSource)
+    if e in env['CTAGSSUFFIXES']:
+        if not source in res:
+            res += [source]
+    for s in source.children():
+        getCtagsSrc(s,env,res)
+    return None
+
+def ctagsEmmiter(target, source, env):
+    src = []
+    getCtagsSrc(source,env,src)
+    return (target, src)
+
+ctagsSuffixes=['.cpp', '.h', '.hpp']
+
+commonCppPath  = [os.path.join("..", "common"+suffix)]
+commonCppPath += ["common"]
+commonCppPath += ["hook"]
+commonCppPath += ["holder"]
+commonCppPath += ["dll"]
+commonCppPath += ["plugin"]
+
+commonCppFlags  = ['/W4', '/WX']
+commonCppFlags += ['/GR-'] # No RTTI
+commonCppFlags += ['/Gy'] # Function level linking
+commonCppFlags += ['/D_WIN32_WINNT=0x0500'] # Be compatible to Windows 2000
+commonCppFlags += ['/D_FAR_USE_FARFINDDATA']
+commonCppFlags += ['/D_UNICODE', '/DUNICODE'] # Use unicode versions of functions by default
+
+commonLinkFlags  = [
+'/INCREMENTAL:NO', '/DEBUG', '/OPT:REF']
+
+
+if optsenv['debug'] :
+    commonCppFlags  += ['/MTd']
+    commonCppFlags  += ['/Z7']
+    commonCppFlags  += ['/D_DEBUG']
+    commonCppFlags  += ['/Od']
+else:
+    commonCppFlags  += ['/MT']
+    commonCppFlags  += ['/DNDEBUG']
+    commonCppFlags  += ['/O1']              # Optimize them all
+    commonLinkFlags += ['/NODEFAULTLIB']
+    commonLinkFlags += ['/opt:nowin98']     # Minimize size of binaries
+
+env = Environment(options=opts, tools=['default', 'packaging'], MSVS_VERSION='8.0') 
+
+env.Tool('msvc')
+
+env.Append(CPPPATH=commonCppPath, CPATH=commonCppPath, CXXFLAGS=commonCppFlags, 
+        CFLAGS=commonCppFlags, LINKFLAGS=commonLinkFlags, CTAGSSUFFIXES=ctagsSuffixes, 
+        CTAGS='ctags', CTAGSFLAGS='--c++-types=+xp --fields=+iaS --extra=+q', LIBPATH=outDir)
+
+if env.Detect('ctags'):
+    env['BUILDERS']['Tags'] = Builder(action='$CTAGS $CTAGSFLAGS $SOURCES', emitter=ctagsEmmiter)
+env.PrependENVPath('PATH', os.path.abspath('tools'))
+env['BUILDERS']['Lng'] = Builder(action='lng.generator.exe -oh ${TARGET.dir} -ol $OUTDIR $SOURCE')
+
+def getSources(dir):
+    files = []
+    for file in os.listdir(dir):
+        name, ext = os.path.splitext(file)
+        if string.upper(ext) == '.CPP' or string.upper(ext) == '.C':
+            files.append(file)
+    return files
+
+def getObjects(srcdir=".", environ=env, outdir=objDir):
+    res = []
+    for s in getSources(srcdir):
+        (b, e) = os.path.splitext(s)
+        s = os.path.join(srcdir, s)
+        res += [environ.Object(source=s, target=os.path.join(outdir, b))]
+    return res
+
+libs  = ['kernel32']
+libs += ['user32']
+libs += ['shell32']
+libs += ['shlwapi']
+libs += ['oleaut32']
+libs += ['ole32']
+libs += ['uuid']
+libs += ['gdi32']
+libs += ['advapi32']
+if not optsenv['debug']:
+    libs += ['libcmt']
+
+pluginLng = env.Lng(source="plugin\dndlng.templ", target=["plugin\ddlng.h", 
+        os.path.join(outDir, "dndeng.lng"), os.path.join(outDir, "dndrus.lng")], OUTDIR=outDir)
+
+commonDllObj = getObjects("dll")
+
+commonObj = getObjects("common")
+
+pluginObj = getObjects("plugin") + getObjects(os.path.join("plugin", chardir))
+
+#determine build number
+import subprocess
+import xml.dom.minidom as xml
+
+try:
+    p = subprocess.Popen('svn info --xml .', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p.wait()
+    d = xml.parse(p.stdout)
+    buildstr = d.getElementsByTagName('entry')[0].getAttribute('revision')  
+    env.Append(RCFLAGS=['-DBUILDNUMBER=%s' % buildstr, r'-DBUILDSTRING=\"%s\"' % buildstr])
+except:
+    print "Faild to setup RCFLAGS"
+
+pluginRes = env.RES(target=os.path.join(outDir, 'plugin.res'), source=os.path.join('plugin', 'plugin.rc'))
+
+holderObj = getObjects("holder")
+
+holderLinkFlags  = copy.copy(commonLinkFlags)
+if not optsenv['debug']:
+    holderLinkFlags += ['/entry:WinMain']
+holder = env.Program(source=holderObj+commonObj,
+        target=os.path.join(outDir, "holder"),
+        LINKFLAGS=holderLinkFlags, LIBS=libs+['drophook'], PROGSUFFIX='.dnd')
+
+pluginLinkFlags = commonLinkFlags
+if not optsenv['debug']:
+    pluginLinkFlags += ['/entry:DllMain']
+
+plugin = env.SharedLibrary(source=pluginObj+commonObj+commonDllObj+ \
+        [os.path.join('plugin', chardir, 'drgndrop'+suffix+'.def')]+[pluginRes], 
+        target=os.path.join(outDir, 'drgndrop'), 
+        LINKFLAGS=pluginLinkFlags, LIBS=libs)
+
+hookFlags  = commonCppFlags
+hookFlags += ['/D_HOOK_EXPORTS']
+
+hookObjs = getObjects('hook', env.Clone(CXXFLAGS=hookFlags, CFLAGS=hookFlags))
+
+hookPdb = os.path.join(outDir, 'drophook.pdb')
+hookLinkFlags = pluginLinkFlags + ['/PDB:'+hookPdb]
+
+hookDll = env.SharedLibrary(source=hookObjs+commonObj+commonDllObj,
+        target=[os.path.join(outDir, 'drgndrop'), os.path.join(outDir, 'drophook.lib'), hookPdb], 
+        SHLIBSUFFIX='.hook',
+        LIBS=libs, LINKFLAGS=hookLinkFlags)
+
+if env['BUILDERS'].has_key('Tags'):
+    tags = env.Tags(target='tags', source=[plugin, hookDll, holder])
+else:
+    tags = None
+
+distrSrc = [plugin[0], hookDll[0], holder[0], pluginLng[1], pluginLng[2]]
+instDistr = env.Install(optsenv['plugdir'], source=distrSrc)
+env.Alias('install', optsenv['plugdir'])
+
+if optsenv['debug']:
+    Default(['install'] + ['tags'] if tags else [])
+
+# vim: set et ts=4 ft=python :
+

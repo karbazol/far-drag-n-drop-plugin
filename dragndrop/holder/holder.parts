@@ -1,0 +1,14 @@
+import fnmatch
+
+Import('*')
+
+env.PartName('holder')
+env.PartVersion('2.0.0')
+
+env.Part(alias = 'code_x86', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86')
+env.Part(alias = 'code_x86_64', parts_file = 'code.parts',
+        TARGET_PLATFORM = 'win32-x86_64')
+
+# vim: set et ts=4 sw=4 ai ft=python :
+
