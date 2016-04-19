@@ -10,9 +10,9 @@
 
 #include <windows.h>
 #include <shlobj.h>
-#include "growarry.h"
-#include "mystring.h"
-#include "myshptr.h"
+#include <common/growarry.h>
+#include <common/myshptr.h>
+#include <dll/mystring.h>
 
 /**
  * Unicode strings array.

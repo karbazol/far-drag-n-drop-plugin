@@ -1,7 +1,8 @@
+#include <common/utils.h>
+#include <hook/hldrapi.h>
+#include <hook/dndcmnct.h>
+
 #include "thrdfltr.h"
-#include "hldrapi.h"
-#include "utils.h"
-#include "dndcmnct.h"
 
 void ThreadFilter::handle(MSG& msg)
 {

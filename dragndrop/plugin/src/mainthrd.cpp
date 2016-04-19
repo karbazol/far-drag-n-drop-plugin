@@ -5,9 +5,10 @@
  * $Id: mainthrd.cpp 81 2011-11-07 08:50:02Z Karbazol $
  */
 
+#include <common/utils.h>
+#include <dll/dll.h>
+
 #include "mainthrd.h"
-#include "dll.h"
-#include "utils.h"
 #include "dragging.h"
 #include "far.h"
 #include "fardlg.h"
@@ -196,7 +197,7 @@ void MainThread::onSetDragging(bool value)
 
 bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
 {
-    WindowInfoW wi;
+    WindowInfo wi;
     wi.Pos = -1;
 
     FarGetWindowInfo(wi);
@@ -214,7 +215,7 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
     pt.x = pt.x * ci.srWindow.Right / rect.right;
     pt.y = pt.y * ci.srWindow.Bottom / rect.bottom;
 
-    PanelInfoW info;
+    PanelInfo info;
     if (FarGetActivePanelInfo(info))
     {
         if (pt.x > info.PanelRect.left && pt.x < info.PanelRect.right &&

@@ -1,8 +1,10 @@
+
 #include <common/utils.h>
+#include <hook/dndcmnct.h>
+#include <hook/hook.h>
+
 #include "hldrwnd.h"
 #include "holder.h"
-#include "hook.h"
-#include "dndcmnct.h"
 
 WCHAR* HolderWindow::getClassName()
 {

@@ -1,7 +1,8 @@
 // $Id: ddlock.cpp 77 2011-10-22 20:25:46Z Karbazol $
 
 #include <windows.h>
-#include "ddlock.h"
+
+#include <common/ddlock.h>
 
 bool Lock::tryLock()
 {

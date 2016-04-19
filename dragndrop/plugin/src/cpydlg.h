@@ -9,7 +9,7 @@
 #define __KARBAZOL_DRAGNDROP_2_0__CPYDLG_H__
 
 #include "fardlg.h"
-#include "mystring.h"
+#include <dll/mystring.h>
 #include "filelist.h"
 #include "filecopy.h"
 
@@ -65,14 +65,15 @@ private: /* FileCopier::FileCopyNotify */
     bool onFileStep(const __int64& step);
     bool onFileError(const wchar_t* src, const wchar_t* dest, DWORD errorNumber);
 protected:
+    const GUID& Id() const;
     InitDialogItem* items();
-    int itemsCount();
+    size_t itemsCount();
     int right();
     int bottom();
     DWORD flags();
 protected:
     bool onInit();
-    bool onClose(int id);
+    bool onClose(intptr_t id);
 public:
     CopyDialog();
     ~CopyDialog(){}

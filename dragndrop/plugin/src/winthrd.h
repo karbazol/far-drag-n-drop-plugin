@@ -8,10 +8,11 @@
 #define __KARBAZOL_DRAGNDROP_2_0__WINTHRD_H__
 
 #include <windows.h>
+#include <dll/dndmsgs.h>
+#include <hook/hldrapi.h>
+
 #include "toolwnd.h"
 #include "datacont.h"
-#include "dndmsgs.h"
-#include "hldrapi.h"
 
 /**
  * @brief Window thread singleton.

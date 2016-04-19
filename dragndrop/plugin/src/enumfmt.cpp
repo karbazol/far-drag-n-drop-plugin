@@ -1,5 +1,6 @@
+#include <common/utils.h>
+
 #include "enumfmt.h"
-#include "utils.h"
 
 EnumFORMATETC::EnumFORMATETC(FORMATETC* fmt, size_t count, const CustomData* cstmData, size_t cstmCount)
 {

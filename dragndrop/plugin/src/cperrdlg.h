@@ -33,10 +33,11 @@ private:
     GrowOnlyArray<MyStringW> _errorLines;
     void allocItems(size_t additionalErrorLines);
 protected:
+    const GUID& Id() const;
     void prepareItems(int consoleWidth, int consoleHeight);
     InitDialogItem* items();
     void releaseItems();
-    int itemsCount();
+    size_t itemsCount();
     DWORD flags();
 public:
     enum RetCode

@@ -1,9 +1,10 @@
+#include <dll/dll.h>
+#include <dll/dndmsgs.h>
+
 #include "far.h"
-#include "dll.h"
 #include "winthrd.h"
 #include "dragging.h"
 #include "mainthrd.h"
-#include "dndmsgs.h"
 
 WinThread::WinThread(): _handle(0), _leftButtonEvent(0), _rightButtonEvent(0),
     _id(0), _window()

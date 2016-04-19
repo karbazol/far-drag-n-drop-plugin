@@ -5,9 +5,10 @@
  * $Id: cperrdlg.cpp 81 2011-11-07 08:50:02Z Karbazol $
  */
 
-#include "dll_utils.h"
+#include <dll/dll_utils.h>
 #include "cperrdlg.h"
 #include "ddlng.h"
+#include "dndguids.h"
 
 /**
  * Utility macro used to determine id of dialog item
@@ -29,6 +30,11 @@ CopyErrorDialog::CopyErrorDialogItems CopyErrorDialog::itemsTemplate =
     {DI_BUTTON,0,7,0,0,0,0,DIF_CENTERGROUP|DIF_NOBRACKETS,0,(wchar_t*)MCancel},
     {DI_TEXT,5,2,32,0,0,0,DIF_CENTERGROUP,0,L""}, // this member has been moved to the end of structure
 };
+
+const GUID& CopyErrorDialog::Id() const
+{
+    return copyErrDialogGuid;
+}
 
 void CopyErrorDialog::allocItems(size_t additionalErrorLines)
 {
@@ -115,7 +121,7 @@ InitDialogItem* CopyErrorDialog::items()
     return _items;
 }
 
-int CopyErrorDialog::itemsCount()
+size_t CopyErrorDialog::itemsCount()
 {
     return _itemsCount;
 }

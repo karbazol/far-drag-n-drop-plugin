@@ -10,7 +10,8 @@
 
 #include <windows.h>
 #include <shlobj.h>
-#include "mystring.h"
+
+#include <dll/mystring.h>
 
 /**
  * Class to iterate through CF_FILEDESCRIPTOR data.

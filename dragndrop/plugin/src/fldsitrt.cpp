@@ -1,5 +1,6 @@
+#include <common/shutils.h>
+
 #include "fldsitrt.h"
-#include "shutils.h"
 
 FileDescriptorIterator::FileDescriptorIterator(): _count(0), _current(-1), _pcurrent(0), _step(0)
 {

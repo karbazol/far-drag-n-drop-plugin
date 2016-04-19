@@ -8,8 +8,17 @@ env.DependsOn([
         Component(env.subst('hook.code_${TARGET_ARCH}')),
         ])
 
+conf = Environment().Configure()
+if not conf.TryCompile('''
+#include <Shldisp.h>
+class MyObject: public IAsyncOperation {};
+''', '.cpp'):
+    env.Append(CPPDEFINES=[('IAsyncOperation', 'IDataObjectAsyncCapability'),
+            ('IID_IAsyncOperation', 'IID_IDataObjectAsyncCapability')])
+conf.Finish()
+
 env.Append(
-    CPPPATH=['#/../common_${A_OR_U}', '.'],
+    CPPPATH=['#/../farheaders', '.'],
     CPPDEFINES=['_FAR_USE_FARFINDDATA'],
     LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32',
         'kernel32', 'uuid'],
@@ -20,9 +29,7 @@ if env.isConfigBasedOn('release'):
     env.Append(LIBS=['libcmt'])
 
 sources  = env.Glob('src/*.cpp') + env.Glob('src/*.c')
-sources += env.Glob('src/$ANSI_OR_UNICODE/*.cpp')
-sources += env.Glob('src/$ANSI_OR_UNICODE/*.c')
-sources += env.Glob('src/$ANSI_OR_UNICODE/*.def')
+sources += env.Glob('src/*.def')
 
 sources += env.RES(target='plugin.res', source=env.VersionInfo(
     FILE_DESCRIPTION = 'FAR manager plug-in module.',

@@ -1,7 +1,8 @@
 // $Id: hdrpprcs.cpp 81 2011-11-07 08:50:02Z Karbazol $
 
+#include <common/utils.h>
+
 #include "hdrpprcs.h"
-#include "utils.h"
 #include "configure.hpp"
 #include "filelist.h"
 #include "filecopy.h"

@@ -1,5 +1,6 @@
 #include <shlobj.h>
-#include "shutils.h"
+#include <common/shutils.h>
+
 #include "datacont.h"
 
 DataContainer::DataContainer(const wchar_t* dir, const PluginPanelItemsW& items): 
@@ -18,7 +19,7 @@ DataContainer::DataContainer(const wchar_t* dir, const PluginPanelItemsW& items)
         }
         for (i = 0; i < _count; i++)
         {
-            _files[i] = items[i].FindData.cFileName;
+            _files[i] = items[i].FileName;
         }
     }
 }

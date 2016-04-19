@@ -5,16 +5,16 @@
  * $Id: toolwnd.cpp 81 2011-11-07 08:50:02Z Karbazol $
  */
 
+#include <common/utils.h>
+#include <dll/dndmsgs.h>
+#include <hook/hldrapi.h>
+
 #include "far.h"
-#include "utils.h"
 #include "toolwnd.h"
 #include "winthrd.h"
 #include "mainthrd.h"
-#include "hldrapi.h"
 #include "configure.hpp"
 #include "dragbmp.h"
-#include "dndmsgs.h"
-#include "hldrapi.h"
 #include "dropprcs.h"
 #include "dataobj.h"
 

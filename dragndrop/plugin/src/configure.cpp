@@ -4,12 +4,13 @@
  *
  * $Id: configure.cpp 82 2011-11-08 11:23:43Z Karbazol $
  */
+#include <ddlng.h>
+#include <common/utils.h>
+#include <dll/dll.h>
 
 #include "fardlg.h"
-#include "ddlng.h"
-#include "utils.h"
 #include "configure.hpp"
-#include "dll.h"
+#include "dndguids.h"
 
 /**
  * @brief Configuration dialog items.
@@ -57,7 +58,11 @@ public:
     ConfigDlg(): FarDialog(){}
     ~ConfigDlg(){}
 protected:
-    LONG_PTR handle(int msg, int param1, LONG_PTR param2)
+    const GUID& Id() const
+    {
+        return configDialogGuid;
+    }
+    intptr_t handle(intptr_t msg, intptr_t param1, void* param2)
     {
         switch (msg)
         {
@@ -76,7 +81,7 @@ protected:
         return &_items.configTitle;
     }
 
-    int itemsCount()
+    size_t itemsCount()
     {
         return sizeof(ConfigDlgItems)/sizeof(InitDialogItem);
     }

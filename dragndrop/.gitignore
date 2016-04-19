@@ -1,0 +1,11 @@
+_build
+_sdks
+.*.swp
+.sconf_temp
+.sconsign.dblite
+*.log
+*.pyc
+install
+logs
+tags
+

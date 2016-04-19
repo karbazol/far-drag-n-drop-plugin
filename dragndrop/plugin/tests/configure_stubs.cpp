@@ -12,7 +12,7 @@ FarDialog::~FarDialog()
 {
 }
 
-LONG_PTR FarDialog::handle(int msg, int param1, LONG_PTR param2)
+intptr_t FarDialog::handle(intptr_t msg, intptr_t param1, void* param2)
 {
     return 0;
 }
@@ -57,12 +57,12 @@ bool FarDialog::onInit()
 	return 0;
 }
 
-bool FarDialog::onClose(int closeId)
+bool FarDialog::onClose(intptr_t closeId)
 {
 	return 0;
 }
 
-int FarDialog::itemsCount()
+size_t FarDialog::itemsCount()
 {
 	return 0;
 }

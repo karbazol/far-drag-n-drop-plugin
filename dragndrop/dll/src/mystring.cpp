@@ -7,9 +7,10 @@
 
 #include <windows.h>
 #include <shlwapi.h>
-#include "mystring.h"
-#include "dll.h"
-#include "ddlock.h"
+
+#include <common/ddlock.h>
+#include <dll/dll.h>
+#include <dll/mystring.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 

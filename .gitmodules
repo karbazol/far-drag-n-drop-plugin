@@ -1,0 +1,3 @@
+[submodule "dragndrop/sconsparts"]
+	path = dragndrop/sconsparts
+	url = https://bitbucket.org/sconsparts/parts.git

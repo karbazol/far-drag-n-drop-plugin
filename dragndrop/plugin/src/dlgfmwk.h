@@ -8,8 +8,9 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLGFMWK_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DLGFMWK_H__
 
+#include <common/ddlock.h>
+
 #include "fardlg.h"
-#include "ddlock.h"
 
 class DialogEntry;
 class ActiveDialog;
@@ -25,9 +26,9 @@ public:
     struct Message
     {
         HANDLE h;
-        int message;
-        int param1;
-        LONG_PTR param2;
+        intptr_t message;
+        intptr_t param1;
+        void* param2;
         Message(): h(0), message(0), param1(0), param2(0){}
     };
 private:
@@ -38,10 +39,10 @@ private:
     RunningDialogs();
     ~RunningDialogs();
     static void kill(RunningDialogs* p);
-    LONG_PTR processPostedSetText(HANDLE dlg, int id, const wchar_t* s);
+    intptr_t processPostedSetText(HANDLE dlg, intptr_t id, const wchar_t* s);
     void processPostedDlgMessages(FarDialog* dlg);
     FarDialog* getDialog(HANDLE handle);
-    LONG_PTR processPostedMessage(HANDLE dlg, int msg, int param0, LONG_PTR param1);
+    intptr_t processPostedMessage(HANDLE dlg, intptr_t msg, intptr_t param0, void* param1);
 public:
     static RunningDialogs* instance();
 
@@ -50,10 +51,10 @@ public:
     bool lockDialog(FarDialog* dlg);
     void unlockDialog(FarDialog* dlg);
 
-    LONG_PTR sendSafeMessage(HANDLE handle, int msg, int param0, LONG_PTR param1);
+    intptr_t sendSafeMessage(HANDLE handle, intptr_t msg, intptr_t param0, void* param1);
 
-    LONG_PTR sendMessage(FarDialog* dlg, int msg, int param0, LONG_PTR param1);
-    void postMessage(FarDialog* dlg, int msg, int param0, LONG_PTR param1);
+    intptr_t sendMessage(FarDialog* dlg, intptr_t msg, intptr_t param0, void* param1);
+    void postMessage(FarDialog* dlg, intptr_t msg, intptr_t param0, void* param1);
 
     void notifyDialog(FarDialog* dlg, bool shown);
 

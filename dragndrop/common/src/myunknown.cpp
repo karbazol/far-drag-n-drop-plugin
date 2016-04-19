@@ -5,8 +5,8 @@
  * $Id: myunknown.cpp 77 2011-10-22 20:25:46Z Karbazol $
  */
 
-#include "myunknown.h"
-#include "utils.h"
+#include <common/myunknown.h>
+#include <common/utils.h>
 
 /**
  * Returns pointers to supported interfaces. 

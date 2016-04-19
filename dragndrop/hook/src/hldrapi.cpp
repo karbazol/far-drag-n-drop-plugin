@@ -1,9 +1,10 @@
 #include <shlwapi.h>
-#include "dndmsgs.h"
-#include "hldrapi.h"
-#include "utils.h"
-#include "dll.h"
-#include "mystring.h"
+
+#include <common/utils.h>
+#include <dll/dll.h>
+#include <dll/dndmsgs.h>
+#include <dll/mystring.h>
+#include <hook/hldrapi.h>
 
 static bool checkMutex(const wchar_t* holderMutex)
 {

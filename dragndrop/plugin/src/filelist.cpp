@@ -5,8 +5,9 @@
  * $Id: filelist.cpp 77 2011-10-22 20:25:46Z Karbazol $
  */
 
+#include <common/utils.h>
+
 #include "filelist.h"
-#include "utils.h"
 
 /**
  * @brief Container for file list entries.

@@ -1,12 +1,13 @@
 #include <shlobj.h>
+#include <common/myshptr.h>
+#include <common/utils.h>
+#include <dll/dll.h>
+
 #include "dragging.h"
-#include "dll.h"
 #include "far.h"
-#include "utils.h"
 #include "inpprcsr.h"
 #include "winthrd.h"
 #include "dataobj.h"
-#include "myshptr.h"
 #include "datacont.h"
 #include "configure.hpp"
 
@@ -78,17 +79,17 @@ bool Dragging::isReadyForDragging()
         return false;
     }
 
-    WindowInfoW wi;
+    WindowInfo wi;
     wi.Pos = -1;
 
     if (!FarGetWindowInfo(wi) || wi.Type != WTYPE_PANELS)
         return false;
 
-    PanelInfoW info;
-    if (!FarGetActivePanelInfo(info) || info.Plugin && !(info.Flags & PFLAGS_REALNAMES))
+    PanelInfo info;
+    if (!FarGetActivePanelInfo(info) || info.PluginHandle && !(info.Flags & PFLAGS_REALNAMES))
         return false;
 
-    if (!info.Visible)
+    if (!(info.Flags & PFLAGS_VISIBLE))
         return false;
 
     return true;
@@ -119,8 +120,8 @@ bool Dragging::start()
         return false;
     }
 
-    PanelInfoW info;
-    if (!FarGetActivePanelInfo(info) || info.Plugin && !(info.Flags & PFLAGS_REALNAMES))
+    PanelInfo info;
+    if (!FarGetActivePanelInfo(info) || info.PluginHandle && !(info.Flags & PFLAGS_REALNAMES))
     {
         return false;
     }

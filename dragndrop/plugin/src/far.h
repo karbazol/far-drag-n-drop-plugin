@@ -13,67 +13,54 @@
 #include <dll/mystring.h>
 #include <common/growarry.h>
 
-struct FAR_FIND_DATA_W
-{
-    DWORD     dwFileAttributes;
-    FILETIME  ftCreationTime;
-    FILETIME  ftLastAccessTime;
-    FILETIME  ftLastWriteTime;
-    DWORD     nFileSizeHigh;
-    DWORD     nFileSizeLow;
-    DWORD     dwReserved0;
-    DWORD     dwReserved1;
-    MyStringW cFileName;
-    MyStringW cAlternateFileName;
-    FAR_FIND_DATA_W(): cFileName(), cAlternateFileName(){}
-};
-
 struct PluginPanelItemW
 {
-    FAR_FIND_DATA_W FindData;
-    DWORD           PackSizeHigh;
-    DWORD           PackSize;
-    DWORD           Flags;
-    DWORD           NumberOfLinks;
+    FILETIME CreationTime;
+    FILETIME LastAccessTime;
+    FILETIME LastWriteTime;
+    FILETIME ChangeTime;
+
+    unsigned __int64 FileSize;
+    unsigned __int64 AllocationSize;
+    
+    MyStringW       FileName;
+    MyStringW       AlternateFileName;
     MyStringW       Description;
     MyStringW       Owner;
     GrowOnlyArray<MyStringW> CustomColumnData;
-    DWORD_PTR       UserData;
-    DWORD           CRC32;
-    DWORD_PTR       Reserved[2];
-    PluginPanelItemW(): FindData(), Description(), Owner(), CustomColumnData(){}
+    PLUGINPANELITEMFLAGS Flags;
+    struct
+    {
+        void *Data;
+        FARPANELITEMFREECALLBACK FreeData;
+    } UserData;
+    uintptr_t FileAttributes;
+    uintptr_t NumberOfLinks;
+    uintptr_t CRC32;
+    intptr_t Reserved[2];
+
+    PluginPanelItemW():  FileSize(0), AllocationSize(0),
+        FileName(), AlternateFileName(), Description(), Owner(),
+        CustomColumnData(), Flags(0), FileAttributes(0), NumberOfLinks(0),
+        CRC32(0)
+    {
+        CreationTime.dwLowDateTime = 0;
+        CreationTime.dwHighDateTime = 0;
+        LastAccessTime.dwLowDateTime = 0;
+        LastAccessTime.dwHighDateTime = 0;
+        LastWriteTime.dwLowDateTime = 0;
+        LastWriteTime.dwHighDateTime = 0;
+        ChangeTime.dwLowDateTime = 0;
+        ChangeTime.dwHighDateTime = 0;
+
+        UserData.Data = 0;
+        UserData.FreeData = 0;
+        Reserved[0] = 0;
+        Reserved[1] = 0;
+    }
 };
 
 typedef GrowOnlyArray<PluginPanelItemW> PluginPanelItemsW;
-
-struct PanelInfoW
-{
-    int PanelType;
-    int Plugin;
-    RECT PanelRect;
-    int CurrentItem;
-    int TopPanelItem;
-    int Visible;
-    int Focus;
-    int ViewMode;
-    int ShortNames;
-    int SortMode;
-    DWORD Flags;
-    DWORD Reserved;
-    PanelInfoW(){}
-};
-
-struct WindowInfoW
-{
-  int  Pos;
-  int  Type;
-  int  Modified;
-  int  Current;
-  MyStringW TypeName;
-  MyStringW Name;
-
-  WindowInfoW(): Pos(0), Type(0), Modified(0), Current(0), TypeName(), Name(){}
-};
 
 // Standard Far Functions
 
@@ -102,9 +89,9 @@ const wchar_t* GetMsg(int MsgId);
  * Returns TRUE if the far.exe is running in console mode otherwise FALSE
  */
 int ConsoleMode(int param);
-bool FarGetWindowInfo(WindowInfoW& wip);
-bool FarGetActivePanelInfo(PanelInfoW& p);
-bool FarGetPassivePanelInfo(PanelInfoW& p);
+bool FarGetWindowInfo(WindowInfo& wip);
+bool FarGetActivePanelInfo(PanelInfo& p);
+bool FarGetPassivePanelInfo(PanelInfo& p);
 MyStringW FarGetActivePanelDirectory();
 MyStringW FarGetPassivePanelDirectory();
 PluginPanelItemsW FarGetActivePanelItems(bool selected);

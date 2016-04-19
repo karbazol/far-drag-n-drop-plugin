@@ -9,9 +9,10 @@
 #define __KARBAZOL_DRAGNDROP_2_0__TOOLWND_H__
 
 #include <shlobj.h>
-#include "mywnd.h"
-#include "myshptr.h"
-#include "myunknown.h"
+#include <common/mywnd.h>
+#include <common/myshptr.h>
+#include <common/myunknown.h>
+
 #include "datacont.h"
 
 /**

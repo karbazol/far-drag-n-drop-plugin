@@ -4,8 +4,8 @@
  *
  * $Id: mywnd.cpp 77 2011-10-22 20:25:46Z Karbazol $
  */
-#include "mywnd.h"
-#include "utils.h"
+#include <common/mywnd.h>
+#include <common/utils.h>
 
 void MyWindow::beforeCreation(DWORD& /*style*/,DWORD& /*styleEx*/)
 {

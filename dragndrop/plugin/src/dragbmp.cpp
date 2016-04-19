@@ -1,5 +1,5 @@
+#include <common/utils.h>
 #include "dragbmp.h"
-#include "utils.h"
 
 DragBitmap::DragBitmap():_bmp(NULL)
 {

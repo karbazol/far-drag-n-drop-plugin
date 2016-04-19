@@ -7,13 +7,14 @@
 
 #include <shlobj.h>
 #include <guiddef.h>
-#include "utils.h"
-#include "myunknown.h"
+#include <common/myshptr.h>
+#include <common/myunknown.h>
+#include <common/shutils.h>
+#include <common/utils.h>
+
 #include "dataobj.h"
 #include "enumfmt.h"
 #include "datacont.h"
-#include "shutils.h"
-#include "myshptr.h"
 
 /**
  * Custom data object used during dragging operation.

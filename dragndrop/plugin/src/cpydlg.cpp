@@ -1,9 +1,11 @@
 // $Id: cpydlg.cpp 81 2011-11-07 08:50:02Z Karbazol $
 
+#include <common/utils.h>
+
 #include "cpydlg.h"
 #include "cperrdlg.h"
+#include "dndguids.h"
 #include "ddlng.h"
-#include "utils.h"
 
 CopyDialog::CopyDialogItems CopyDialog::copyDialogItemsTemplate =
 {
@@ -23,6 +25,11 @@ CopyDialog::CopyDialogItems CopyDialog::copyDialogItemsTemplate =
 
 #define getMyItemId(structItem) getFarDlgItemId(CopyDialogItems,structItem)
 #define NANOSECPERSEC 10000000
+
+const GUID& CopyDialog::Id() const
+{
+    return copyDialogGuid;
+}
 
 CopyDialog::CopyDialog(): FarDialog(), _items(copyDialogItemsTemplate),
     _totalProcessedSize(0), _totalSize(0), _currentProcessedSize(0),
@@ -45,7 +52,7 @@ bool CopyDialog::onInit()
     return true;
 }
 
-bool CopyDialog::onClose(int id)
+bool CopyDialog::onClose(intptr_t id)
 {
     id;
     /** @todo Ask user are they sure to cancel copy/move operation */
@@ -113,7 +120,7 @@ void CopyDialog::updateTotalSize()
     wsprintf(totalSizeString, GetMsg(MTotalSize), sizeToString(totalSizeValue, _totalSize));
 
     postMessage(DM_SETTEXTPTR, getMyItemId(lblTotalSize),
-            (long)centerAndFill(totalSizeString, LENGTH(totalSizeString), L'\x2500'));
+            centerAndFill(totalSizeString, LENGTH(totalSizeString), L'\x2500'));
 }
 
 void CopyDialog::updateFilesProcessed()
@@ -128,7 +135,7 @@ void CopyDialog::updateFilesProcessed()
 
     wsprintf(filesProcessed, GetMsg(MFilesProcessed), processed, _filesToProcess);
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblFilesProcessed), (long)filesProcessed);
+    postMessage(DM_SETTEXTPTR, getMyItemId(lblFilesProcessed), filesProcessed);
 }
 
 static int calcPercents(const __int64& value, const __int64& base, int len)
@@ -177,7 +184,7 @@ void CopyDialog::updateProgressBar(int value, int controlId)
     }
     stringValue[j] = L'\0';
 
-    postMessage(DM_SETTEXTPTR, controlId, (long)stringValue);
+    postMessage(DM_SETTEXTPTR, controlId, stringValue);
 }
 
 void CopyDialog::updateTimesAndSpeed()
@@ -208,7 +215,7 @@ void CopyDialog::updateTimesAndSpeed()
             leftTime.wHour, leftTime.wMinute, leftTime.wSecond,
             _speed >> 10);
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblTimeInfo), (long)timeString);
+    postMessage(DM_SETTEXTPTR, getMyItemId(lblTimeInfo), timeString);
 }
 
 void CopyDialog::calcSpeed()
@@ -268,8 +275,8 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
         TruncPathStr(srcFile, 40);
         TruncPathStr(destFile, 40);
 
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (long)(wchar_t*)srcFile);
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (long)(wchar_t*)destFile);
+        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (wchar_t*)srcFile);
+        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (wchar_t*)destFile);
 
         updateFilesProcessed();
         updatePercents();
@@ -285,7 +292,7 @@ InitDialogItem* CopyDialog::items()
     return reinterpret_cast<InitDialogItem*>(&_items);
 }
 
-int CopyDialog::itemsCount()
+size_t CopyDialog::itemsCount()
 {
     return sizeof(CopyDialogItems)/sizeof(InitDialogItem);
 }
@@ -370,7 +377,7 @@ bool CopyDialog::onFileError(const wchar_t* src, const wchar_t* dest, DWORD erro
     if (running())
     {
         // give the _dialog a chance to appear
-        while (sendMessage(DM_GETTEXTPTR, 0, 0) == 0)
+        while (sendMessage(DM_GETTEXT, 0, 0) == 0)
         {
             Sleep(1);
         }

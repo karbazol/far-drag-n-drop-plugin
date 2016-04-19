@@ -7,7 +7,7 @@
 #ifndef __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__
 #define __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__
 
-#include "mystring.h"
+#include <dll/mystring.h>
 
 /**
  * Class to create directories

@@ -1,7 +1,9 @@
+
+#include <common/utils.h>
+#include <hook/dndcmnct.h>
+#include <hook/hook.h>
+
 #include "holder.h"
-#include "utils.h"
-#include "dndcmnct.h"
-#include "hook.h"
 
 Holder::Holder(): _window(), _mutex(0), _fars(), _hookIsSet(false)
 {

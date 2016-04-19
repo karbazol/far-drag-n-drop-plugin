@@ -5,9 +5,10 @@
  * $Id: modules.cpp 77 2011-10-22 20:25:46Z Karbazol $
  */
 
+#include <common/utils.h>
+
 #include "modules.hpp"
 #include "protect.h"
-#include "utils.h"
 
 /**
  * @brief MemProtect wrappers

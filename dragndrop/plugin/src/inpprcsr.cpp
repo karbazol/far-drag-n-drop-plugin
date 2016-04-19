@@ -6,9 +6,11 @@
  */
 
 #include <windows.h>
-#include "utils.h"
+
+#include <common/utils.h>
+#include <dll/dll.h>
+
 #include "inpprcsr.h"
-#include "dll.h"
 #include "dragging.h"
 #include "mainthrd.h"
 #include "configure.hpp"

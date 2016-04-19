@@ -9,7 +9,7 @@
 #define __KARBAZOL_DRAGNDROP_2_0__FILECOPY_H__
 
 #include <windows.h>
-#include "mystring.h"
+#include <dll/mystring.h>
 
 /**
  * Instances of this class perform copying of a single file.

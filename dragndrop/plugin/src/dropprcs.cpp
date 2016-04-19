@@ -1,10 +1,12 @@
-#include "far.h"
-#include "dropprcs.h"
-#include "dll.h"
-#include "utils.h"
 #include <shlobj.h>
 #include <shellapi.h>
-#include "shutils.h"
+
+#include <common/shutils.h>
+#include <common/utils.h>
+#include <dll/dll.h>
+
+#include "far.h"
+#include "dropprcs.h"
 #include "fmtprcsr.h"
 #include "thrdpool.h"
 
