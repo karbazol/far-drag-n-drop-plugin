@@ -86,7 +86,7 @@ void FreeDbgThreadBuff()
     DebugBuffs* p = reinterpret_cast<DebugBuffs*>(TlsGetValue(tlsBuffIdx));
     if (p)
     {
-        delete GetDbgThreadBuff();
+        delete p;
     }
     TlsSetValue(tlsBuffIdx, 0);
 }

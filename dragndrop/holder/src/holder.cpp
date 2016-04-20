@@ -238,6 +238,7 @@ void Holder::validateFarItems()
 
 void Holder::registerDND(HWND hFar, HWND dnd)
 {
+    TRACE("Registering far Windows: %p and %p\n", hFar, dnd);
     validateFarItems();
 
     size_t dndIndex = 0;
@@ -253,12 +254,6 @@ void Holder::registerDND(HWND hFar, HWND dnd)
     if (dndIndex == item->dnds().size())
     {
         item->dnds().append(dnd);
-
-        HolderApi* holderApi = HolderApi::instance();
-        if (holderApi)
-        {
-            holderApi->windowsCreated(hFar, dnd);
-        }
     }
 }
 
@@ -274,13 +269,6 @@ void Holder::unregisterDND(HWND dnd)
         if (!item->dnds().deleteItem(dndIndex))
         {
             _fars.deleteItem(item - &_fars[0]);
-        }
-
-        HolderApi* holderApi = HolderApi::instance();
-
-        if (holderApi)
-        {
-            holderApi->windowsDestroy(dnd);
         }
     }
 
@@ -426,6 +414,19 @@ HWND Holder::getActiveDnd(HWND hFar)
         }
     }
     return 0;
+}
+
+void Holder::notifyOtherHolder(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    HolderApi* holderApi = HolderApi::instance();
+    if (holderApi)
+    {
+        HWND hwnd = holderApi->window();
+        if (hwnd)
+        {
+            SendMessage(hwnd, msg, wParam, lParam);
+        }
+    }
 }
 
 // vim: set et ts=4 ai :

@@ -35,6 +35,7 @@ struct HolderApi
 
     virtual bool isLeftButtonDown() const = 0;
     virtual bool isRightButtonDown()const = 0;
+    virtual HWND window() = 0;
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__HLDRAPI_H__

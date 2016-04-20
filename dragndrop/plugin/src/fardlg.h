@@ -81,8 +81,8 @@ public:
      */
     virtual size_t itemsCount();
 
-    int show(bool modal);
-    int hide();
+    intptr_t show(bool modal);
+    intptr_t hide();
 
     intptr_t sendMessage(intptr_t msg, intptr_t param1, void* param2);
     void postMessage(intptr_t msg, intptr_t param1, void* param2);

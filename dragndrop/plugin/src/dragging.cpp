@@ -79,7 +79,7 @@ bool Dragging::isReadyForDragging()
         return false;
     }
 
-    WindowInfo wi;
+    WindowInfo wi = {sizeof(wi)};
     wi.Pos = -1;
 
     if (!FarGetWindowInfo(wi) || wi.Type != WTYPE_PANELS)

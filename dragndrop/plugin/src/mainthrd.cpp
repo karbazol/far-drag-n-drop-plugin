@@ -197,7 +197,7 @@ void MainThread::onSetDragging(bool value)
 
 bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
 {
-    WindowInfo wi;
+    WindowInfo wi = {sizeof(wi)};
     wi.Pos = -1;
 
     FarGetWindowInfo(wi);

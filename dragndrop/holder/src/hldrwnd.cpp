@@ -19,8 +19,12 @@ LRESULT HolderWindow::handle(UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_ARE_YOU_HOLDER:
         return HOLDER_YES;
     case WM_FARWINDOWSCREATED:
+        if (_holder) _holder->notifyOtherHolder(WM_FARWINDOWSCREATED_FWD, wParam, lParam);
+    case WM_FARWINDOWSCREATED_FWD:
         return onFarWindowsCreated((HWND)wParam, (HWND)lParam);
     case WM_DNDWINDOWDESTROY:
+        if (_holder) _holder->notifyOtherHolder(WM_DNDWINDOWDESTROY_FWD, wParam, lParam);
+    case WM_DNDWINDOWDESTROY_FWD:
         return onDndWindowDestroy((HWND)wParam);
     case WM_HLDR_ISDNDWND:
         return onIsDndWindow((HWND)wParam);

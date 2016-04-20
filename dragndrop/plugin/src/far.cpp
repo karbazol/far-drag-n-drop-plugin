@@ -25,13 +25,17 @@
 static struct PluginStartupInfo theFar={0};
 static struct FarStandardFunctions farFuncs={0};
 
-/**
- * Far calls this function to determine minimal version of Far
- * supported by the plug-in
- */
-int WINAPI GetMinFarVersionW()
+void WINAPI GetGlobalInfoW(
+  struct GlobalInfo *Info
+)
 {
-    return (3<<8);
+    Info->StructSize = sizeof(*Info);
+    Info->MinFarVersion = MAKEFARVERSION(3,0,0,2927,VS_RELEASE);
+    Info->Version = MAKEFARVERSION(2,0,0,0,VS_RELEASE);
+    Info->Guid = pluginGuid;
+    Info->Title = L"Dragndrop";
+    Info->Description = L"Allows to drag files from and drop them on to FAR manager";
+    Info->Author = L"Eugene Leskinen";
 }
 
 static BOOL alwaysTrue()
@@ -282,13 +286,16 @@ static MyStringW FarGetPanelDirectory(bool activePanel)
 
         size_t buffSize = theFar.PanelControl(h, FCTL_GETPANELDIRECTORY, 0, 0);
 
-        wchar_t* buff = new wchar_t[buffSize];
+        FarPanelDirectory* buff = reinterpret_cast<FarPanelDirectory*>(malloc(buffSize));
+        if (buff)
+        {
+            buff->StructSize = sizeof(*buff);
+            theFar.PanelControl(h, FCTL_GETPANELDIRECTORY, static_cast<intptr_t>(buffSize), buff);
 
-        theFar.PanelControl(h, FCTL_GETPANELDIRECTORY, static_cast<intptr_t>(buffSize), buff);
+            res = buff->Name;
 
-        res = buff;
-
-        delete [] buff;
+            free(buff);
+        }
     }
 
     return res;
@@ -313,19 +320,25 @@ static bool FarGetPanelItem(HANDLE panel, FILE_CONTROL_COMMANDS command, size_t 
         return false;
     }
 
+    FarGetPluginPanelItem getItem = {
+        sizeof(getItem),
+        static_cast<size_t>(size),
+        reinterpret_cast<PluginPanelItem*>(malloc(size))
+    };
+
     PluginPanelItem* tmp = reinterpret_cast<PluginPanelItem*>(
             malloc(size));
 
-    if (!tmp)
+    if (!getItem.Item)
     {
         return false;
     }
 
-    theFar.PanelControl(panel, command, static_cast<intptr_t>(itemIndex), tmp);
+    theFar.PanelControl(panel, command, static_cast<intptr_t>(itemIndex), &getItem);
 
-    copy(item, *tmp);
+    copy(item, *getItem.Item);
 
-    free(tmp);
+    free(getItem.Item);
 
     return true;
 }

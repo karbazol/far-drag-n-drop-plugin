@@ -145,9 +145,9 @@ intptr_t FarDialog::handle(intptr_t msg, intptr_t param1, void* param2)
 /**
  * Hides running dialog
  */
-int FarDialog::hide()
+intptr_t FarDialog::hide()
 {
-    int res = static_cast<int>(sendMessage(DM_CLOSE, 0, 0));
+    intptr_t res = sendMessage(DM_CLOSE, 0, 0);
 
     if (res)
     {
@@ -203,7 +203,7 @@ public:
     }
 };
 
-int FarDialog::show(bool modal)
+intptr_t FarDialog::show(bool modal)
 {
     MainThread* mainThread = MainThread::instance();
     if (!mainThread)
@@ -215,7 +215,7 @@ int FarDialog::show(bool modal)
     DialogShower* d = new DialogShower(this);
     if (modal)
     {
-        return reinterpret_cast<int>(mainThread->callIt(d));
+        return reinterpret_cast<intptr_t>(mainThread->callIt(d));
     }
 
     mainThread->callItAsync(d);
@@ -322,7 +322,8 @@ int FarDialog::switchCheckBox(int id, int state)
 {
     if (running())
     {
-        return static_cast<int>(sendMessage(DM_SETCHECK, id, (void*)state));
+        intptr_t longstate = state;
+        return static_cast<int>(sendMessage(DM_SETCHECK, id, reinterpret_cast<void*>(longstate)));
     }
     else
     {
@@ -394,9 +395,9 @@ static void InitDialogItems(
         PItem->Y2=PInit->Y2;
         PItem->Selected=PInit->Selected;
         PItem->Flags=PInit->Flags;
-        if ((unsigned int)PInit->Data < 2000)
+        if ((uintptr_t)PInit->Data < 2000)
         {
-           PItem->Data = GetMsg((int)PInit->Data);
+           PItem->Data = GetMsg((int)(uintptr_t)PInit->Data);
         }
         else
         {
