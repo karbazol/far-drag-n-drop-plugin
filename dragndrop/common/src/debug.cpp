@@ -22,12 +22,12 @@ static char* moduleName=0;
 struct DebugBuffs
 {
     char buff0[4096];
-    char buff[4096];
+    char buff1[4096];
     char* pBuff;
     DebugBuffs()
     {
         memset(buff0, 0, sizeof(buff0));
-        memset(buff, 0, sizeof(buff));
+        memset(buff1, 0, sizeof(buff1));
         pBuff = buff0;
     }
 };
@@ -48,7 +48,7 @@ static bool getModuleName(void* module, char* modulePath, size_t modulePathSize,
     }
 }
 
-static DWORD tlsBuffIdx = 0;
+static DWORD tlsBuffIdx = TLS_OUT_OF_INDEXES;
 
 /**
  * Initializes DbgTrace API
@@ -68,7 +68,8 @@ static DebugBuffs* GetDbgThreadBuff()
     DebugBuffs* res = reinterpret_cast<DebugBuffs*>(TlsGetValue(tlsBuffIdx));
     if (!res)
     {
-        res = new DebugBuffs;
+        res = reinterpret_cast<DebugBuffs*>(VirtualAlloc(NULL, sizeof(*res),
+                    MEM_COMMIT, PAGE_READWRITE));
         if (res)
         {
             TlsSetValue(tlsBuffIdx, res);
@@ -86,7 +87,7 @@ void FreeDbgThreadBuff()
     DebugBuffs* p = reinterpret_cast<DebugBuffs*>(TlsGetValue(tlsBuffIdx));
     if (p)
     {
-        delete p;
+        VirtualFree(p, 0, MEM_RELEASE);
     }
     TlsSetValue(tlsBuffIdx, 0);
 }
@@ -120,29 +121,32 @@ void DbgTrace(const char* lpszFormat,...)
         return;
     }
 
-    wvnsprintfA(p->pBuff, static_cast<int>(sizeof(p->buff0) - (p->pBuff - p->buff0)), lpszFormat, va);
-    p->pBuff = p->buff0 + lstrlenA(p->buff0);
-
-    char* pN = StrChrA(p->buff0, '\n');
-
-    while (pN != NULL || (sizeof(p->buff0) - (p->pBuff - p->buff0)) < 64)
+    int written = wvnsprintfA(p->pBuff, static_cast<int>(sizeof(p->buff0) - (p->pBuff - p->buff0))-1, lpszFormat, va);
+    if (written > 0)
     {
-        char oldN = *++pN;
-        *pN = '\0';
-        if (!processName)
+        p->pBuff += written;
+
+        char* pN = StrChrA(p->buff0, '\n');
+
+        while (pN != NULL || (sizeof(p->buff0) - (p->pBuff - p->buff0)) < 64)
         {
-            OutputDebugStringA(p->buff0);
+            char oldN = *++pN;
+            *pN = '\0';
+            if (!processName)
+            {
+                OutputDebugStringA(p->buff0);
+            }
+            else
+            {
+                wnsprintfA(p->buff1, sizeof(p->buff1)-1, "[%s:%s:%d]%s", processName, moduleName, GetCurrentThreadId(), p->buff0);
+                OutputDebugStringA(p->buff1);
+            }
+            *pN = oldN;
+            lstrcpynA(p->buff1, pN, LENGTH(p->buff1));
+            lstrcpynA(p->buff0, p->buff1, LENGTH(p->buff0));
+            p->pBuff = p->buff0 + lstrlenA(p->buff0);
+            pN = StrChrA(p->buff0, '\n');
         }
-        else
-        {
-            wnsprintfA(p->buff, sizeof(p->buff), "[%s:%s:%d]%s", processName, moduleName, GetCurrentThreadId(), p->buff0);
-            OutputDebugStringA(p->buff);
-        }
-        *pN = oldN;
-        lstrcpynA(p->buff, pN, LENGTH(p->buff));
-        lstrcpynA(p->buff0, p->buff, LENGTH(p->buff));
-        p->pBuff = p->buff0 + lstrlenA(p->buff0);
-        pN = StrChrA(p->buff0, '\n');
     }
 }
 

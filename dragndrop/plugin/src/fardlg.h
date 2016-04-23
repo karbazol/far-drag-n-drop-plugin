@@ -20,7 +20,7 @@ struct InitDialogItem
     int X2;
     int Y2;
     int Focus;
-    int Selected;
+    intptr_t Selected;
     unsigned int Flags;
     int DefaultButton;
     const wchar_t *Data;
@@ -88,11 +88,11 @@ public:
     void postMessage(intptr_t msg, intptr_t param1, void* param2);
 
     // Operations with the dialog controls
-    bool enable(int id);
-    bool disable(int id);
-    int switchCheckBox(int id, int state);
-    int checkState(int id);
-    bool checked(int id);
+    bool enable(intptr_t id);
+    bool disable(intptr_t id);
+    intptr_t switchCheckBox(intptr_t id, intptr_t state);
+    intptr_t checkState(intptr_t id);
+    bool checked(intptr_t id);
     friend class DialogShower;
 };
 

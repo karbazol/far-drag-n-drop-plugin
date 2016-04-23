@@ -70,15 +70,6 @@ bool Dragging::isReadyForDragging()
         return false;
     }
 
-    if (FAR_CONSOLE_FULLSCREEN == ConsoleMode(FAR_CONSOLE_GET_MODE))
-    {
-        /**
-         * We cannot start dragging when Far is running in hardware console mode.
-         * (Beginning from Windows Vista such mode is not supported).
-         */
-        return false;
-    }
-
     WindowInfo wi = {sizeof(wi)};
     wi.Pos = -1;
 

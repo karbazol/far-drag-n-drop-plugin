@@ -89,7 +89,9 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
 /**
  * Far calls this function when it is about to exit.
  */
-void WINAPI ExitFARW(void)
+void WINAPI ExitFARW(
+  const struct ExitInfo *Info
+)
 {
     ThreadPool::instance()->shutDown();
     Dragging::instance()->shutDown();
@@ -112,9 +114,11 @@ void WINAPI GetPluginInfoW(struct PluginInfo *Info)
     Info->PluginConfig.Count = LENGTH(ConfigStrings);
 }
 
-int WINAPI ConfigureW(int Number)
+intptr_t WINAPI ConfigureW(
+  const struct ConfigureInfo *Info
+)
 {
-    return doConfigure(Number);
+    return doConfigure(0);
 }
 
 /**
@@ -199,15 +203,6 @@ intptr_t SendDlgMessage(HANDLE hDlg, intptr_t Msg, intptr_t Param1, void* Param2
         return theFar.SendDlgMessage(hDlg, Msg, Param1, Param2);
 
     return -1;
-}
-
-/**
- * Helps to determine wheather the Far is running in Full-screen mode or
- * in windowed mode
- */
-int ConsoleMode(int /*param*/)
-{
-    return FAR_CONSOLE_WINDOWED;
 }
 
 /**
@@ -529,7 +524,7 @@ size_t FarReadRegistry(const wchar_t* name, DWORD type, void* value, size_t size
         sizeof(data),
         0, // Root
         name,
-        FST_UNKNOWN
+        regTypeToFarType(type)
     };
 
     size_t res = theFar.SettingsControl(settings.Handle, SCTL_GET, 0, &data);

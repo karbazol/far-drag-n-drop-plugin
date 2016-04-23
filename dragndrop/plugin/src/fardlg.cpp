@@ -98,7 +98,6 @@ intptr_t FarDialog::dlgProc(HANDLE dlg, intptr_t msg, intptr_t param1, void* par
     if (msg == DN_CLOSE && res)
     {
         This->restoreItems();
-        //This->_hwnd = 0;
         if (runningDialogs)
         {
             runningDialogs->notifyDialog(This, false);
@@ -285,7 +284,7 @@ void FarDialog::postMessage(intptr_t msg, intptr_t param1, void* param2)
 /**
  * @return - previous state of the control
  */
-bool FarDialog::enable(int id)
+bool FarDialog::enable(intptr_t id)
 {
     if (running())
     {
@@ -303,7 +302,7 @@ bool FarDialog::enable(int id)
 /**
  * @return - previous state of the control
  */
-bool FarDialog::disable(int id)
+bool FarDialog::disable(intptr_t id)
 {
     if (running())
     {
@@ -318,27 +317,26 @@ bool FarDialog::disable(int id)
     }
 }
 
-int FarDialog::switchCheckBox(int id, int state)
+intptr_t FarDialog::switchCheckBox(intptr_t id, intptr_t state)
 {
     if (running())
     {
-        intptr_t longstate = state;
-        return static_cast<int>(sendMessage(DM_SETCHECK, id, reinterpret_cast<void*>(longstate)));
+        return sendMessage(DM_SETCHECK, id, reinterpret_cast<void*>(state));
     }
     else
     {
-        int ret = (items()[id].Selected & 0x3);
+        intptr_t ret = (items()[id].Selected & 0x3);
         items()[id].Selected |= state;
 
         return ret;
     }
 }
 
-int FarDialog::checkState(int id)
+intptr_t FarDialog::checkState(intptr_t id)
 {
     if (running())
     {
-        return static_cast<int>(sendMessage(DM_GETCHECK, id, 0));
+        return sendMessage(DM_GETCHECK, id, 0);
     }
     else
     {
@@ -388,6 +386,7 @@ static void InitDialogItems(
     struct FarDialogItem *PItem=Item;
     for (I=0; I < ItemsNumber; I++,PItem++,PInit++)
     {
+        memset(PItem, 0, sizeof(*PItem));
         PItem->Type=PInit->Type;
         PItem->X1=PInit->X1;
         PItem->Y1=PInit->Y1;
@@ -424,18 +423,24 @@ intptr_t FarDialog::run(void*& farItems)
 void FarDialog::restoreItems()
 {
     InitDialogItem* initItems = items();
-    FarDialogItem* item;
     if (initItems)
     {
         size_t i;
         for (i = 0; i < itemsCount(); i++)
         {
-            item = reinterpret_cast<FarDialogItem*>(malloc(sendMessage(DM_GETDLGITEM, i, 0)));
-            if (item)
+            FarGetDialogItem item = {
+                sizeof(item),
+                static_cast<size_t>(sendMessage(DM_GETDLGITEM, i, 0))
+            };
+            if (static_cast<intptr_t>(item.Size) > 0)
             {
-                sendMessage(DM_GETDLGITEM, i, item);
-                //initItems[i].Selected = item->Selected;
-                free(item);
+                item.Item = reinterpret_cast<FarDialogItem*>(malloc(item.Size));
+                if (item.Item)
+                {
+                    sendMessage(DM_GETDLGITEM, i, &item);
+                    initItems[i].Selected = item.Item->Selected;
+                    free(item.Item);
+                }
             }
         }
     }
@@ -443,12 +448,15 @@ void FarDialog::restoreItems()
 
 void FarDialog::freeFarItems(void* farItems)
 {
-    DialogFree(_hwnd);
-    _hwnd = 0;
+    if (_hwnd)
+    {
+        DialogFree(_hwnd);
+        _hwnd = 0;
+    }
     delete [] reinterpret_cast<FarDialogItem*>(farItems);
 }
 
-bool FarDialog::checked(int id)
+bool FarDialog::checked(intptr_t id)
 {
     return checkState(id) != BSTATE_UNCHECKED;
 }
