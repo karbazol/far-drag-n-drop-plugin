@@ -25,13 +25,16 @@
 static struct PluginStartupInfo theFar={0};
 static struct FarStandardFunctions farFuncs={0};
 
+#define __PLUGIN_VERSION(x) MAKEFARVERSION(##x,VS_RELEASE)
+#define PLUGIN_VERSION() __PLUGIN_VERSION(PRODUCT_VERSION)
+
 void WINAPI GetGlobalInfoW(
   struct GlobalInfo *Info
 )
 {
     Info->StructSize = sizeof(*Info);
     Info->MinFarVersion = MAKEFARVERSION(3,0,0,2927,VS_RELEASE);
-    Info->Version = MAKEFARVERSION(2,0,0,0,VS_RELEASE);
+    Info->Version = PLUGIN_VERSION();
     Info->Guid = pluginGuid;
     Info->Title = L"Dragndrop";
     Info->Description = L"Allows to drag files from and drop them on to FAR manager";

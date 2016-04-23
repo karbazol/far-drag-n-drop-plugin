@@ -7,5 +7,6 @@ _sdks
 *.pyc
 install
 logs
+message.txt
 tags
 

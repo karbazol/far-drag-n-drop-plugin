@@ -3,7 +3,6 @@ Import('*')
 env.PartName('tests')
 
 env.DependsOn([
-        Component('tut'),
         Component('texts'),
         Component('dll.headers'),
         ])

@@ -29,7 +29,6 @@ struct ConfigDlgItems
     InitDialogItem radioRightAlt;
 
     InitDialogItem sepPanels;
-    InitDialogItem checkEnableDrop;
     InitDialogItem edtPixelsPassed;
     InitDialogItem txtPixelsPassed0;
     InitDialogItem txtPixelsPassed1;
@@ -182,18 +181,17 @@ ConfigDlgItems ConfigDlg::_items =
     /* 05 */{DI_RADIOBUTTON,22,3,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MRightCtl},
     /* 06 */{DI_RADIOBUTTON,22,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MRightAlt},
     {DI_TEXT,5,6,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MPanels},
-        /* 08 */{DI_CHECKBOX,5,7,0,0,0,0,0,0,(wchar_t *)MEnableDrop},
-        /* 09 */{DI_EDIT,5,8,7,0,0,0,0,0,L"0"},
-        /* 10 */{DI_TEXT,9,8,37,0,0,0,0,0,(wchar_t *)MPixelsPassed},
-        /* 11 */{DI_TEXT,9,9,37,0,0,0,0,0,(wchar_t *)MPixelsPassed2},
-    {DI_TEXT,5,10,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MOptions},
-    {DI_CHECKBOX,5,11,0,0,0,0,0,0,(wchar_t *)MUseShellCopy},
-    {DI_CHECKBOX,5,12,0,0,0,0,0,0,(wchar_t *)MShowMenu},
+        /* 08 */{DI_EDIT,5,7,7,0,0,0,0,0,L"0"},
+        /* 09 */{DI_TEXT,9,7,37,0,0,0,0,0,(wchar_t *)MPixelsPassed},
+        /* 10 */{DI_TEXT,9,8,37,0,0,0,0,0,(wchar_t *)MPixelsPassed2},
+    {DI_TEXT,5,9,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MOptions},
+    {DI_CHECKBOX,5,10,0,0,0,0,0,0,(wchar_t *)MUseShellCopy},
+    {DI_CHECKBOX,5,11,0,0,0,0,0,0,(wchar_t *)MShowMenu},
 
     // ------- Buttons -------
-    {DI_TEXT,5,13,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,L""},
-    {DI_BUTTON,0,14,0,0,0,0,(unsigned int)DIF_CENTERGROUP,1,(wchar_t *)MOK},
-    {DI_BUTTON,0,14,0,0,0,0,(unsigned int)DIF_CENTERGROUP,0,(wchar_t *)MCancel}
+    {DI_TEXT,5,12,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,L""},
+    {DI_BUTTON,0,13,0,0,0,0,(unsigned int)DIF_CENTERGROUP,1,(wchar_t *)MOK},
+    {DI_BUTTON,0,13,0,0,0,0,(unsigned int)DIF_CENTERGROUP,0,(wchar_t *)MCancel}
 };
 
 /**
@@ -208,8 +206,6 @@ int doConfigure(int /*Number*/)
         ConfigDlg dlg;
 
         dlg.enableUseKeyToStartDnd(config->checkKey());
-        dlg.switchCheckBox(getMyItemId(checkEnableDrop),
-                config->allowDrop()?BSTATE_CHECKED:BSTATE_UNCHECKED);
         dlg.switchCheckBox(getMyItemId(checkUseShellCopy),
                 config->shellCopy());
         dlg.switchCheckBox(getMyItemId(checkShowMenu),
@@ -221,35 +217,24 @@ int doConfigure(int /*Number*/)
         }
 
         config->checkKey(dlg.getKeyToStartDnd());
-        config->allowDrop(dlg.checked(getMyItemId(checkEnableDrop)));
         config->shellCopy(dlg.checked(getMyItemId(checkUseShellCopy)));
         config->showMenu(dlg.checked(getMyItemId(checkShowMenu)));
 
-        if(config->allowDrop())
-        {
-            // RegisterHooker();
-        }
-        else
-        {
-            // DeregisterHooker();
-        };
         return TRUE;
     }
 
     return FALSE;
 }
 
-Config::Config():_checkKey(0), _allowDrop(true), _shellCopy(true), _showMenu(false),
+Config::Config():_checkKey(0), _shellCopy(true), _showMenu(false),
     _useShellObject(false)
 {
     _checkKey = FarReadRegistry(_checkKeyName, _checkKey);
-    _allowDrop = !!FarReadRegistry(_allowDropName, _allowDrop);
     _shellCopy = !!FarReadRegistry(_shellCopyName, _shellCopy);
     _showMenu = !!FarReadRegistry(_showMenuName, _showMenu);
     _useShellObject = !!FarReadRegistry(_useShellObjectName, _useShellObject);
 }
 
-const wchar_t* Config::_allowDropName = L"AllowDrop";
 const wchar_t* Config::_checkKeyName = L"CheckKey";
 const wchar_t* Config::_shellCopyName = L"UseShellCopy";
 const wchar_t* Config::_showMenuName = L"ShowUserMenu";
@@ -286,16 +271,6 @@ void Config::checkKey(unsigned int value)
         _checkKey = value;
 
         FarWriteRegistry(_checkKeyName, _checkKey);
-    }
-}
-
-void Config::allowDrop(bool value)
-{
-    if (value != _allowDrop)
-    {
-        _allowDrop = value;
-
-        FarWriteRegistry(_allowDropName, _allowDrop);
     }
 }
 

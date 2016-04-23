@@ -57,11 +57,7 @@ void ToolWindow::onCreate()
     {
         holderApi->windowsCreated(parent(), hwnd());
 
-        Config* config = Config::instance();
-        if (config && config->allowDrop())
-        {
-            holderApi->setHook(true);
-        }
+        holderApi->setHook(true);
     }
 }
 

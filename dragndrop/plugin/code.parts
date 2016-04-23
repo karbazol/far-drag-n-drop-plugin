@@ -19,7 +19,7 @@ conf.Finish()
 
 env.Append(
     CPPPATH=['#/../farheaders', '.'],
-    CPPDEFINES=['_FAR_USE_FARFINDDATA'],
+    CPPDEFINES=['_FAR_USE_FARFINDDATA', ('PRODUCT_VERSION', '$PRODUCT_VERSION')],
     LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32',
         'kernel32', 'uuid'],
     )
@@ -28,8 +28,38 @@ if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS=['/entry:DllMain'])
     env.Append(LIBS=['libcmt'])
 
-sources  = env.Glob('src/*.cpp') + env.Glob('src/*.c')
-sources += env.Glob('src/*.def')
+sources  = [('src/' + x) for x in (
+        'dndguids.c',
+        'configure.cpp',
+        'cperrdlg.cpp',
+        'cpydlg.cpp',
+        'datacont.cpp',
+        'dataobj.cpp',
+        'dircrtr.cpp',
+        'dlgfmwk.cpp',
+        'dragbmp.cpp',
+        'dragging.cpp',
+        'dropprcs.cpp',
+        'enumfmt.cpp',
+        'far.cpp',
+        'fardlg.cpp',
+        'filecopy.cpp',
+        'filelist.cpp',
+        'fldsitrt.cpp',
+        'fldsprcs.cpp',
+        'fmtprcsr.cpp',
+        'hdrpprcs.cpp',
+        'hookfuncs.cpp',
+        'inpprcsr.cpp',
+        'mainthrd.cpp',
+        'modules.cpp',
+        'protect.cpp',
+        'thrdpool.cpp',
+        'toolwnd.cpp',
+        'winthrd.cpp',
+        'wrkrthrd.cpp'
+        )]
+sources += ['src/drgndrop.def']
 
 sources += env.RES(target='plugin.res', source=env.VersionInfo(
     FILE_DESCRIPTION = 'FAR manager plug-in module.',

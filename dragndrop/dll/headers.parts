@@ -6,7 +6,12 @@ env.DependsOn([
         Component('common.headers')
         ])
 
-source = env.Glob('include/*.h') + env.Glob('include/*.hpp')
+source = [('include/' + x) for x in (
+    'dll.h',
+    'dll_utils.h',
+    'dndmsgs.h',
+    'mystring.h',
+)]
 env.SdkInclude(source, sub_dir = 'dll')
 
 # vim: set et ts=4 sw=4 ai ft=python :

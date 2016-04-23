@@ -1,8 +1,0 @@
-Import('*')
-
-env.PartName('headers')
-
-source = env.Glob('include/*.h') + env.Glob('include/*.hpp')
-env.SdkInclude(source, sub_dir = 'hook')
-
-# vim: set et ts=4 sw=4 ai ft=python :
