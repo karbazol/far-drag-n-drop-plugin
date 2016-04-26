@@ -1,3 +1,4 @@
+#include <common/oleholder.hpp>
 #include <dll/dll.h>
 #include <dll/dndmsgs.h>
 
@@ -130,34 +131,26 @@ DWORD WinThread::runInstnace(WinThread* p)
 
 void WinThread::run()
 {
-    OleInitialize(NULL);
+    OleHolder oleHolder;
 
-    __try
+    _window.create(GetFarWindow());
+
+    MainThread::instance()->winThreadStarted();
+
+    for (;;)
     {
+        MSG msg;
+        DWORD res;
 
-        _window.create(GetFarWindow());
-
-        MainThread::instance()->winThreadStarted();
-
-        for (;;)
+        res = GetMessageW(&msg, 0, 0, 0);
+        if (!res || res == -1)
         {
-            MSG msg;
-            DWORD res;
-
-            res = GetMessageW(&msg, 0, 0, 0);
-            if (!res || res == -1)
-            {
-                _window.destroy();
-                break;
-            }
-
-            TranslateMessage(&msg);
-            DispatchMessageW(&msg);
+            _window.destroy();
+            break;
         }
-    }
-    __finally
-    {
-        OleUninitialize();
+
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
     }
 }
 

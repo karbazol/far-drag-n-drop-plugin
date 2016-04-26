@@ -64,7 +64,7 @@ bool CopyDialog::onClose(intptr_t id)
  * comma as 'Digit grouping symbol'.
  * I.e. number 999999999 will be converted to "999,999,999".
  */
-static wchar_t* sizeToString(wchar_t* buff, const __int64& value)
+static wchar_t* sizeToString(wchar_t* buff, const int64_t& value)
 {
     wsprintf(buff, L"%I64d", value);
 
@@ -138,7 +138,7 @@ void CopyDialog::updateFilesProcessed()
     postMessage(DM_SETTEXTPTR, getMyItemId(lblFilesProcessed), filesProcessed);
 }
 
-static int calcPercents(const __int64& value, const __int64& base, int len)
+static int calcPercents(const int64_t& value, const int64_t& base, int len)
 {
     if (!value)
     {
@@ -223,7 +223,7 @@ void CopyDialog::calcSpeed()
     LARGE_INTEGER now;
     GetSystemTimeAsFileTime(reinterpret_cast<LPFILETIME>(&now));
 
-    __int64 delta = now.QuadPart - _timeStart.QuadPart;
+    int64_t delta = now.QuadPart - _timeStart.QuadPart;
     if (delta)
     {
         _speed = static_cast<int>(_totalProcessedSize * NANOSECPERSEC / delta);
@@ -234,7 +234,7 @@ void CopyDialog::calcSpeed()
     }
 }
 
-bool CopyDialog::appendFile(const __int64& size, bool lastOne)
+bool CopyDialog::appendFile(const int64_t& size, bool lastOne)
 {
     if (!running())
     {
@@ -260,7 +260,7 @@ bool CopyDialog::appendFile(const __int64& size, bool lastOne)
 }
 
 bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
-        const __int64& size)
+        const int64_t& size)
 {
     if (running())
     {
@@ -354,7 +354,7 @@ bool CopyDialog::onFileExists(const wchar_t* src, const wchar_t* dest)
     return true;
 }
 
-bool CopyDialog::onFileStep(const __int64& step)
+bool CopyDialog::onFileStep(const int64_t& step)
 {
     if (running())
     {

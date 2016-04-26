@@ -10,7 +10,8 @@ source = [('include/' + x) for x in (
     'myunknown.h',
     'mywnd.h',
     'shutils.h',
-    'utils.h'
+    'utils.h',
+    'oleholder.hpp'
     )]
 env.SdkInclude(source, sub_dir = 'common')
 

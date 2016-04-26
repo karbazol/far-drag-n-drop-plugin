@@ -26,7 +26,6 @@ env.Append(
 
 if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS=['/entry:DllMain'])
-    env.Append(LIBS=['libcmt'])
 
 sources  = [('src/' + x) for x in (
         'dndguids.c',
@@ -68,6 +67,16 @@ sources += env.RES(target='plugin.res', source=env.VersionInfo(
 )
 
 env.InstallTarget(env.SharedLibrary(target='${PART_PARENT_NAME}_${TARGET_ARCH}', source=sources))
+
+env.UnitTest('configure_test${TARGET_ARCH}', 
+        ['tests/configure_test.cpp',
+        'src/configure.cpp',
+        'src/dndguids.c',
+        'tests/configure_stubs.cpp'],
+        make_pdb = True,
+        depends=[Component(env.PartName(), env.PartVersion()),
+            Component('tut')],
+        CXXFLAGS=['$CXXFLAGS', '/EHsc', '/GR'])
 
 # vim: set et ts=4 sw=4 ft=python :
 

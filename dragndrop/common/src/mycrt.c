@@ -81,7 +81,6 @@ void WINAPI RtlMoveMemory ( void *, const void *, size_t count );
 #undef memmove
 #endif
 
-#ifndef _M_X64
 void * __cdecl memmove (
         void * dst,
         const void * src,
@@ -97,11 +96,26 @@ void * __cdecl memmove (
     return ret;
 }
 
-int main()
-{
-    return 0;
-}
+#ifdef RtlFillMemory
+#undef RtlFillMemory
 #endif
+
+void WINAPI RtlFillMemory ( void *, size_t, unsigned char );
+
+#ifdef memset
+#undef memset
+#endif
+
+#pragma function(memset)
+void * __cdecl memset (
+        void * dst,
+        int ch,
+        size_t count
+        )
+{
+    RtlFillMemory(dst, count, ch);
+    return dst;
+}
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // _DEBUG

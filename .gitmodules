@@ -1,3 +1,6 @@
 [submodule "dragndrop/sconsparts"]
 	path = dragndrop/sconsparts
 	url = https://bitbucket.org/sconsparts/parts.git
+[submodule "dragndrop/tut-framework"]
+	path = dragndrop/tut-framework
+	url = https://github.com/mrzechonek/tut-framework.git

@@ -13,8 +13,6 @@ env.Append(
 
 if env.isConfigBasedOn('release'):
     env.Append(LINKFLAGS = ['/entry:WinMain'])
-    if env.get('TARGET_ARCH') == 'x86_64':
-        env.Append(LIBS=['libcmt'])
 
 source  = [env.SharedObject('src/' + x ) for x in (
     'hldrwnd.cpp',

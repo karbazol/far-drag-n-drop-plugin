@@ -28,7 +28,7 @@ DWORD FileCopier::winCallBack(LARGE_INTEGER /*totalSize*/, LARGE_INTEGER transfe
             DWORD /*streamNumber*/, DWORD /*dwCallBackReason*/, HANDLE /*hSourcefile*/,
             HANDLE /*hDestinationFile*/, FileCopier* This)
 {
-    __int64 step = transferred.QuadPart - This->_copied;
+    int64_t step = transferred.QuadPart - This->_copied;
     This->_copied = transferred.QuadPart;
     if (This->_notify && !This->_notify->onFileStep(step))
     {

@@ -8,6 +8,8 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FILECOPY_H__
 #define __KARBAZOL_DRAGNDROP_2_0__FILECOPY_H__
 
+#include <stdint.h>
+
 #include <windows.h>
 #include <dll/mystring.h>
 
@@ -31,7 +33,7 @@ public:
          * Return true to overrwrite existing file
          */
         virtual bool onFileExists(const wchar_t* src, const wchar_t* dest) = 0;
-        virtual bool onFileStep(const __int64& step) = 0;
+        virtual bool onFileStep(const int64_t& step) = 0;
         /**
          * @brief What to do in case of error
          *
@@ -44,7 +46,7 @@ private:
     MyStringW _src;
     MyStringW _dest;
     FileCopyNotify* _notify;
-    __int64 _copied;
+    int64_t _copied;
     bool _result;
     static DWORD CALLBACK winCallBack(LARGE_INTEGER totalSize, LARGE_INTEGER transferred,
             LARGE_INTEGER streamSize, LARGE_INTEGER streamBytesTransferred,

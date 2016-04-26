@@ -1,0 +1,24 @@
+Import('*')
+
+env.PartName('tut')
+
+tut_framwork_tut = [('tut-framework/include/tut/' + x) for x in (
+    'tut.hpp',
+    'tut_assert.hpp',
+    'tut_config.hpp',
+    'tut_console_reporter.hpp',
+    'tut_cppunit_reporter.hpp',
+    'tut_exception.hpp',
+    'tut_fpt.hpp',
+    'tut_macros.hpp',
+    'tut_main.hpp',
+    'tut_posix.hpp',
+    'tut_reporter.hpp',
+    'tut_restartable.hpp',
+    'tut_result.hpp',
+    'tut_runner.hpp',
+    'tut_xml_reporter.hpp',
+    )]
+
+env.SdkInclude(tut_framwork_tut, sub_dir='tut')
+# vim: set et ts=4 sw=4 ai ft=python :

@@ -8,9 +8,7 @@ env.DependsOn([
         ])
 
 env.Append(
-#    CPPPATH=['#/../common_${A_OR_U}', '.', 'src'],
     CXXFLAGS=['/EHsc', '/GR'],
-#    CPPDEFINES=['_FAR_USE_FARFINDDATA'],
     LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32',
         'kernel32', 'uuid'],
     )
@@ -19,7 +17,10 @@ env.UnitTest('mystring_test', [
         'tests/mystring_test.cpp',
         'tests/mystring_stubs.cpp',
         'src/mystring.cpp',
-        'tests/main.cpp'], make_pdb = True)
+        'tests/main.cpp'], make_pdb=True,
+        depends=[Component(env.PartName(), env.PartVersion()), 
+        Component('tut')]
+        )
 
 # vim: set et ts=4 sw=4 ft=python :
 

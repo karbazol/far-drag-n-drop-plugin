@@ -20,8 +20,8 @@ struct PluginPanelItemW
     FILETIME LastWriteTime;
     FILETIME ChangeTime;
 
-    unsigned __int64 FileSize;
-    unsigned __int64 AllocationSize;
+    uint64_t FileSize;
+    uint64_t AllocationSize;
     
     MyStringW       FileName;
     MyStringW       AlternateFileName;

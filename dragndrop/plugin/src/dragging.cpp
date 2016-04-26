@@ -7,7 +7,6 @@
 #include "far.h"
 #include "inpprcsr.h"
 #include "winthrd.h"
-#include "dataobj.h"
 #include "datacont.h"
 #include "configure.hpp"
 
@@ -126,7 +125,6 @@ bool Dragging::start()
     MyStringW dir = FarGetActivePanelDirectory();
     PluginPanelItemsW items = FarGetActivePanelItems(true);
 
-    ShPtr<IDataObject> dataObj;
     DataContainer* data = new DataContainer(dir, items);
 
     if (!data)

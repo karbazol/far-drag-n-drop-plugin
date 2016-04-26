@@ -62,6 +62,11 @@ Part(
     platform_independent=True,
     package_group='plugin',
     )
+Part(
+    alias='tut',
+    parts_file='tut.parts',
+    platform_independent=True,
+    )
 
 #Alias('pack', DefaultEnvironment().ZipPackage('drgndrop', ['plugin']))
 # vim: set et ts=4 sw=4 ai ft=python :

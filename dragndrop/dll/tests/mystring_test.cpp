@@ -1,4 +1,4 @@
-#include <tut.h>
+#include <tut/tut.hpp>
 #include <dll/mystring.h>
 
 namespace tut

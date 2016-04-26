@@ -68,50 +68,50 @@ size_t FarDialog::itemsCount()
 }
 
 
-int FarDialog::show(bool modal)
+intptr_t FarDialog::show(bool modal)
 {
 	return 0;
 }
 
-int FarDialog::hide()
+intptr_t FarDialog::hide()
 {
 	return 0;
 }
 
 
-LONG_PTR FarDialog::sendMessage(int msg, int param1, LONG_PTR param2)
+intptr_t FarDialog::sendMessage(intptr_t msg, intptr_t param1, void* param2)
 {
 	return 0;
 }
 
-void FarDialog::postMessage(int msg, int param1, LONG_PTR param2)
+void FarDialog::postMessage(intptr_t msg, intptr_t param1, void* param2)
 {
 	return;
 }
 
 
 // Operations with the dialog controls
-bool FarDialog::enable(int id)
+bool FarDialog::enable(intptr_t id)
 {
 	return 0;
 }
 
-bool FarDialog::disable(int id)
+bool FarDialog::disable(intptr_t id)
 {
 	return 0;
 }
 
-int FarDialog::switchCheckBox(int id, int state)
+intptr_t FarDialog::switchCheckBox(intptr_t id, intptr_t state)
 {
 	return 0;
 }
 
-int FarDialog::checkState(int id)
+intptr_t FarDialog::checkState(intptr_t id)
 {
 	return 0;
 }
 
-bool FarDialog::checked(int id)
+bool FarDialog::checked(intptr_t id)
 {
 	return 0;
 }

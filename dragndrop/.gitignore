@@ -1,5 +1,6 @@
 _build
 _sdks
+_unit_tests
 .*.swp
 .sconf_temp
 .sconsign.dblite

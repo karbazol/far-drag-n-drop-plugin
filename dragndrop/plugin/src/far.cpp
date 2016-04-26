@@ -110,8 +110,9 @@ void WINAPI GetPluginInfoW(struct PluginInfo *Info)
     Info->Flags = PF_PRELOAD;
 
     static const wchar_t* ConfigStrings[] = {
-        GetMsg(MConfigMenu)
+        L"", // GetMsg(MConfigMenu)
     };
+    ConfigStrings[0] = GetMsg(MConfigMenu);
     Info->PluginConfig.Guids = &configGuid;
     Info->PluginConfig.Strings = ConfigStrings;
     Info->PluginConfig.Count = LENGTH(ConfigStrings);
@@ -485,7 +486,7 @@ bool FarWriteRegistry(const wchar_t* name, DWORD type, const void* value, size_t
     switch (data.Type)
     {
     case FST_QWORD:
-        memcpy(&data.Number, value, min(size, sizeof(data.Number)));
+        memmove(&data.Number, value, min(size, sizeof(data.Number)));
         break;
     case FST_STRING:
         data.String = reinterpret_cast<const wchar_t*>(value);
@@ -543,14 +544,14 @@ size_t FarReadRegistry(const wchar_t* name, DWORD type, void* value, size_t size
             case FST_SUBKEY:
                 break;
             case FST_QWORD:
-                memcpy(value, &data.Number, min(size, sizeof(data.Number)));
+                memmove(value, &data.Number, min(size, sizeof(data.Number)));
                 res = sizeof(data.Number);
                 break;
             case FST_STRING:
-                memcpy(value, data.String, res = min(size, static_cast<size_t>(lstrlen(data.String) + 1)));
+                memmove(value, data.String, res = min(size, static_cast<size_t>(lstrlen(data.String) + 1)));
                 break;
             case FST_DATA:
-                memcpy(value, data.Data.Data, res = min(size, data.Data.Size));
+                memmove(value, data.Data.Data, res = min(size, data.Data.Size));
                 break;
             }
         }

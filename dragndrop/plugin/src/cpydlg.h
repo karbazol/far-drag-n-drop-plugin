@@ -40,10 +40,10 @@ private:
     static CopyDialogItems copyDialogItemsTemplate;
     wchar_t szFilesProcessed[41];
     CopyDialogItems _items;
-    __int64 _totalProcessedSize;
-    __int64 _totalSize;
-    __int64 _currentProcessedSize;
-    __int64 _currentSize;
+    int64_t _totalProcessedSize;
+    int64_t _totalSize;
+    int64_t _currentProcessedSize;
+    int64_t _currentSize;
     /*MyStringW _srcFile;
     MyStringW _destFile;*/
     volatile long _filesProcessed;
@@ -62,7 +62,7 @@ private: /* FileListNotify implementation */
     bool onAllProcessed();
 private: /* FileCopier::FileCopyNotify */
     bool onFileExists(const wchar_t* src, const wchar_t* dest);
-    bool onFileStep(const __int64& step);
+    bool onFileStep(const int64_t& step);
     bool onFileError(const wchar_t* src, const wchar_t* dest, DWORD errorNumber);
 protected:
     const GUID& Id() const;
@@ -78,8 +78,8 @@ public:
     CopyDialog();
     ~CopyDialog(){}
 
-    bool appendFile(const __int64& size, bool lastOne);
-    bool nextFile(const wchar_t* src, const wchar_t* dest, const __int64& size);
+    bool appendFile(const int64_t& size, bool lastOne);
+    bool nextFile(const wchar_t* src, const wchar_t* dest, const int64_t& size);
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__CPYDLG_H__
