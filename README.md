@@ -1,5 +1,5 @@
-﻿[English Version is below]: #english
+### English Version can be found below
 
 Это плагин, позволяющий таскать файлы с и на фар.
 
-### <a name="english"></a> English version
+### English version
