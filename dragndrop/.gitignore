@@ -6,6 +6,7 @@ _unit_tests
 .sconsign.dblite
 *.log
 *.pyc
+docs
 install
 logs
 message.txt
