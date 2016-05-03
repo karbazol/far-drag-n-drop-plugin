@@ -211,9 +211,13 @@ int doConfigure(int /*Number*/)
         dlg.switchCheckBox(getMyItemId(checkShowMenu),
                 config->showMenu());
 
-        if (getMyItemId(btnOk) != dlg.show(true))
+        switch (dlg.show(true))
         {
+        case getMyItemId(btnCancel):
+        case -1:
             return FALSE;
+        default:
+            break;
         }
 
         config->checkKey(dlg.getKeyToStartDnd());

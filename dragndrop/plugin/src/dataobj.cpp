@@ -199,6 +199,11 @@ HRESULT createDataObject(const DataContainer& data, IDataObject** dataObject, bo
 
     *dataObject = new DataObject(data);
 
+    if (!*dataObject)
+    {
+        return E_OUTOFMEMORY;
+    }
+
     (*dataObject)->AddRef();
 
     return res;

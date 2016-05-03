@@ -33,13 +33,9 @@ const GUID& CopyDialog::Id() const
 
 CopyDialog::CopyDialog(): FarDialog(), _items(copyDialogItemsTemplate),
     _totalProcessedSize(0), _totalSize(0), _currentProcessedSize(0),
-    _currentSize(0), /*_srcFile(), _destFile(),*/ _filesToProcess(0),
+    _currentSize(0), _filesToProcess(0),
     _filesProcessed(-1), _fileListProcessed(0), _speed(0)
 {
-    wsprintf(szFilesProcessed, GetMsg(MFilesProcessed), 0, 0);
-
-    _items.lblFilesProcessed.Data = szFilesProcessed;
-
     _timeStart.QuadPart = 0;
 }
 
@@ -56,6 +52,7 @@ bool CopyDialog::onClose(intptr_t id)
 {
     id;
     /** @todo Ask user are they sure to cancel copy/move operation */
+    TRACE("Copy Dialog is about to be closed with %d code\n", id);
     return true;
 }
 

@@ -30,6 +30,17 @@ struct DebugBuffs
         memset(buff1, 0, sizeof(buff1));
         pBuff = buff0;
     }
+    void* operator new(size_t size)
+    {
+        return VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE);
+    }
+    void operator delete(void* p)
+    {
+        if (p)
+        {
+            VirtualFree(p, 0, MEM_RELEASE);
+        }
+    }
 };
 
 static bool getModuleName(void* module, char* modulePath, size_t modulePathSize, char*& moduleFileName)
@@ -68,8 +79,7 @@ static DebugBuffs* GetDbgThreadBuff()
     DebugBuffs* res = reinterpret_cast<DebugBuffs*>(TlsGetValue(tlsBuffIdx));
     if (!res)
     {
-        res = reinterpret_cast<DebugBuffs*>(VirtualAlloc(NULL, sizeof(*res),
-                    MEM_COMMIT, PAGE_READWRITE));
+        res = new DebugBuffs();
         if (res)
         {
             TlsSetValue(tlsBuffIdx, res);
@@ -85,10 +95,7 @@ static DebugBuffs* GetDbgThreadBuff()
 void FreeDbgThreadBuff()
 {
     DebugBuffs* p = reinterpret_cast<DebugBuffs*>(TlsGetValue(tlsBuffIdx));
-    if (p)
-    {
-        VirtualFree(p, 0, MEM_RELEASE);
-    }
+    delete p;
     TlsSetValue(tlsBuffIdx, 0);
 }
 

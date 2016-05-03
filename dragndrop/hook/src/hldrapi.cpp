@@ -131,7 +131,7 @@ class HolderApiImpl: public HolderApi
     HWND window()
     {
         static HWND hldr = NULL;
-        if (HOLDER_YES == SendMessage(hldr, WM_ARE_YOU_HOLDER, 0, 0))
+        if (hldr && HOLDER_YES == SendMessage(hldr, WM_ARE_YOU_HOLDER, 0, 0))
         {
             return hldr;
         }

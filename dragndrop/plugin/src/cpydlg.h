@@ -38,14 +38,11 @@ private:
     };
 #pragma pack(pop)
     static CopyDialogItems copyDialogItemsTemplate;
-    wchar_t szFilesProcessed[41];
     CopyDialogItems _items;
     int64_t _totalProcessedSize;
     int64_t _totalSize;
     int64_t _currentProcessedSize;
     int64_t _currentSize;
-    /*MyStringW _srcFile;
-    MyStringW _destFile;*/
     volatile long _filesProcessed;
     volatile long _filesToProcess;
     volatile long _fileListProcessed;

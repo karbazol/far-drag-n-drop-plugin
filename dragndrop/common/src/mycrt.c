@@ -117,6 +117,19 @@ void * __cdecl memset (
     return dst;
 }
 
+
+#ifdef _M_IX86__
+LONGLONG _alldiv(LONGLONG a, LONGLONG b)
+{
+    return 0;
+}
+
+LONGLONG _allmul(LONGLONG a, LONGLONG b)
+{
+    return 0;
+}
+#endif
+
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // _DEBUG
 

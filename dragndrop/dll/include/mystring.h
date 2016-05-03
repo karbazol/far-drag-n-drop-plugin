@@ -149,7 +149,7 @@ StringType substring(const StringType& s, size_t offset,
 template<class StringType>
 StringType wrapString(const StringType& s, size_t maxChars, size_t tabLen=8)
 {
-    tabLen; /** @todo Tabs should be counted too. */
+    tabLen;
     if (!s || StringType::Traits::strlen(s) <= maxChars)
         return s;
 
@@ -207,7 +207,7 @@ void wrapString(const StringType& s, size_t maxChars,
             }
         }
 
-        if (p[pos] <= 32)
+        if (p[pos] == 32)
         {
             candidate = pos;
         }
