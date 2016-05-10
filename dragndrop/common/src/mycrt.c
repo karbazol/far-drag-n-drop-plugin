@@ -118,7 +118,7 @@ void * __cdecl memset (
 }
 
 
-#ifdef _M_IX86__
+#ifdef _M_IX86
 LONGLONG _alldiv(LONGLONG a, LONGLONG b)
 {
     return 0;

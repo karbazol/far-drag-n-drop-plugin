@@ -11,6 +11,7 @@
 #include <windows.h>
 #include <common/ddlock.h>
 #include <common/growarry.h>
+#include <common/irefcounted.hpp>
 #include <dll/mystring.h>
 
 // Main thread message identifiers
@@ -43,7 +44,8 @@
 
 /**
  * Send callable object
- *  param0 - pointer to a Callable object instance
+ *  param0 - pointer to a Callable object instance.
+ *  after the object is called it will be release'ed therefore it has to be addRef'ed before posting the message
  */
 #define MTM_CALLTHEOBJECT 5
 
@@ -56,12 +58,10 @@ public:
     /**
      * Interface of callable object.
      */
-    class Callable
+    class Callable: public IRefCounted
     {
     public:
-        virtual ~Callable(){}
         virtual void* call() = 0;
-        virtual void free();
     };
 private:
     DWORD _threadId;
@@ -117,8 +117,8 @@ public:
     {
         postMessage(MTM_SENDDLGMSG, 0);
     }
-    inline void* callIt(Callable* p){return sendMessage(MTM_CALLTHEOBJECT, p);}
-    inline void callItAsync(Callable* p){postMessage(MTM_CALLTHEOBJECT, p);}
+    inline void* callIt(Callable* p){p->addRef(); return sendMessage(MTM_CALLTHEOBJECT, p);}
+    inline void callItAsync(Callable* p){p->addRef(); postMessage(MTM_CALLTHEOBJECT, p);}
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__MAINTHRD_H_

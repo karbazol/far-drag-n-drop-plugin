@@ -249,9 +249,7 @@ void Holder::registerDND(HWND hFar, HWND dnd)
         item = &_fars.append(hFar);
     }
 
-    ASSERT(item && item->hwnd() == hFar);
-
-    if (dndIndex == item->dnds().size())
+    if (item && dndIndex == item->dnds().size())
     {
         item->dnds().append(dnd);
     }

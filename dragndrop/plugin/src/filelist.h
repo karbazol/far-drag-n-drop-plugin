@@ -10,6 +10,7 @@
 
 #include <windows.h>
 #include <common/ddlock.h>
+#include <common/refcounted.hpp>
 #include <dll/mystring.h>
 
 /**
@@ -41,7 +42,7 @@ public:
  * Declares interface of notifiable object which
  * receives notifications from a FileList object.
  */
-struct FileListNotify
+struct FileListNotify: public IRefCounted
 {
     virtual bool onNextEntry(const int reason, const FileListEntry& e) = 0;
     virtual bool onAllProcessed() = 0;
@@ -54,7 +55,7 @@ class FileListEntryContainer;
  *
  * Represents a list of files.
  */
-class FileList
+class FileList: public RefCounted
 {
 private:
     FileListNotify* _notify;

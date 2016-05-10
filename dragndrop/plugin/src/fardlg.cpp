@@ -6,6 +6,7 @@
  * $Id: fardlg.cpp 81 2011-11-07 08:50:02Z Karbazol $
  */
 
+#include <common/refcounted.hpp>
 #include <dll/dll_utils.h>
 #include <dll/mystring.h>
 
@@ -15,7 +16,7 @@
 
 LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, intptr_t Msg, intptr_t Param1, void* Param2);
 
-FarDialog::FarDialog(): _hwnd(0), _running(0), _destructing(0)
+FarDialog::FarDialog(): RefCounted(), _hwnd(0), _running(0), _destructing(0)
 {
     _running = CreateEvent(NULL, TRUE, TRUE, NULL);
     RunningDialogs* runningDialogs = RunningDialogs::instance();
@@ -187,19 +188,32 @@ intptr_t FarDialog::doShow()
  * Implementation of MainThread::Callable interface used to
  * inter-thread communications during dialog showing
  */
-class DialogShower : public MainThread::Callable
+class DialogShower : public MainThread::Callable, private RefCounted
 {
 private:
     FarDialog* _dlg;
 public:
-    DialogShower(FarDialog* dlg):_dlg(dlg){}
+    DialogShower(FarDialog* dlg): RefCounted(), _dlg(dlg)
+    {
+        if (_dlg)
+        {
+            _dlg->addRef();
+        }
+    }
     void* call()
     {
         if (_dlg)
-            return (void*)_dlg->doShow();
+        {
+            void* res = (void*)_dlg->doShow();
+            _dlg->release();
+            _dlg = 0;
+            return res;
+        }
 
         return (void*)-1;
     }
+    uintptr_t addRef() {return RefCounted::addRef();}
+    uintptr_t release() {return RefCounted::release();}
 };
 
 intptr_t FarDialog::show(bool modal)

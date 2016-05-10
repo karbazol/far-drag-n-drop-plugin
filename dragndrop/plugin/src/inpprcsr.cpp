@@ -337,20 +337,24 @@ static BOOL ProcessDirectInput(HANDLE console, PINPUT_RECORD buffer,
         DWORD buffLength, LPDWORD readCount,
         bool isUnicode, bool removeFromInput)
 {
+    BOOL res;
     if (removeFromInput)
     {
         if (isUnicode)
-            return ReadConsoleInputW(console, buffer, buffLength, readCount);
+            res = ReadConsoleInputW(console, buffer, buffLength, readCount);
         else
-            return ReadConsoleInputA(console, buffer, buffLength, readCount);
+            res = ReadConsoleInputA(console, buffer, buffLength, readCount);
+        TRACE("ReadConsoleInputX read %d events\n", readCount?*readCount:0);
     }
     else
     {
         if (isUnicode)
-            return PeekConsoleInputW(console, buffer, buffLength, readCount);
+            res = PeekConsoleInputW(console, buffer, buffLength, readCount);
         else
-            return PeekConsoleInputA(console, buffer, buffLength, readCount);
+            res = PeekConsoleInputA(console, buffer, buffLength, readCount);
+        TRACE("PeekConsoleInputX poke %d events\n", readCount?*readCount:0);
     }
+    return res;
 }
 
 /**

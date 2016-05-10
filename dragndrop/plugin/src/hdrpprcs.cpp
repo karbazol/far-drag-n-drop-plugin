@@ -54,14 +54,16 @@ HRESULT HdropProcessor::farCopyHDrop(MyStringW& files)
     {
         return E_OUTOFMEMORY;
     }
+    dlg->addRef();
 
     dlg->show(false);
     FileList* list = new FileList(files, dlg);
     if (!list)
     {
-        delete dlg;
+        dlg->release();
         return E_OUTOFMEMORY;
     }
+    list->addRef();
 
     FileListEntry e;
 
@@ -81,8 +83,8 @@ HRESULT HdropProcessor::farCopyHDrop(MyStringW& files)
 
     }
 
-    delete dlg;
-    delete list;
+    dlg->release();
+    list->release();
 
     return hr;
 }

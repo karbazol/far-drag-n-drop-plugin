@@ -7,6 +7,7 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FARDLG_H__
 #define __KARBAZOL_DRAGNDROP_2_0__FARDLG_H__
 
+#include <common/refcounted.hpp>
 #include "far.h"
 
 /**
@@ -31,7 +32,7 @@ class DialogShower;
 /**
  * Use this class as base for your dialogs.
  */
-class FarDialog
+class FarDialog: public RefCounted
 {
 private:
     HANDLE _hwnd;

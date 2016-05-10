@@ -11,6 +11,7 @@ source = [env.SharedObject('src/' + x) for x in (
     'myunknown.cpp',
     'mywnd.cpp',
     'new.cpp',
+    'refcounted.cpp',
     'shutils.cpp',
     'utils.cpp',
     )]

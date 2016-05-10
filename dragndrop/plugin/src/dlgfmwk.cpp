@@ -153,7 +153,7 @@ public:
 
         return res;
     }
-    RunningDialogs::Message& addMessage(HANDLE h, intptr_t msg, intptr_t p1, void* p2)
+    RunningDialogs::Message* addMessage(HANDLE h, intptr_t msg, intptr_t p1, void* p2)
     {
         RunningDialogs::Message m;
         m.h = h;
@@ -161,7 +161,7 @@ public:
         m.param1 = p1;
         m.param2 = p2;
 
-        return _messages.append(m);
+        return &_messages.append(m);
     }
     inline Messages messages(){return _messages;}
 };
@@ -320,20 +320,24 @@ void RunningDialogs::postMessage(FarDialog* dlg,
         return;
     }
 
+    bool doPost = true;
     switch (msg)
     {
     case DM_SETTEXTPTR:
-        e->setControlText(param0, (const wchar_t*)param1) && dlg->hwnd();
+        doPost = !e->setControlText(param0, (const wchar_t*)param1) && dlg->hwnd();
         break;
     default:
         e->addMessage(dlg->hwnd(), msg, param0, param1);
         break;
     }
 
-    MainThread* mainThread = MainThread::instance();
-    if (mainThread)
+    if (doPost)
     {
-        mainThread->postDlgMessage();
+        MainThread* mainThread = MainThread::instance();
+        if (mainThread)
+        {
+            mainThread->postDlgMessage();
+        }
     }
 }
 

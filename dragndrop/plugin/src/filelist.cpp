@@ -116,9 +116,13 @@ DWORD FileList::runMe(FileList* This)
     return This->createTheList(This->_files);
 }
 
-FileList::FileList(const wchar_t* files, FileListNotify* fn): _notify(fn),
+FileList::FileList(const wchar_t* files, FileListNotify* fn): RefCounted(), _notify(fn),
     _files(files), _entriesGuard(), _head(0), _tail(0)
 {
+    if (_notify)
+    {
+        _notify->addRef();
+    }
     _haveEntries = CreateEvent(NULL, FALSE, FALSE, NULL);
     _stopThread = CreateEvent(NULL, FALSE, FALSE, NULL);
 
@@ -133,6 +137,11 @@ FileList::FileList(const wchar_t* files, FileListNotify* fn): _notify(fn),
 
 FileList::~FileList()
 {
+    if (_notify)
+    {
+        _notify->release();
+        _notify = 0;
+    }
 #if 1
     SignalObjectAndWait(_stopThread, _threadEnd, INFINITE, FALSE);
     CloseHandle(_threadEnd);

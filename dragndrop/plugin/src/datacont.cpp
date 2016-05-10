@@ -14,7 +14,6 @@ DataContainer::DataContainer(const wchar_t* dir, const PluginPanelItemsW& items)
         if (!_files)
         {
             _count = 0;
-            /** @todo Raise some exception here */
             return;
         }
         for (i = 0; i < _count; i++)
@@ -42,7 +41,6 @@ DataContainer::DataContainer(const DataContainer& r):
         }
         else
         {
-            /** @todo Raise some exception here */
             _count = 0;
         }
     }
@@ -50,14 +48,17 @@ DataContainer::DataContainer(const DataContainer& r):
     if (_customCapacity)
     {
         _custom = new CustomData[_customCapacity];
-        ZeroMemory(_custom, sizeof(*_custom)*_customCapacity);
-
-        size_t i;
-
-        for (i = 0; i < _customCount; i++)
+        if (_custom)
         {
-            _custom[i].fmt = r._custom[i].fmt;
-            CopyMedium(_custom[i].mdm, r._custom[i].mdm, _custom[i].fmt.cfFormat);
+            ZeroMemory(_custom, sizeof(*_custom)*_customCapacity);
+
+            size_t i;
+
+            for (i = 0; i < _customCount; i++)
+            {
+                _custom[i].fmt = r._custom[i].fmt;
+                CopyMedium(_custom[i].mdm, r._custom[i].mdm, _custom[i].fmt.cfFormat);
+            }
         }
     }
 }

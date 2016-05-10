@@ -14,12 +14,6 @@
 #include "fardlg.h"
 #include "dlgfmwk.h"
 
-void MainThread::Callable::free()
-{
-    if (this)
-        delete this;
-}
-
 MainThread::MainThread():_posted(), _sendGuard(), _postGuard()
 {
     _threadId = GetCurrentThreadId();
@@ -245,7 +239,7 @@ void* MainThread::onCallIt(Callable* p)
         return reinterpret_cast<void*>(-1);
 
     void* res = p->call();
-    p->free();
+    p->release();
     return res;
 }
 

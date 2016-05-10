@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <windows.h>
+#include <common/irefcounted.hpp>
 #include <dll/mystring.h>
 
 /**
@@ -22,9 +23,8 @@ public:
     /**
      * Interface used to notify about file copying progress
      */
-    struct FileCopyNotify
+    struct FileCopyNotify: public IRefCounted
     {
-        virtual ~FileCopyNotify(){};
         /**
          * @brief What to do if the file allready exists
          *

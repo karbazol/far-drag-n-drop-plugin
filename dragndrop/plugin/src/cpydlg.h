@@ -9,6 +9,7 @@
 #define __KARBAZOL_DRAGNDROP_2_0__CPYDLG_H__
 
 #include "fardlg.h"
+#include <common/refcounted.hpp>
 #include <dll/mystring.h>
 #include "filelist.h"
 #include "filecopy.h"
@@ -17,7 +18,8 @@
 /**
  * Implements Far-based copy progress dialog.
  */
-class CopyDialog : public FarDialog, public FileListNotify, public FileCopier::FileCopyNotify
+class CopyDialog : public FarDialog, public FileListNotify,
+    public FileCopier::FileCopyNotify
 {
 private:
 #pragma pack(push, 1)
@@ -74,6 +76,9 @@ protected:
 public:
     CopyDialog();
     ~CopyDialog(){}
+
+    uintptr_t addRef() {return FarDialog::addRef();}
+    uintptr_t release() {return FarDialog::release();}
 
     bool appendFile(const int64_t& size, bool lastOne);
     bool nextFile(const wchar_t* src, const wchar_t* dest, const int64_t& size);

@@ -112,7 +112,7 @@ public:
     }
     const char* funcName() const
     {
-        if (!_module || !_names || !*_names)
+        if (!_module || !_names || !*_names || (*_names & IMAGE_ORDINAL_FLAG))
             return "";
         char* res = (char*)_module + *_names + 2;
         if (!IsBadReadPtr(res, 1))

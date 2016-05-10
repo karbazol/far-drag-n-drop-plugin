@@ -11,7 +11,9 @@ source = [('include/' + x) for x in (
     'mywnd.h',
     'shutils.h',
     'utils.h',
-    'oleholder.hpp'
+    'irefcounted.hpp',
+    'oleholder.hpp',
+    'refcounted.hpp'
     )]
 env.SdkInclude(source, sub_dir = 'common')
 

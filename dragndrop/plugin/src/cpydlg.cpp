@@ -7,20 +7,24 @@
 #include "dndguids.h"
 #include "ddlng.h"
 
+#define ITEM_X1 5
+#define ITEM_X2 44
+#define ITEM_LENGTH (ITEM_X2 - ITEM_X1 + 1)
+
 CopyDialog::CopyDialogItems CopyDialog::copyDialogItemsTemplate =
 {
-        /*  0 */{DI_DOUBLEBOX,3,1,46,13,0,0,0,0,(wchar_t*)MCopy},
-        /*  1 */{DI_TEXT,5, 2,44,0,0,0,0,0,(wchar_t*)MCopyingTheFile},
-        /*  2 */{DI_TEXT,5, 3,44,0,0,0,0,0,L""},
-        /*  3 */{DI_TEXT,5, 4,44,0,0,0,0,0,(wchar_t*)MCopyingTo},
-        /*  4 */{DI_TEXT,5, 5,44,0,0,0,0,0,L""},
-        /*  5 */{DI_TEXT,5, 6,44,0,0,0,0,0,L"\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591"}, // u+2591 0xb0
-        /*  6 */{DI_TEXT,5, 7,44,0,0,0,0,0,L"Total size:"},
-        /*  7 */{DI_TEXT,5, 8,44,0,0,0,0,0,L"\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591"},
-        /*  8 */{DI_TEXT,5, 9,44,0,0,0,0,0,L"\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500"}, // u+2500 0xc4
-        /*  9 */{DI_TEXT,5,10,44,0,0,0,0,0,L""},
-        /* 10 */{DI_TEXT,5,11,44,0,0,0,0,0,L"\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500"}, // u+2500 0xc4
-        /* 11 */{DI_TEXT,5,12,44,0,0,0,0,0,L"Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"}
+        /*  0 */{DI_DOUBLEBOX,ITEM_X1-2,1,ITEM_X2+2,13,0,0,0,0,(wchar_t*)MCopy},
+        /*  1 */{DI_TEXT,ITEM_X1, 2,ITEM_X2,0,0,0,0,0,(wchar_t*)MCopyingTheFile},
+        /*  2 */{DI_TEXT,ITEM_X1, 3,ITEM_X2,0,0,0,0,0,L""},
+        /*  3 */{DI_TEXT,ITEM_X1, 4,ITEM_X2,0,0,0,0,0,(wchar_t*)MCopyingTo},
+        /*  4 */{DI_TEXT,ITEM_X1, 5,ITEM_X2,0,0,0,0,0,L""},
+        /*  5 */{DI_TEXT,ITEM_X1, 6,ITEM_X2,0,0,0,0,0,L"\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591"}, // u+2591 0xb0
+        /*  6 */{DI_TEXT,ITEM_X1, 7,ITEM_X2,0,0,0,0,0,L"Total size:"},
+        /*  7 */{DI_TEXT,ITEM_X1, 8,ITEM_X2,0,0,0,0,0,L"\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591"},
+        /*  8 */{DI_TEXT,ITEM_X1, 9,ITEM_X2,0,0,0,0,0,L"\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500"}, // u+2500 0xc4
+        /*  9 */{DI_TEXT,ITEM_X1,10,ITEM_X2,0,0,0,0,0,L""},
+        /* 10 */{DI_TEXT,ITEM_X1,11,ITEM_X2,0,0,0,0,0,L"\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500"}, // u+2500 0xc4
+        /* 11 */{DI_TEXT,ITEM_X1,12,ITEM_X2,0,0,0,0,0,L"Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"}
 };
 
 #define getMyItemId(structItem) getFarDlgItemId(CopyDialogItems,structItem)
@@ -111,8 +115,8 @@ static wchar_t* centerAndFill(wchar_t* buff, size_t size /*of buff including NUL
 
 void CopyDialog::updateTotalSize()
 {
-    wchar_t totalSizeValue[41];
-    wchar_t totalSizeString[41];
+    wchar_t totalSizeValue[] = L"9,223,372,036,854,775,807"; // Maximum value of int64
+    wchar_t totalSizeString[ITEM_LENGTH + 1];
 
     wsprintf(totalSizeString, GetMsg(MTotalSize), sizeToString(totalSizeValue, _totalSize));
 
@@ -122,7 +126,7 @@ void CopyDialog::updateTotalSize()
 
 void CopyDialog::updateFilesProcessed()
 {
-    wchar_t filesProcessed[41];
+    wchar_t filesProcessed[ITEM_LENGTH + 1];
 
     int processed;
     if (_filesProcessed < 0)
@@ -155,18 +159,17 @@ void CopyDialog::updatePercents()
     int percents;
     if (_fileListProcessed)
     {
-        percents = calcPercents(_totalProcessedSize, _totalSize, 40);
+        percents = calcPercents(_totalProcessedSize, _totalSize, ITEM_LENGTH);
         updateProgressBar(percents, getMyItemId(progressTotal));
     }
 
-    percents = calcPercents(_currentProcessedSize, _currentSize, 40);
+    percents = calcPercents(_currentProcessedSize, _currentSize, ITEM_LENGTH);
     updateProgressBar(percents, getMyItemId(progressCurrent));
 }
 
 void CopyDialog::updateProgressBar(int value, int controlId)
 {
-    /** @todo Get rid of magic numbers. The dialog width maybe variable */
-    wchar_t stringValue[41];
+    wchar_t stringValue[ITEM_LENGTH + 1];
 
     ASSERT(value < LENGTH(stringValue));
 
@@ -269,8 +272,8 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
         InterlockedExchange64(&_currentProcessedSize, 0);
         _currentSize = size;
 
-        TruncPathStr(srcFile, 40);
-        TruncPathStr(destFile, 40);
+        TruncPathStr(srcFile, ITEM_LENGTH);
+        TruncPathStr(destFile, ITEM_LENGTH);
 
         postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (wchar_t*)srcFile);
         postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (wchar_t*)destFile);
@@ -379,8 +382,16 @@ bool CopyDialog::onFileError(const wchar_t* src, const wchar_t* dest, DWORD erro
             Sleep(1);
         }
     }
-    CopyErrorDialog dlg;
-    if (CopyErrorDialog::cancel == dlg.show(src, dest, errorNumber))
+    CopyErrorDialog* dlg = new CopyErrorDialog();
+    if (!dlg)
+    {
+        return false;
+    }
+
+    dlg->addRef();
+    int res = dlg->show(src, dest, errorNumber);
+    dlg->release();
+    if (CopyErrorDialog::cancel == res)
     {
         return true;
     }
