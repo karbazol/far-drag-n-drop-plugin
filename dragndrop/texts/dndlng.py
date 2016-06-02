@@ -265,6 +265,12 @@ ITEMS = [
     ),
 
     (
+        "MCopyOverwrite",
+        u"Переписать",
+        "&Overwrite"
+    ),
+
+    (
         "MRetry",
         u"Повторить",
         "&Retry"

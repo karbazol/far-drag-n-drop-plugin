@@ -22,16 +22,10 @@ FormatProcessor* FormatProcessor::create(IDataObject* obj, const wchar_t* destDi
     for (i = 0; i < LENGTH(fmts); i++)
     {
         FORMATETC fmt = {fmts[i].fmt, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
-#if 0
-        // Old implementation
-        if (SUCCEEDED(obj->QueryGetData(&fmt)))
-        {
-#else
         STGMEDIUM data = {0};
         if (SUCCEEDED(obj->GetData(&fmt, &data)))
         {
             ReleaseStgMedium(&data);
-#endif
             FormatProcessor* res = fmts[i].creator();
             res->_dir = destDir;
             return res;

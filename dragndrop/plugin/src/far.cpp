@@ -41,26 +41,23 @@ void WINAPI GetGlobalInfoW(
     Info->Author = L"Eugene Leskinen";
 }
 
-static BOOL alwaysTrue()
-{
-    return TRUE;
-}
-
 /**
  * Pointer to function which allow to check wheather this Far
  * is the active one.
  */
-BOOL (*IsActiveFar)() = 0;
+BOOL (*IsActiveFar)() = [](){return TRUE;};
 
 static void checkConman()
 {
     HMODULE conman = GetModuleHandle(L"infis.dll");
     if (conman)
     {
-        IsActiveFar = (BOOL (*)())GetProcAddress(conman, "IsConsoleActive");
+        void* IsConsoleActive = GetProcAddress(conman, "IsConsoleActive");
+        if (IsConsoleActive)
+        {
+            IsActiveFar = reinterpret_cast<BOOL(*)()>(IsConsoleActive);
+        }
     }
-    if (!IsActiveFar)
-        IsActiveFar = &alwaysTrue;
 }
 
 /**
@@ -389,6 +386,27 @@ PluginPanelItemsW FarGetActivePanelItems(bool selected)
 PluginPanelItemsW FarGetPassivePanelItems(bool selected)
 {
     return FarGetPanelItems(false, selected);
+}
+
+bool FarClearSelectionActivePanel(intptr_t from, intptr_t count)
+{
+    if (!theFar.PanelControl||!theFar.PanelControl(
+                PANEL_ACTIVE, FCTL_BEGINSELECTION, 0, nullptr))
+    {
+        return false;
+    }
+    bool res = true;
+    for (intptr_t i = 0; i < count; i++)
+    {
+        if (!theFar.PanelControl(PANEL_ACTIVE, FCTL_CLEARSELECTION, from++, nullptr))
+        {
+            res = false;
+            break;
+        }
+    }
+    theFar.PanelControl(PANEL_ACTIVE, FCTL_ENDSELECTION, 0, nullptr);
+    theFar.PanelControl(PANEL_ACTIVE, FCTL_REDRAWPANEL, 0, nullptr);
+    return res;
 }
 
 /**

@@ -73,6 +73,7 @@ MyStringW FarGetActivePanelDirectory();
 MyStringW FarGetPassivePanelDirectory();
 PluginPanelItemsW FarGetActivePanelItems(bool selected);
 PluginPanelItemsW FarGetPassivePanelItems(bool selected);
+bool FarClearSelectionActivePanel(intptr_t index, intptr_t count);
 HWND GetFarWindow();
 MyStringA TruncPathStr(const MyStringA& s, int maxLen);
 MyStringW TruncPathStr(const MyStringW& s, int maxLen);

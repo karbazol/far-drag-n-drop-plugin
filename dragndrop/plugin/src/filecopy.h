@@ -61,7 +61,7 @@ public:
      *           notifications during file copy/move operation.
      */
     FileCopier(const wchar_t* src, const wchar_t* dest, FileCopyNotify* p = NULL);
-    ~FileCopier(){}
+    ~FileCopier();
 
     /**
      * This method allows to get result of copy/move operation performed.

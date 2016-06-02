@@ -48,14 +48,12 @@ private:
     volatile long _filesProcessed;
     volatile long _filesToProcess;
     volatile long _fileListProcessed;
-    LARGE_INTEGER _timeStart;
-    int _speed;
+    int64_t _timeStart;
     void updateTotalSize();
     void updateFilesProcessed();
     void updatePercents();
     void updateProgressBar(int value, int controlId);
     void updateTimesAndSpeed();
-    void calcSpeed();
 private: /* FileListNotify implementation */
     bool onNextEntry(const int reason, const FileListEntry& e);
     bool onAllProcessed();

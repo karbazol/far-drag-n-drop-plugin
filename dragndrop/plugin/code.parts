@@ -25,7 +25,10 @@ env.Append(
     )
 
 if env.isConfigBasedOn('release'):
-    env.Append(LINKFLAGS=['/entry:DllMain'])
+    env.Append(
+        LINKFLAGS=['/entry:DllMain'],
+        LIBS=['libcmt'], # for _alldiv and _allmul functions
+        )
 
 sources  = [('src/' + x) for x in (
         'dndguids.c',

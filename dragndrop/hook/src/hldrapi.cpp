@@ -103,8 +103,6 @@ class HolderApiImpl: public HolderApi
 
     ~HolderApiImpl()
     {
-        //CloseHandle(_leftEvent);
-        //CloseHandle(_rightEvent);
         _holder = NULL;
     }
 

@@ -96,7 +96,7 @@ private:
     // Message handlers
     void onSetDragging(bool value);
     bool onGetDirFromScreenPoint(POINT&pt, MyStringW& dir);
-    void* onCallIt(Callable* p);
+    void* onCallIt(void* (*function)(void*), void* param);
     LONG_PTR onSendDlgMessage(void* msg);
 public:
     static MainThread* instance();
@@ -117,8 +117,8 @@ public:
     {
         postMessage(MTM_SENDDLGMSG, 0);
     }
-    inline void* callIt(Callable* p){p->addRef(); return sendMessage(MTM_CALLTHEOBJECT, p);}
-    inline void callItAsync(Callable* p){p->addRef(); postMessage(MTM_CALLTHEOBJECT, p);}
+    inline void* callIt(void* (*function)(void*), void* param){return sendMessage(MTM_CALLTHEOBJECT, function, param);}
+    inline void callItAsync(void* (*function)(void*), void* param){postMessage(MTM_CALLTHEOBJECT, function, param);}
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__MAINTHRD_H_

@@ -38,9 +38,8 @@ const GUID& CopyDialog::Id() const
 CopyDialog::CopyDialog(): FarDialog(), _items(copyDialogItemsTemplate),
     _totalProcessedSize(0), _totalSize(0), _currentProcessedSize(0),
     _currentSize(0), _filesToProcess(0),
-    _filesProcessed(-1), _fileListProcessed(0), _speed(0)
+    _filesProcessed(-1), _fileListProcessed(0), _timeStart(0)
 {
-    _timeStart.QuadPart = 0;
 }
 
 bool CopyDialog::onInit()
@@ -189,17 +188,24 @@ void CopyDialog::updateProgressBar(int value, int controlId)
 
 void CopyDialog::updateTimesAndSpeed()
 {
-    if (!_timeStart.QuadPart)
-        GetSystemTimeAsFileTime(reinterpret_cast<LPFILETIME>(&_timeStart));
-    LARGE_INTEGER spent;
+    int64_t spent;
     GetSystemTimeAsFileTime(reinterpret_cast<LPFILETIME>(&spent));
-    spent.QuadPart -= _timeStart.QuadPart;
-
-    LARGE_INTEGER left = {0};
-
-    if (_speed)
+    if (!_timeStart)
     {
-        left.QuadPart = (_totalSize - _totalProcessedSize) / (_speed) * NANOSECPERSEC;
+        _timeStart = spent;
+        spent = 0;
+    }
+    else
+    {
+        spent -= _timeStart;
+    }
+
+    int64_t left = 0;
+    int speed = 0;
+    if (spent && _totalProcessedSize)
+    {
+        left = (_totalSize - _totalProcessedSize) * spent / _totalProcessedSize;
+        speed = static_cast<int>(_totalProcessedSize * NANOSECPERSEC / spent);
     }
 
     SYSTEMTIME spentTime, leftTime;
@@ -213,25 +219,10 @@ void CopyDialog::updateTimesAndSpeed()
             GetMsg(MFileCopyingTimes), // "Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"
             spentTime.wHour, spentTime.wMinute, spentTime.wSecond,
             leftTime.wHour, leftTime.wMinute, leftTime.wSecond,
-            _speed >> 10);
+            // TODO Use specific suffix for large speed
+            speed ? speed >> 10 : 0);
 
     postMessage(DM_SETTEXTPTR, getMyItemId(lblTimeInfo), timeString);
-}
-
-void CopyDialog::calcSpeed()
-{
-    LARGE_INTEGER now;
-    GetSystemTimeAsFileTime(reinterpret_cast<LPFILETIME>(&now));
-
-    int64_t delta = now.QuadPart - _timeStart.QuadPart;
-    if (delta)
-    {
-        _speed = static_cast<int>(_totalProcessedSize * NANOSECPERSEC / delta);
-    }
-    else
-    {
-        _speed = 1;
-    }
 }
 
 bool CopyDialog::appendFile(const int64_t& size, bool lastOne)
@@ -360,8 +351,6 @@ bool CopyDialog::onFileStep(const int64_t& step)
     {
         _currentProcessedSize += step;
         _totalProcessedSize += step;
-
-        calcSpeed();
 
         updateTimesAndSpeed();
         updatePercents();

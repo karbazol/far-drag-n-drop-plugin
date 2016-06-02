@@ -118,7 +118,7 @@ void * __cdecl memset (
 }
 
 
-#ifdef _M_IX86
+#ifdef _M_IX86_ // These two functions should be picked up from libcmt
 LONGLONG _alldiv(LONGLONG a, LONGLONG b)
 {
     return 0;

@@ -344,7 +344,6 @@ static BOOL ProcessDirectInput(HANDLE console, PINPUT_RECORD buffer,
             res = ReadConsoleInputW(console, buffer, buffLength, readCount);
         else
             res = ReadConsoleInputA(console, buffer, buffLength, readCount);
-        TRACE("ReadConsoleInputX read %d events\n", readCount?*readCount:0);
     }
     else
     {
@@ -352,7 +351,6 @@ static BOOL ProcessDirectInput(HANDLE console, PINPUT_RECORD buffer,
             res = PeekConsoleInputW(console, buffer, buffLength, readCount);
         else
             res = PeekConsoleInputA(console, buffer, buffLength, readCount);
-        TRACE("PeekConsoleInputX poke %d events\n", readCount?*readCount:0);
     }
     return res;
 }

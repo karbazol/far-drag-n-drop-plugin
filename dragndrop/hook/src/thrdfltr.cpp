@@ -57,6 +57,8 @@ void ThreadFilter::checkDndUnderMouse(HWND msgHwnd)
 
     if (res == msgHwnd)
     {
+        // Cursor is over the window that recieves input.
+        // No need to check further
         return;
     }
 

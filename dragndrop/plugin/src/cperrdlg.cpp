@@ -71,6 +71,8 @@ void CopyErrorDialog::prepareItems(int consoleWidth, int consoleHeight)
 
     items = itemsTemplate;
 
+    items.btnRetry.Data = reinterpret_cast<const wchar_t*>(_useOverwrite ? MCopyOverwrite : MRetry);
+
     items.srcFileName.Data = _srcFileName;
     items.dstFileName.Data = _dstFileName;
 

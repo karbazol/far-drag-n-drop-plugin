@@ -83,6 +83,7 @@ HRESULT HdropProcessor::farCopyHDrop(MyStringW& files)
 
     }
 
+    dlg->hide();
     dlg->release();
     list->release();
 

@@ -188,34 +188,6 @@ intptr_t FarDialog::doShow()
  * Implementation of MainThread::Callable interface used to
  * inter-thread communications during dialog showing
  */
-class DialogShower : public MainThread::Callable, private RefCounted
-{
-private:
-    FarDialog* _dlg;
-public:
-    DialogShower(FarDialog* dlg): RefCounted(), _dlg(dlg)
-    {
-        if (_dlg)
-        {
-            _dlg->addRef();
-        }
-    }
-    void* call()
-    {
-        if (_dlg)
-        {
-            void* res = (void*)_dlg->doShow();
-            _dlg->release();
-            _dlg = 0;
-            return res;
-        }
-
-        return (void*)-1;
-    }
-    uintptr_t addRef() {return RefCounted::addRef();}
-    uintptr_t release() {return RefCounted::release();}
-};
-
 intptr_t FarDialog::show(bool modal)
 {
     MainThread* mainThread = MainThread::instance();
@@ -225,13 +197,22 @@ intptr_t FarDialog::show(bool modal)
     }
 
     ResetEvent(_running);
-    DialogShower* d = new DialogShower(this);
     if (modal)
     {
-        return reinterpret_cast<intptr_t>(mainThread->callIt(d));
+        return reinterpret_cast<intptr_t>(mainThread->callIt([](void* param)
+                    {
+                        return reinterpret_cast<void*>(reinterpret_cast<FarDialog*>(param)->doShow());
+                    }, this));
     }
 
-    mainThread->callItAsync(d);
+    addRef();
+    mainThread->callItAsync([](void* param)
+                {
+                    FarDialog* that = reinterpret_cast<FarDialog*>(param);
+                    that->doShow();
+                    that->release();
+                    return reinterpret_cast<void*>(-1);
+                }, this);
     return -1;
 }
 
@@ -430,6 +411,13 @@ intptr_t FarDialog::run(void*& farItems)
 
     _hwnd = DialogInit(&Id(), left(), top(), right(), bottom(), help(), theItems, count, 0,
             flags(), &dlgProc, this);
+
+    if (_hwnd == INVALID_HANDLE_VALUE)
+    {
+        TRACE("Could not initialize dialog");
+        LASTERROR();
+        return -2;
+    }
 
     return DialogRun(_hwnd);
 }

@@ -62,14 +62,14 @@ void* MainThread::handleMessage(unsigned int msg, void* param0, void* param1,
     switch (msg)
     {
     case MTM_SETDRAGGING:
-        onSetDragging(param0?true:false);
+        onSetDragging(!!param0);
         break;
     case MTM_GETDIRFROMPT:
         return (void*)onGetDirFromScreenPoint(*(POINT*)param0, *(MyStringW*)param1);
     case MTM_SENDDLGMSG:
         return (void*)onSendDlgMessage(param0);
     case MTM_CALLTHEOBJECT:
-        return onCallIt(reinterpret_cast<Callable*>(param0));
+        return onCallIt(reinterpret_cast<void*(*)(void*)>(param0), param1);
     }
     return NULL;
 }
@@ -233,14 +233,12 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
     return false;
 }
 
-void* MainThread::onCallIt(Callable* p)
+void* MainThread::onCallIt(void* (*function)(void*), void* param)
 {
-    if (!p)
+    if (!function)
         return reinterpret_cast<void*>(-1);
 
-    void* res = p->call();
-    p->release();
-    return res;
+    return function(param);
 }
 
 LONG_PTR MainThread::onSendDlgMessage(void* msg)

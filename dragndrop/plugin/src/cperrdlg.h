@@ -25,6 +25,7 @@ private:
         InitDialogItem sysErrMessage[1];
     };
     static CopyErrorDialogItems itemsTemplate;
+    bool _useOverwrite;
     InitDialogItem* _items;
     int _itemsCount;
     MyStringW _errorMessage;
@@ -47,8 +48,9 @@ public:
         skipAll,
         cancel
     };
-    CopyErrorDialog(): FarDialog(), _items(0), _itemsCount(0), _errorMessage(),
-        _srcFileName(), _dstFileName(), _errorLines(){}
+    CopyErrorDialog(bool useOverwrite=false): FarDialog(),
+        _useOverwrite(useOverwrite), _items(0), _itemsCount(0),
+        _errorMessage(), _srcFileName(), _dstFileName(), _errorLines(){}
     ~CopyErrorDialog(){}
     RetCode show(const wchar_t* source, const wchar_t* dest, unsigned int error);
 };
