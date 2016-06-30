@@ -84,6 +84,9 @@ extern BOOL (*IsActiveFar)();
 bool FarWriteRegistry(const wchar_t* name, const DWORD value);
 DWORD FarReadRegistry(const wchar_t* name, DWORD defaultValue=0);
 
+// Dialog functions
+intptr_t SendDlgMessage(HANDLE hDlg, intptr_t Msg, intptr_t Param1, void* Param2);
+
 #endif // __KARBAZOL_DRAGNDROP_2_0__FAR_H__
 // vim: set et ts=4 ai :
 

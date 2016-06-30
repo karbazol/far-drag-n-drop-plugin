@@ -33,9 +33,9 @@ class DialogShower;
 class FarDialog: public RefCounted
 {
 private:
-    HANDLE _hwnd;
-    HANDLE _running;
-    volatile long _destructing;
+    volatile HANDLE _hwnd;
+    CriticalSection _textGuard;
+    MyStringW** volatile _controlTexts;
     static intptr_t WINAPI dlgProc(HANDLE dlg, intptr_t msg, intptr_t param1, void* param2);
     intptr_t doShow();
     intptr_t run(void*& farItems);
@@ -58,8 +58,6 @@ protected:
     // HANDLERS
     virtual bool onInit();
     virtual bool onClose(intptr_t closeId);
-    bool lock();
-    void unlock();
 public:
     FarDialog();
     virtual ~FarDialog();
@@ -73,7 +71,7 @@ public:
     /**
      * Allows to determine whether the dialog is running
      */
-    inline bool running(){return WaitForSingleObject(_running,0)!=WAIT_OBJECT_0;}
+    inline bool running(){return !!_hwnd;}
 
     /**
      * Override this function to allow Dialog framework to show the dialog.
@@ -84,9 +82,9 @@ public:
     intptr_t hide();
 
     intptr_t sendMessage(intptr_t msg, intptr_t param1, void* param2);
-    void postMessage(intptr_t msg, intptr_t param1, void* param2);
 
     // Operations with the dialog controls
+    intptr_t setText(intptr_t id, const wchar_t* value);
     bool enable(intptr_t id);
     bool disable(intptr_t id);
     intptr_t switchCheckBox(intptr_t id, intptr_t state);

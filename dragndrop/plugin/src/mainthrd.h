@@ -33,20 +33,11 @@
 #define MTM_GETDIRFROMPT 3
 
 /**
- * Send message to a far dialog\n
- * param0 - HANDLE of the dialog\n
- * param1 - int Msg to be sent\n
- * param2 - int Param1 of the message\n
- * param3 - int Param2 of the message\n
- */
-#define MTM_SENDDLGMSG 4
-
-/**
  * Send callable object
  *  param0 - pointer to a Callable object instance.
  *  after the object is called it will be release'ed therefore it has to be addRef'ed before posting the message
  */
-#define MTM_CALLTHEOBJECT 5
+#define MTM_CALLTHEOBJECT 4
 
 /**
  * Singleton. Represents a main thread of Far.
@@ -96,9 +87,9 @@ private:
     void onSetDragging(bool value);
     bool onGetDirFromScreenPoint(POINT&pt, MyStringW& dir);
     void* onCallIt(void* (*function)(void*), void* param);
-    LONG_PTR onSendDlgMessage(void* msg);
 public:
     static MainThread* instance();
+    bool isMainThread();
     // returns last processed message id
     unsigned int processMessage(bool wait, void** result=NULL);
     void* waitForMessage(unsigned int msg);
@@ -107,14 +98,6 @@ public:
     inline bool getDirFromScreenPoint(POINT& pt, MyStringW& dir)
     {
         return sendMessage(MTM_GETDIRFROMPT, &pt, &dir)?true:false;
-    }
-    inline LONG_PTR sendDlgMessage(void* msg)
-    {
-        return reinterpret_cast<LONG_PTR>(sendMessage(MTM_SENDDLGMSG, msg));
-    }
-    inline void postDlgMessage()
-    {
-        postMessage(MTM_SENDDLGMSG, 0);
     }
     inline void* callIt(void* (*function)(void*), void* param){return sendMessage(MTM_CALLTHEOBJECT, function, param);}
     inline void callItAsync(void* (*function)(void*), void* param){postMessage(MTM_CALLTHEOBJECT, function, param);}

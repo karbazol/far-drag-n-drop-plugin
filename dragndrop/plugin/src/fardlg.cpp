@@ -1,9 +1,7 @@
-
 /**
  * @file fardlg.cpp
  * Contains implementation of FarDialog class.
  *
- * $Id: fardlg.cpp 81 2011-11-07 08:50:02Z Karbazol $
  */
 
 #include <refcounted.hpp>
@@ -12,32 +10,21 @@
 
 #include "fardlg.h"
 #include "mainthrd.h"
-#include "dlgfmwk.h"
 
 LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, intptr_t Msg, intptr_t Param1, void* Param2);
 
-FarDialog::FarDialog(): RefCounted(), _hwnd(0), _running(0), _destructing(0)
+FarDialog::FarDialog(): RefCounted(), _hwnd(0), _textGuard(), _controlTexts(0)
 {
-    _running = CreateEvent(NULL, TRUE, TRUE, NULL);
-    RunningDialogs* runningDialogs = RunningDialogs::instance();
-    if (runningDialogs)
-    {
-        runningDialogs->registerDialog(this);
-    }
 }
 
 FarDialog::~FarDialog()
 {
-    InterlockedExchange(&_destructing, 1L);
     hide();
-    WaitForSingleObject(_running, INFINITE);
-    CloseHandle(_running);
-    RunningDialogs* runningDialogs = RunningDialogs::instance();
-    if (runningDialogs)
+    if (_controlTexts)
     {
-        runningDialogs->unregisterDialog(this);
+        delete [] _controlTexts;
+        _controlTexts = nullptr;
     }
-
     TRACE("Leaving FarDialog::~FarDialog\n");
 }
 
@@ -54,7 +41,6 @@ InitDialogItem* FarDialog::items()
 intptr_t FarDialog::dlgProc(HANDLE dlg, intptr_t msg, intptr_t param1, void* param2)
 {
     FarDialog* This = 0;
-    RunningDialogs* runningDialogs = RunningDialogs::instance();
     if (msg == DN_INITDIALOG)
     {
         This = reinterpret_cast<FarDialog*>(param2);
@@ -62,21 +48,6 @@ intptr_t FarDialog::dlgProc(HANDLE dlg, intptr_t msg, intptr_t param1, void* par
         {
             InterlockedExchangePointer(&This->_hwnd, dlg);
             This->sendMessage(DM_SETDLGDATA, 0, This);
-            if (runningDialogs)
-            {
-                runningDialogs->notifyDialog(This, true);
-            }
-        }
-    }
-    else
-    {
-        if (runningDialogs)
-        {
-            This = (FarDialog*)runningDialogs->sendSafeMessage(dlg, DM_GETDLGDATA, 0, 0);
-            if (This && !runningDialogs->lockDialog(This))
-            {
-                This = 0;
-            }
         }
     }
 
@@ -85,34 +56,76 @@ intptr_t FarDialog::dlgProc(HANDLE dlg, intptr_t msg, intptr_t param1, void* par
         return DefDlgProc(dlg, msg, param1, param2);
     }
 
-    if (This->_destructing)
-    {
-        if (msg != DN_CLOSE)
-        {
-            This->sendMessage(DM_CLOSE, 0, 0);
-            return DefDlgProc(dlg, msg, param1, param2);
-        }
-        return TRUE;
-    }
     intptr_t res = This->handle(msg, param1, param2);
 
     if (msg == DN_CLOSE && res)
     {
         This->restoreItems();
-        if (runningDialogs)
-        {
-            runningDialogs->notifyDialog(This, false);
-        }
-
         return res;
     }
 
-    if (runningDialogs)
+    return res;
+}
+
+intptr_t FarDialog::setText(intptr_t id, const wchar_t* value)
+{
+    if (!value || !running())
     {
-        runningDialogs->unlockDialog(This);
+        return 0;
     }
 
-    return res;
+    MainThread* mainThread = MainThread::instance();
+    if (!mainThread)
+    {
+        return 0;
+    }
+
+    if (mainThread->isMainThread())
+    {
+        return sendMessage(DM_SETTEXTPTR, id, const_cast<wchar_t*>(value)); 
+    }
+    else
+    {
+        LOCKIT(_textGuard);
+
+
+        if (!_controlTexts)
+        {
+            intptr_t count = itemsCount();
+            _controlTexts = new MyStringW*[count];
+            memset(_controlTexts, 0, sizeof(*_controlTexts)*count);
+            addRef();
+            mainThread->callItAsync([](void* that)
+                    {
+                        FarDialog* This = reinterpret_cast<FarDialog*>(that);
+                        LOCKIT(This->_textGuard);
+                        intptr_t count = static_cast<intptr_t>(This->itemsCount());
+                        MyStringW** p = This->_controlTexts;
+                        This->_controlTexts = nullptr;
+                        for (intptr_t i = 0; i < count; ++i)
+                        {
+                            if (p[i])
+                            {
+                                This->sendMessage(DM_SETTEXTPTR, i, static_cast<wchar_t*>(*p[i]));
+                                delete p[i];
+                                p[i] = nullptr;
+                            }
+                        }
+                        delete [] p;
+                        This->release();
+                        return static_cast<void*>(nullptr);
+                    }, this);
+        }
+        if (_controlTexts[id])
+        {
+            *_controlTexts[id] = value;
+        }
+        else
+        {
+            _controlTexts[id] = new MyStringW(value);
+        }
+        return lstrlen(value);
+    }
 }
 
 bool FarDialog::onInit()
@@ -160,24 +173,17 @@ intptr_t FarDialog::hide()
 intptr_t FarDialog::doShow()
 {
     intptr_t res = -1;
-    RunningDialogs* runningDialogs = RunningDialogs::instance();
-    if (runningDialogs && runningDialogs->lockDialog(this))
-    {
-        CONSOLE_SCREEN_BUFFER_INFO consoleInfo = {0};
-        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &consoleInfo);
-        prepareItems(consoleInfo.dwSize.X, consoleInfo.dwSize.Y);
 
-        void* farItems;
-        res = run(farItems);
+    CONSOLE_SCREEN_BUFFER_INFO consoleInfo = {0};
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &consoleInfo);
+    prepareItems(consoleInfo.dwSize.X, consoleInfo.dwSize.Y);
 
-//        restoreItems();
-        freeFarItems(farItems);
-        releaseItems();
+    void* farItems;
+    res = run(farItems);
 
-        runningDialogs->unlockDialog(this);
-    }
-
-    SetEvent(_running);
+//    restoreItems();
+    freeFarItems(farItems);
+    releaseItems();
 
     return res;
 }
@@ -196,7 +202,6 @@ intptr_t FarDialog::show(bool modal)
         return -1;
     }
 
-    ResetEvent(_running);
     if (modal)
     {
         return reinterpret_cast<intptr_t>(mainThread->callIt([](void* param)
@@ -258,22 +263,11 @@ DWORD FarDialog::flags()
 
 intptr_t FarDialog::sendMessage(intptr_t msg, intptr_t param1, void* param2)
 {
-    RunningDialogs* runningDialogs = RunningDialogs::instance();
-    if (runningDialogs)
+    if (_hwnd)
     {
-        return runningDialogs->sendMessage(this, msg, param1, param2);
+        return SendDlgMessage(_hwnd, msg, param1, param2);
     }
-
     return 0;
-}
-
-void FarDialog::postMessage(intptr_t msg, intptr_t param1, void* param2)
-{
-    RunningDialogs* runningDialogs = RunningDialogs::instance();
-    if (runningDialogs)
-    {
-        runningDialogs->postMessage(this, msg, param1, param2);
-    }
 }
 
 /**
@@ -336,27 +330,6 @@ intptr_t FarDialog::checkState(intptr_t id)
     else
     {
         return items()[id].Selected;
-    }
-}
-
-bool FarDialog::lock()
-{
-    RunningDialogs* runningDialogs = RunningDialogs::instance();
-
-    if (!runningDialogs)
-    {
-        return false;
-    }
-
-    return runningDialogs->lockDialog(this);
-}
-
-void FarDialog::unlock()
-{
-    RunningDialogs* runningDialogs = RunningDialogs::instance();
-    if (runningDialogs)
-    {
-        runningDialogs->unlockDialog(this);
     }
 }
 

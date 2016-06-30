@@ -12,16 +12,12 @@
 #include "dragging.h"
 #include "far.h"
 #include "fardlg.h"
-#include "dlgfmwk.h"
 
 MainThread::MainThread():_posted(), _sendGuard(), _postGuard()
 {
     _threadId = GetCurrentThreadId();
     _eventMessage = CreateEvent(NULL, FALSE, FALSE, NULL);
     _eventProcessed = CreateEvent(NULL, FALSE, FALSE, NULL);
-
-    // Initialize the stuff which must be run in mainthread
-    RunningDialogs::instance();
 }
 
 MainThread::~MainThread()
@@ -55,10 +51,15 @@ void MainThread::kill(MainThread* p)
         delete p;
 }
 
+bool MainThread::isMainThread()
+{
+    return _threadId == GetCurrentThreadId();
+}
+
 void* MainThread::handleMessage(unsigned int msg, void* param0, void* param1,
         void* /*param2*/, void* /*param3*/)
 {
-    ASSERT(_threadId == GetCurrentThreadId());
+    ASSERT(isMainThread());
     switch (msg)
     {
     case MTM_SETDRAGGING:
@@ -66,8 +67,6 @@ void* MainThread::handleMessage(unsigned int msg, void* param0, void* param1,
         break;
     case MTM_GETDIRFROMPT:
         return (void*)onGetDirFromScreenPoint(*(POINT*)param0, *(MyStringW*)param1);
-    case MTM_SENDDLGMSG:
-        return (void*)onSendDlgMessage(param0);
     case MTM_CALLTHEOBJECT:
         return onCallIt(reinterpret_cast<void*(*)(void*)>(param0), param1);
     }
@@ -89,7 +88,7 @@ void MainThread::postMessage(unsigned int msg, void* param0, void* param1,
 void* MainThread::sendMessage(unsigned int msg, void* param0, void* param1,
         void* param2, void* param3)
 {
-    if (_threadId == GetCurrentThreadId())
+    if (isMainThread())
     {
         return _result = handleMessage(msg, param0, param1, param2, param3);
     }
@@ -112,7 +111,7 @@ void* MainThread::sendMessage(unsigned int msg, void* param0, void* param1,
 
 unsigned int MainThread::processMessage(bool wait, void** result)
 {
-    if (_threadId != GetCurrentThreadId())
+    if (!isMainThread())
     {
         return 0;
     }
@@ -239,16 +238,6 @@ void* MainThread::onCallIt(void* (*function)(void*), void* param)
         return reinterpret_cast<void*>(-1);
 
     return function(param);
-}
-
-LONG_PTR MainThread::onSendDlgMessage(void* msg)
-{
-    RunningDialogs* runningDialogs = RunningDialogs::instance();
-    if (!runningDialogs)
-    {
-        return 0;
-    }
-    return runningDialogs->processMessages(reinterpret_cast<RunningDialogs::Message*>(msg));
 }
 
 // vim: set et ts=4 ai :

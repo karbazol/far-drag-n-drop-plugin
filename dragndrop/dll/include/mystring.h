@@ -15,11 +15,6 @@
 #define EXCEPTION_EXECUTE_HANDLER       1
 #endif
 
-/**
- * Magic number used to mark memory regions used by MyString objects.
- */
-#define MYSTRING_COOKIE 0x4b43534b
-
 bool isBadReadPtr(void* p, size_t size);
 bool isBadWritePtr(void* p, size_t size);
 
@@ -226,8 +221,7 @@ public:
 private:
     struct StringData
     {
-        int cookie;
-        size_t refCount;
+        size_t mutable volatile refCount;
         // Not including null terminator
         size_t allocated;
         // Not including null terminator
@@ -235,35 +229,13 @@ private:
         CharType data[1];
     };
     StringData* data;
-    StringData* tryData(const CharType* s)
-    {
-        if (!s)
-        {
-            return 0;
-        }
-        StringData* res = reinterpret_cast<StringData*>(
-                const_cast<char*>(
-                reinterpret_cast<const char*>(s) - offsetof(StringData,data)));
-        if (isBadReadPtr(res, sizeof(*res))||isBadWritePtr(res, sizeof(*res)))
-        {
-            return 0;
-        }
-
-        if (res->cookie != MYSTRING_COOKIE ||
-            isBadReadPtr(res->data, res->len)||isBadWritePtr(res->data, res->len))
-        {
-            return 0;
-        }
-
-        return res;
-    }
     StringData* newData(size_t len)
     {
         size_t totalLen = sizeof(StringData) + len * sizeof(CharType);
 
         /*
          * The following case is impossible I guess, but
-         * Intel Source Checkers thinks it is possible because integer overflow.
+         * Intel Source Checker thinks it is possible because integer overflow.
          */
         if (totalLen < sizeof(StringData))
         {
@@ -275,7 +247,6 @@ private:
 
         if (res)
         {
-            res->cookie = MYSTRING_COOKIE;
             res->refCount = 1;
             res->allocated = len;
             res->len = 0;
@@ -305,9 +276,9 @@ private:
 
         return res;
     }
-    StringData* reallocData(StringData* p, size_t newLen)
+    StringData* reallocData(size_t newLen)
     {
-        uniqueData();
+        StringData* p = uniqueData();
 
         if (!p)
         {
@@ -346,7 +317,7 @@ private:
             data = 0;
         }
     }
-    void uniqueData()
+    StringData* uniqueData()
     {
         lockString l;
 
@@ -367,6 +338,8 @@ private:
                 }
             }
         }
+
+        return data;
     }
 public:
     ~MyString()
@@ -376,18 +349,11 @@ public:
     MyString(): data(0){}
     MyString(const CharType* p): data(0)
     {
-        if (p != data->data)
+        if (p)
         {
             lockString l;
-            data = tryData(p);
-            if (data)
-            {
-                data->refCount++;
-            }
-            else
-            {
-                data = allocData(p);
-            }
+
+            data = allocData(p);
         }
     }
     MyString(const MyString& s): data(s.data)
@@ -423,21 +389,38 @@ public:
     }
     MyString& operator=(const CharType* s)
     {
-        if (data->data != s)
+        if (!s)
         {
             freeData();
-
-            if (s)
+        }
+        else
+        {
+            size_t size = Traits::strlen(s);
+            if (!data)
             {
-                data = tryData(s);
-                if (data)
+                data = newData(size);
+            }
+            else
+            {
+                lockString l;
+
+                if (data->refCount > 1)
                 {
-                    data->refCount++;
+                    freeData();
+                    data = newData(size);
                 }
-                else
+                else // data->refCount == 0;
                 {
-                    data = allocData(s);
+                    if (size > data->allocated)
+                    {
+                        data = reallocData(size);
+                    }
                 }
+            }
+            if (data)
+            {
+                Traits::strcpy(data->data, s);
+                data->len = size;
             }
         }
 
@@ -494,6 +477,8 @@ public:
     }
     MyString& operator +=(const CharType* s)
     {
+        lockString l;
+
         if (!data)
         {
             data = allocData(s);
@@ -563,6 +548,7 @@ public:
 
     void length(size_t value)
     {
+
         uniqueData();
 
         if (!data)
@@ -571,7 +557,7 @@ public:
         }
         else if (value > data->allocated)
         {
-            data = reallocData(data, value);
+            data = reallocData(value);
         }
 
         if (data)

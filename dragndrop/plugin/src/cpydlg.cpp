@@ -1,4 +1,3 @@
-
 #include <utils.h>
 
 #include "cpydlg.h"
@@ -118,7 +117,7 @@ void CopyDialog::updateTotalSize()
 
     wsprintf(totalSizeString, GetMsg(MTotalSize), sizeToString(totalSizeValue, _totalSize));
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblTotalSize),
+    setText(getMyItemId(lblTotalSize),
             centerAndFill(totalSizeString, LENGTH(totalSizeString), L'\x2500'));
 }
 
@@ -134,7 +133,7 @@ void CopyDialog::updateFilesProcessed()
 
     wsprintf(filesProcessed, GetMsg(MFilesProcessed), processed, _filesToProcess);
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblFilesProcessed), filesProcessed);
+    setText(getMyItemId(lblFilesProcessed), filesProcessed);
 }
 
 static int calcPercents(const int64_t& value, const int64_t& base, int len)
@@ -182,7 +181,7 @@ void CopyDialog::updateProgressBar(int value, int controlId)
     }
     stringValue[j] = L'\0';
 
-    postMessage(DM_SETTEXTPTR, controlId, stringValue);
+    setText(controlId, stringValue);
 }
 
 void CopyDialog::updateTimesAndSpeed()
@@ -221,7 +220,7 @@ void CopyDialog::updateTimesAndSpeed()
             // TODO Use specific suffix for large speed
             speed ? speed >> 10 : 0);
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblTimeInfo), timeString);
+    setText(getMyItemId(lblTimeInfo), timeString);
 }
 
 bool CopyDialog::appendFile(const int64_t& size, bool lastOne)
@@ -262,11 +261,11 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
         InterlockedExchange64(&_currentProcessedSize, 0);
         _currentSize = size;
 
-        TruncPathStr(srcFile, ITEM_LENGTH);
-        TruncPathStr(destFile, ITEM_LENGTH);
+        srcFile = TruncPathStr(srcFile, ITEM_LENGTH);
+        destFile = TruncPathStr(destFile, ITEM_LENGTH);
 
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (wchar_t*)srcFile);
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (wchar_t*)destFile);
+        setText(getMyItemId(lblSrcFile), srcFile);
+        setText(getMyItemId(lblDestFile), destFile);
 
         updateFilesProcessed();
         updatePercents();

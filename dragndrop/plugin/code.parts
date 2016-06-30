@@ -37,7 +37,6 @@ sources  = [('src/' + x) for x in (
         'datacont.cpp',
         'dataobj.cpp',
         'dircrtr.cpp',
-        'dlgfmwk.cpp',
         'dragbmp.cpp',
         'dragging.cpp',
         'dropprcs.cpp',
