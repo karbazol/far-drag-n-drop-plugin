@@ -70,9 +70,10 @@ protected:
     int right();
     int bottom();
     DWORD flags();
+    const GUID* guid();
 protected:
     bool onInit();
-    bool onClose(int id);
+    bool onClose(intptr_t id);
 public:
     CopyDialog();
     ~CopyDialog(){}

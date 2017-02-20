@@ -18,7 +18,7 @@ DataContainer::DataContainer(const wchar_t* dir, const PluginPanelItemsW& items)
         }
         for (i = 0; i < _count; i++)
         {
-            _files[i] = items[i].FindData.cFileName;
+            _files[i] = items[i].cFileName;
         }
     }
 }

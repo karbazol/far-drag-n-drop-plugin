@@ -12,7 +12,7 @@
 #include "dlgfmwk.h"
 #include "mystring.h"
 
-LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2);
+FAR_RETURN_TYPE WINAPI DefDlgProc(HANDLE hDlg, FAR_WPARAM_TYPE Msg, FAR_WPARAM_TYPE Param1, FAR_LPARAM_TYPE Param2);
 
 FarDialog::FarDialog(): _hwnd(0), _running(0), _destructing(0)
 {
@@ -49,7 +49,7 @@ InitDialogItem* FarDialog::items()
     return 0;
 }
 
-LONG_PTR FarDialog::dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2)
+FAR_RETURN_TYPE FarDialog::dlgProc(HANDLE dlg, FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2)
 {
     FarDialog* This = 0;
     RunningDialogs* runningDialogs = RunningDialogs::instance();
@@ -59,7 +59,7 @@ LONG_PTR FarDialog::dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2)
         if (This)
         {
             InterlockedExchangePointer(&This->_hwnd, dlg);
-            This->sendMessage(DM_SETDLGDATA, 0, (LONG_PTR)This);
+            This->sendMessage(DM_SETDLGDATA, 0, (FAR_LPARAM_TYPE)This);
             if (runningDialogs)
             {
                 runningDialogs->notifyDialog(This, true);
@@ -92,7 +92,7 @@ LONG_PTR FarDialog::dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2)
         }
         return TRUE;
     }
-    LONG_PTR res = This->handle(msg, param1, param2);
+    FAR_RETURN_TYPE res = This->handle(msg, param1, param2);
 
     if (msg == DN_CLOSE && res)
     {
@@ -119,12 +119,12 @@ bool FarDialog::onInit()
     return false;
 }
 
-bool FarDialog::onClose(int /*closeId*/)
+bool FarDialog::onClose(intptr_t /*closeId*/)
 {
     return true;
 }
 
-LONG_PTR FarDialog::handle(int msg, int param1, LONG_PTR param2)
+FAR_RETURN_TYPE FarDialog::handle(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2)
 {
     switch (msg)
     {
@@ -156,9 +156,9 @@ int FarDialog::hide()
     return res;
 }
 
-int FarDialog::doShow()
+intptr_t FarDialog::doShow()
 {
-    int res = -1;
+    intptr_t res = -1;
     RunningDialogs* runningDialogs = RunningDialogs::instance();
     if (runningDialogs && runningDialogs->lockDialog(this))
     {
@@ -202,7 +202,7 @@ public:
     }
 };
 
-int FarDialog::show(bool modal)
+intptr_t FarDialog::show(bool modal)
 {
     MainThread* mainThread = MainThread::instance();
     if (!mainThread)
@@ -214,7 +214,7 @@ int FarDialog::show(bool modal)
     DialogShower* d = new DialogShower(this);
     if (modal)
     {
-        return reinterpret_cast<int>(mainThread->callIt(d));
+        return reinterpret_cast<intptr_t>(mainThread->callIt(d));
     }
 
     mainThread->callItAsync(d);
@@ -261,7 +261,7 @@ DWORD FarDialog::flags()
     return 0;
 }
 
-LONG_PTR FarDialog::sendMessage(int msg, int param1, LONG_PTR param2)
+FAR_RETURN_TYPE FarDialog::sendMessage(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2)
 {
     RunningDialogs* runningDialogs = RunningDialogs::instance();
     if (runningDialogs)
@@ -272,7 +272,7 @@ LONG_PTR FarDialog::sendMessage(int msg, int param1, LONG_PTR param2)
     return 0;
 }
 
-void FarDialog::postMessage(int msg, int param1, LONG_PTR param2)
+void FarDialog::postMessage(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2)
 {
     RunningDialogs* runningDialogs = RunningDialogs::instance();
     if (runningDialogs)
@@ -288,7 +288,7 @@ bool FarDialog::enable(int id)
 {
     if (running())
     {
-        return sendMessage(DM_ENABLE, id, TRUE)?true:false;
+        return sendMessage(DM_ENABLE, id, (FAR_LPARAM_TYPE)TRUE)?true:false;
     }
     else
     {
@@ -321,7 +321,7 @@ int FarDialog::switchCheckBox(int id, int state)
 {
     if (running())
     {
-        return static_cast<int>(sendMessage(DM_SETCHECK, id, state));
+        return (int)sendMessage(DM_SETCHECK, id, (FAR_LPARAM_TYPE)(intptr_t)state);
     }
     else
     {

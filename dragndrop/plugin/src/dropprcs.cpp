@@ -66,7 +66,7 @@ HRESULT DropProcessor::canProcess(IDataObject* _data)
     size_t i;
     for (i = 0; i < LENGTH(_supported); i++)
     {
-        FORMATETC fmt = {_supported[i], NULL, DVASPECT_CONTENT, (DWORD)-1, (DWORD)-1};
+        FORMATETC fmt = {_supported[i], NULL, DVASPECT_CONTENT, -1, (DWORD)-1};
         if (SUCCEEDED(_data->QueryGetData(&fmt)))
             return S_OK;
     }
