@@ -10,8 +10,8 @@
 #pragma warning(push, 3)
 #include "plugin.hpp"
 #pragma warning(pop)
-#include <dll/mystring.h>
-#include <common/growarry.h>
+#include <mystring.h>
+#include <growarry.h>
 
 struct FAR_FIND_DATA_W
 {

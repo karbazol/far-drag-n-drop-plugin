@@ -56,7 +56,7 @@ HRESULT DropProcessor::processDrop(IDataObject* obj, DWORD* effect, const wchar_
 
 HRESULT DropProcessor::canProcess(IDataObject* _data)
 {
-    static CLIPFORMAT _supported[] =
+    CLIPFORMAT _supported[] =
     {
         CF_HDROP,
         CF_FILEDESCRIPTORW,
