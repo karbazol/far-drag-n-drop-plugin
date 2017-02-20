@@ -50,7 +50,7 @@ class ModuleImportsWalker : public CommonWalker, public ModuleWalker
 {
 protected:
     void** _current;
-    int* _names;
+    DWORD_PTR* _names;
     PIMAGE_IMPORT_DESCRIPTOR _importedModule;
 public:
     ModuleImportsWalker(void* module): CommonWalker(module), _current(0), _names(0){}
@@ -67,7 +67,7 @@ public:
         _current = (void**)((DWORD_PTR)pDos + _importedModule->FirstThunk);
         _protect = new MemProtect(_current, PAGE_EXECUTE_READWRITE);
         if (_importedModule->OriginalFirstThunk)
-            _names = (int*)((DWORD_PTR)pDos + _importedModule->OriginalFirstThunk);
+            _names = (DWORD_PTR*)((DWORD_PTR)pDos + _importedModule->OriginalFirstThunk);
     }
     bool next()
     {
@@ -80,7 +80,7 @@ public:
             if (!_importedModule->OriginalFirstThunk)
                 return false;
             _current = (void**)((DWORD_PTR)_module + _importedModule->FirstThunk);
-            _names = (int*)((DWORD_PTR)_module + _importedModule->OriginalFirstThunk);
+            _names = (DWORD_PTR*)((DWORD_PTR)_module + _importedModule->OriginalFirstThunk);
             return true;
         }
 
@@ -104,14 +104,14 @@ public:
     }
     bool isName(const char* value) const
     {
-        if (!value || !_names || !*_names)
+        if (!value || !_names || !*_names || IMAGE_SNAP_BY_ORDINAL(*_names))
             return false;
 
         return lstrcmpA(funcName(), value)==0;
     }
     const char* funcName() const
     {
-        if (!_module || !_names || !*_names)
+        if (!_module || !_names || !*_names || IMAGE_SNAP_BY_ORDINAL(*_names))
             return "";
         char* res = (char*)_module + *_names + 2;
         if (!IsBadReadPtr(res, 1))

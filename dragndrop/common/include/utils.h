@@ -8,10 +8,6 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__UTILS_H__
 #define __KARBAZOL_DRAGNDROP_2_0__UTILS_H__
 
-#ifndef TARGET_ARCH
-#define TARGET_ARCH L""
-#endif
-
 /**
  * Return length of staticly defined array
  */
