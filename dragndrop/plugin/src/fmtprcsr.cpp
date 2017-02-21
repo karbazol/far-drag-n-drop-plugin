@@ -6,7 +6,7 @@
 
 FormatProcessor* FormatProcessor::create(IDataObject* obj, const wchar_t* destDir)
 {
-    static struct
+    struct
     {
         CLIPFORMAT fmt;
         FormatCreator creator;

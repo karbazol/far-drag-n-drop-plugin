@@ -45,7 +45,7 @@ bool CopyDialog::onInit()
     return true;
 }
 
-bool CopyDialog::onClose(int id)
+bool CopyDialog::onClose(intptr_t id)
 {
     id;
     /** @todo Ask user are they sure to cancel copy/move operation */
@@ -113,7 +113,7 @@ void CopyDialog::updateTotalSize()
     wsprintf(totalSizeString, GetMsg(MTotalSize), sizeToString(totalSizeValue, _totalSize));
 
     postMessage(DM_SETTEXTPTR, getMyItemId(lblTotalSize),
-            (long)centerAndFill(totalSizeString, LENGTH(totalSizeString), L'\x2500'));
+            (FAR_LPARAM_TYPE)centerAndFill(totalSizeString, LENGTH(totalSizeString), L'\x2500'));
 }
 
 void CopyDialog::updateFilesProcessed()
@@ -128,7 +128,7 @@ void CopyDialog::updateFilesProcessed()
 
     wsprintf(filesProcessed, GetMsg(MFilesProcessed), processed, _filesToProcess);
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblFilesProcessed), (long)filesProcessed);
+    postMessage(DM_SETTEXTPTR, getMyItemId(lblFilesProcessed), (FAR_LPARAM_TYPE)filesProcessed);
 }
 
 static int calcPercents(const __int64& value, const __int64& base, int len)
@@ -177,7 +177,7 @@ void CopyDialog::updateProgressBar(int value, int controlId)
     }
     stringValue[j] = L'\0';
 
-    postMessage(DM_SETTEXTPTR, controlId, (long)stringValue);
+    postMessage(DM_SETTEXTPTR, controlId, (FAR_LPARAM_TYPE)stringValue);
 }
 
 void CopyDialog::updateTimesAndSpeed()
@@ -208,7 +208,7 @@ void CopyDialog::updateTimesAndSpeed()
             leftTime.wHour, leftTime.wMinute, leftTime.wSecond,
             _speed >> 10);
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblTimeInfo), (long)timeString);
+    postMessage(DM_SETTEXTPTR, getMyItemId(lblTimeInfo), (FAR_LPARAM_TYPE)timeString);
 }
 
 void CopyDialog::calcSpeed()
@@ -268,8 +268,8 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
         TruncPathStr(srcFile, 40);
         TruncPathStr(destFile, 40);
 
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (long)(wchar_t*)srcFile);
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (long)(wchar_t*)destFile);
+        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (FAR_LPARAM_TYPE)(wchar_t*)srcFile);
+        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (FAR_LPARAM_TYPE)(wchar_t*)destFile);
 
         updateFilesProcessed();
         updatePercents();
@@ -303,6 +303,15 @@ int CopyDialog::bottom()
 DWORD CopyDialog::flags()
 {
     return 0x10;
+}
+
+// {E1197B18-EB86-45EC-B319-5F1E4C600B65}
+static const GUID CopyDialogGUID =
+{ 0xe1197b18, 0xeb86, 0x45ec,{ 0xb3, 0x19, 0x5f, 0x1e, 0x4c, 0x60, 0xb, 0x65 } };
+
+const GUID* CopyDialog::guid()
+{
+    return &CopyDialogGUID;
 }
 
 bool CopyDialog::onNextEntry(const int /*reason*/, const FileListEntry& e)
@@ -370,7 +379,11 @@ bool CopyDialog::onFileError(const wchar_t* src, const wchar_t* dest, DWORD erro
     if (running())
     {
         // give the _dialog a chance to appear
+#ifdef FAR2
         while (sendMessage(DM_GETTEXTPTR, 0, 0) == 0)
+#else
+        while (sendMessage(DM_GETFOCUS, 0, 0) == -1)
+#endif
         {
             Sleep(1);
         }

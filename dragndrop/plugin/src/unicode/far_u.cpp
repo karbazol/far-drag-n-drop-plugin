@@ -6,16 +6,16 @@
  */
 
 #include <shlwapi.h>
-#include <dll/dll.h>
+#include <dll.h>
 #include "../far.h"
 #include "../configure.hpp"
 #include "ddlng.h"
-#include <common/utils.h>
+#include <utils.h>
 #include "../hookfuncs.h"
 #include "../dragging.h"
 #include "../mainthrd.h"
 #include "../thrdpool.h"
-#include <dll/mystring.h>
+#include <mystring.h>
 
 static struct PluginStartupInfo theFar={0};
 static struct FarStandardFunctions farFuncs={0};
@@ -24,10 +24,27 @@ static struct FarStandardFunctions farFuncs={0};
  * Far calls this function to determine minimal version of Far
  * supported by the plug-in
  */
+#ifndef FAR2
+ // {453E81B7-43A7-4A95-8301-E4499A2695B5}
+static const GUID PluginGuid =
+{ 0x453e81b7, 0x43a7, 0x4a95,{ 0x83, 0x1, 0xe4, 0x49, 0x9a, 0x26, 0x95, 0xb5 } };
+
+void WINAPI GetGlobalInfoW(GlobalInfo* info)
+{
+    info->StructSize = sizeof(*info);
+    info->MinFarVersion = FARMANAGERVERSION;
+    info->Version = MAKEFARVERSION(2, 0, 1, 0, VS_RELEASE);
+    info->Guid = PluginGuid;
+    info->Title = L"drag-n-drop";
+    info->Description = L"This plugin enables drag'n'drop operations between Far and other apps.";
+    info->Author = L"Karbazol";
+}
+#else
 int WINAPI GetMinFarVersionW()
 {
     return FARMANAGERVERSION;
 }
+#endif
 
 static BOOL alwaysTrue()
 {
@@ -51,6 +68,7 @@ static void checkConman()
         IsActiveFar = &alwaysTrue;
 }
 
+#ifdef FAR2
 static void freeRegistry(MyStringA* registry)
 {
     delete registry;
@@ -69,6 +87,7 @@ static const wchar_t* getRegistryKeyName()
 
     return *regKeyName;
 }
+#endif
 
 /**
  * Far calls this function to provide its API to the plug-in.
@@ -76,6 +95,10 @@ static const wchar_t* getRegistryKeyName()
  */
 void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
 {
+#ifndef FAR2
+    if (Info->StructSize < sizeof(*Info))
+        return;
+#endif
     checkConman();
 
     if (!patchImports())
@@ -89,8 +112,10 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
     farFuncs = *Info->FSF;
     theFar.FSF = &farFuncs;
 
+#ifdef FAR2
     // Make sure we have correct registry key name
     getRegistryKeyName();
+#endif
 
     // Read config from the registry
     Config::instance();
@@ -104,6 +129,10 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
  */
 void WINAPI ExitFARW(void)
 {
+#ifndef FAR2
+    if (!theFar.StructSize) // early initialization failed
+        return;
+#endif
     ThreadPool::instance()->shutDown();
     Dragging::instance()->shutDown();
     restoreImports();
@@ -119,18 +148,29 @@ void WINAPI GetPluginInfoW(struct PluginInfo *Info)
 
     static const wchar_t* ConfigStrings[1];
     ConfigStrings[0] = GetMsg(MConfigMenu);
+#ifdef FAR2
     Info->PluginConfigStrings = ConfigStrings;
     Info->PluginConfigStringsNumber = LENGTH(ConfigStrings);
+#else
+    Info->PluginConfig.Count = 1;
+    Info->PluginConfig.Strings = ConfigStrings;
+    Info->PluginConfig.Guids = &PluginGuid;
+#endif
 }
 
-int WINAPI ConfigureW(int Number)
+#ifdef FAR2
+int WINAPI ConfigureW(int)
+#else
+intptr_t WINAPI ConfigureW(const struct ConfigureInfo*)
+#endif
 {
-    return doConfigure(Number);
+    return doConfigure(0);
 }
+
 /**
  * Far's default dialog procedure
  */
-LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2)
+FAR_RETURN_TYPE WINAPI DefDlgProc(HANDLE hDlg, FAR_WPARAM_TYPE Msg, FAR_WPARAM_TYPE Param1, FAR_LPARAM_TYPE Param2)
 {
     if (!theFar.DefDlgProc)
     {
@@ -145,15 +185,20 @@ LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2)
 /**
  * Far's function to show a dialog
  */
-HANDLE DialogInit(int X1, int Y1, int X2, int Y2,
+HANDLE DialogInit(const GUID* guid, int X1, int Y1, int X2, int Y2,
   const wchar_t *HelpTopic, struct FarDialogItem *Item, int ItemsNumber,
-  DWORD Reserved, DWORD Flags, FARWINDOWPROC DlgProc, long Param)
+  DWORD Reserved, DWORD Flags, FARWINDOWPROC DlgProc, FAR_LPARAM_TYPE Param)
 {
     HANDLE theDialog = INVALID_HANDLE_VALUE;
     if (theFar.DialogInit)
     {
+#ifdef FAR2
         theDialog = theFar.DialogInit(theFar.ModuleNumber, X1, Y1, X2, Y2,
                 HelpTopic, Item, ItemsNumber, Reserved, Flags, DlgProc, Param);
+#else
+        theDialog = theFar.DialogInit(&PluginGuid, guid, X1, Y1, X2, Y2,
+            HelpTopic, Item, ItemsNumber, Reserved, Flags, DlgProc, Param);
+#endif
         return theDialog;
     }
 
@@ -163,7 +208,7 @@ HANDLE DialogInit(int X1, int Y1, int X2, int Y2,
 /**
  * Far's function to run a dialog
  */
-int DialogRun(HANDLE dlg)
+intptr_t DialogRun(HANDLE dlg)
 {
     if (theFar.DialogRun)
     {
@@ -194,7 +239,11 @@ const wchar_t* GetMsg(int MsgId)
 {
     if (theFar.GetMsg)
     {
+#ifdef FAR2
         return theFar.GetMsg(theFar.ModuleNumber, MsgId);
+#else
+        return theFar.GetMsg(&PluginGuid, MsgId);
+#endif
     }
 
     return 0;
@@ -203,7 +252,7 @@ const wchar_t* GetMsg(int MsgId)
 /**
  * Sends a message to specified dialog
  */
-LONG_PTR SendDlgMessage(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2)
+FAR_RETURN_TYPE SendDlgMessage(HANDLE hDlg, FAR_WPARAM_TYPE Msg, FAR_WPARAM_TYPE Param1, FAR_LPARAM_TYPE Param2)
 {
     if (theFar.SendDlgMessage)
         return theFar.SendDlgMessage(hDlg, Msg, Param1, Param2);
@@ -220,220 +269,104 @@ int ConsoleMode(int /*param*/)
     return FAR_CONSOLE_WINDOWED;
 }
 
-/**
- * Gets window info from the Far.
- */
-bool FarGetWindowInfo(struct WindowInfo* wi)
+bool FarGetWindowInfo(struct WindowInfoW& wi)
 {
-    if (theFar.AdvControl)
-        return theFar.AdvControl(theFar.ModuleNumber, ACTL_GETWINDOWINFO, wi)?true:false;
-
-    return false;
-}
-
-static WindowInfoW& copy(WindowInfoW& wip, WindowInfo& wi)
-{
-    wip.Pos = wi.Pos;
-    wip.Modified = wi.Modified;
-    wip.Type = wi.Type;
-    wip.Current = wi.Current;
-
-    wip.TypeName = wi.TypeName;
-    wip.Name = wi.Name;
-
-    return wip;
-}
-
-bool FarGetWindowInfo(WindowInfoW& wip)
-{
-    struct WindowInfo wi;
-    wi.Pos = wip.Pos;
-    wi.TypeNameSize = 0;
-    wi.NameSize = 0;
-    if (!FarGetWindowInfo(&wi))
+    if (!theFar.AdvControl)
         return false;
-
-    wip.TypeName.length(wi.TypeNameSize);
-    wi.TypeName = wip.TypeName;
-
-    wip.Name.length(wi.NameSize);
-    wi.Name = wip.Name;
-
-    if (!FarGetWindowInfo(&wi))
+    WindowInfo info;
+    info.TypeName = nullptr;
+    info.Name = nullptr;
+    info.TypeNameSize = 0;
+    info.NameSize = 0;
+#ifdef FAR2
+    info.Pos = (int)wi.Pos;
+    if (!theFar.AdvControl(theFar.ModuleNumber, ACTL_GETWINDOWINFO, &info))
         return false;
-
-    copy(wip, wi);
+#else
+    info.StructSize = sizeof(info);
+    info.Pos = wi.Pos;
+    if (!theFar.AdvControl(&PluginGuid, ACTL_GETWINDOWINFO, 0, &info))
+        return false;
+#endif
+    wi.Pos = info.Pos;
+    wi.Type = info.Type;
     return true;
 }
 /**
- * Gets Panel info from the Far.
- */
-bool FarGetPanelInfo(struct PanelInfo* pi)
+* Gets Panel info from the Far.
+*/
+static bool FarGetPanelInfo(HANDLE hPanel, PanelInfoW& pw)
 {
-    if (theFar.Control)
-        return theFar.Control(PANEL_ACTIVE, FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(pi))?true:false;
-    return false;
-}
-
-static FAR_FIND_DATA_W& copy(FAR_FIND_DATA_W& pw, const FAR_FIND_DATA& pi)
-{
-    pw.dwFileAttributes = pi.dwFileAttributes;
-    pw.ftCreationTime = pi.ftCreationTime;
-    pw.ftLastAccessTime = pi.ftLastAccessTime;
-    pw.ftLastWriteTime = pi.ftLastWriteTime;
-    pw.nFileSizeHigh = ((LARGE_INTEGER*)&pi.nFileSize)->HighPart;
-    pw.nFileSizeLow = ((LARGE_INTEGER*)&pi.nFileSize)->LowPart;
-    //pw.dwReserved0 = pi.dwReserved0;
-    //pw.dwReserved1 = pi.dwReserved1;
-
-    pw.cFileName = pi.lpwszFileName;
-    pw.cAlternateFileName = pi.lpwszAlternateFileName;
-
-    return pw;
-}
-
-static PluginPanelItemW& copy(PluginPanelItemW& pw, const PluginPanelItem& pi)
-{
-    copy(pw.FindData, pi.FindData);
-
-#if 0
-    pw.PackSizeHigh = pi.PackSizeHigh;
-    pw.PackSize = pi.PackSize;
-#endif
-    pw.Flags = pi.Flags;
-    pw.NumberOfLinks = pi.NumberOfLinks;
-
-    pw.Description = pi.Description;
-    pw.Owner = pi.Owner;
-
-    pw.UserData = pi.UserData;
-    pw.CRC32 = pi.CRC32;
-    pw.Reserved[0] = pi.Reserved[0];
-    pw.Reserved[1] = pi.Reserved[1];
-
-    pw.CustomColumnData.size(pi.CustomColumnNumber);
-
-    for (int i = 0; i < pi.CustomColumnNumber; i++)
-    {
-        pw.CustomColumnData[i] = pi.CustomColumnData[i];
-    }
-
-    return pw;
-}
-
-static PanelInfoW& copy(PanelInfoW& pw, const PanelInfo& pi)
-{
-    pw.PanelType = pi.PanelType;
+    PanelInfo pi;
+#ifdef FAR2
+    if (!theFar.Control)
+        return false;
+    if (!theFar.Control(hPanel, FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&pi)))
+        return false;
     pw.Plugin = pi.Plugin;
-    pw.PanelRect = pi.PanelRect;
-
-    pw.CurrentItem = pi.CurrentItem;
-    pw.TopPanelItem = pi.TopPanelItem;
     pw.Visible = pi.Visible;
-    pw.Focus = pi.Focus;
-    pw.ViewMode = pi.ViewMode;
-
-    //pw.ColumnTypes = pi.lpwszColumnTypes;
-    //pw.ColumnWidths = pi.lpwszColumnWidths;
-    //pw.CurDir = pi.lpwszCurDir;
-
-    pw.ShortNames = pi.ShortNames;
-    pw.SortMode = pi.SortMode;
-
-    pw.Flags = pi.Flags;
-    pw.Reserved = pi.Reserved;
-
-#if 0
-    pw.PanelItems.size(0);
-    pw.SelectedItems.size(0);
-
-    if (pi.PanelItems)
-    {
-        pw.PanelItems.size(pi.ItemsNumber);
-
-        int i;
-
-        for (i = 0; i < pi.ItemsNumber; i++)
-        {
-            PluginPanelItemW& item = copy(pw.PanelItems[i], pi.PanelItems[i]);
-            if (pi.SelectedItemsNumber && (item.Flags & PPIF_SELECTED))
-                pw.SelectedItems.append(&item);
-        }
-
-        if (pi.SelectedItemsNumber == 1 && !pw.SelectedItems.size())
-        {
-            pw.SelectedItems.append(&pw.PanelItems[pw.CurrentItem]);
-        }
-
-        ASSERT(pw.SelectedItems.size() == (size_t)pi.SelectedItemsNumber);
-    }
+#else
+    pi.StructSize = sizeof(pi);
+    if (!theFar.PanelControl)
+        return false;
+    if (!theFar.PanelControl(hPanel, FCTL_GETPANELINFO, 0, &pi))
+        return false;
+    pw.Plugin = (pi.Flags & PFLAGS_PLUGIN);
+    pw.Visible = (pi.Flags & PFLAGS_VISIBLE);
 #endif
-
-    return pw;
+    pw.PanelRect = pi.PanelRect;
+    pw.Flags = (DWORD)pi.Flags;
+    return true;
 }
-
 bool FarGetActivePanelInfo(PanelInfoW& pw)
 {
-    PanelInfo pi;
-    if (!FarGetPanelInfo(&pi))
-        return false;
-
-    copy(pw, pi);
-
-    return true;
+    return FarGetPanelInfo(PANEL_ACTIVE, pw);
 }
-
-static bool FarGetPassivePanelInfo(struct PanelInfo* pi)
+bool FarGetPassivePanelInfo(PanelInfoW& pw)
 {
-    if (theFar.Control)
-        return theFar.Control(PANEL_PASSIVE, FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(pi))?true:false;
-    return false;
+    return FarGetPanelInfo(PANEL_PASSIVE, pw);
 }
-
-bool FarGetPassivePanelInfo(PanelInfoW& p)
-{
-    PanelInfo pi;
-    if (!FarGetPassivePanelInfo(&pi))
-        return false;
-
-    copy(p, pi);
-
-    return true;
-}
-
-static MyStringW FarGetPanelDirectory(bool activePanel)
+static MyStringW FarGetPanelDirectory(HANDLE hPanel)
 {
     MyStringW res;
-
+#ifdef FAR2
     if (theFar.Control)
     {
-        HANDLE h = activePanel?PANEL_ACTIVE:PANEL_PASSIVE;
-
-        size_t buffSize = theFar.Control(h, FCTL_GETPANELDIR, 0, 0);
+        size_t buffSize = theFar.Control(hPanel, FCTL_GETPANELDIR, 0, 0);
 
         wchar_t* buff = new wchar_t[buffSize];
 
-        theFar.Control(h, FCTL_GETPANELDIR, static_cast<int>(buffSize),
-                reinterpret_cast<LONG_PTR>(static_cast<wchar_t*>(buff)));
+        theFar.Control(hPanel, FCTL_GETPANELDIR, static_cast<int>(buffSize),
+            reinterpret_cast<LONG_PTR>(static_cast<wchar_t*>(buff)));
 
         res = buff;
 
-        delete [] buff;
+        delete[] buff;
     }
-
+#else
+    if (theFar.PanelControl)
+    {
+        size_t buffSize = theFar.PanelControl(hPanel, FCTL_GETPANELDIRECTORY, 0, 0);
+        FarPanelDirectory* buff = (FarPanelDirectory*)malloc(buffSize);
+        theFar.PanelControl(hPanel, FCTL_GETPANELDIRECTORY, buffSize, buff);
+        res = buff->Name;
+        free(buff);
+    }
+#endif
     return res;
 }
 
 MyStringW FarGetActivePanelDirectory()
 {
-    return FarGetPanelDirectory(true);
+    return FarGetPanelDirectory(PANEL_ACTIVE);
 }
 
 MyStringW FarGetPassivePanelDirectory()
 {
-    return FarGetPanelDirectory(false);
+    return FarGetPanelDirectory(PANEL_PASSIVE);
 }
 
+#ifdef FAR2
 static bool FarGetPanelItem(HANDLE panel, int command, int itemIndex, PluginPanelItemW& item)
 {
     int size = theFar.Control(panel, command, itemIndex, 0);
@@ -444,7 +377,7 @@ static bool FarGetPanelItem(HANDLE panel, int command, int itemIndex, PluginPane
     }
 
     PluginPanelItem* tmp = reinterpret_cast<PluginPanelItem*>(
-            malloc(size));
+        malloc(size));
 
     if (!tmp)
     {
@@ -453,27 +386,25 @@ static bool FarGetPanelItem(HANDLE panel, int command, int itemIndex, PluginPane
 
     theFar.Control(panel, command, itemIndex, reinterpret_cast<LONG_PTR>(tmp));
 
-    copy(item, *tmp);
+    item.cFileName = tmp->FindData.lpwszFileName;
 
     free(tmp);
 
     return true;
 }
-
-PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
+PluginPanelItemsW FarGetPanelItems(HANDLE hPanel, bool selected)
 {
     PluginPanelItemsW res;
 
     if (theFar.Control)
     {
-        HANDLE h = active?PANEL_ACTIVE:PANEL_PASSIVE;
-        int command = selected?FCTL_GETSELECTEDPANELITEM:FCTL_GETPANELITEM;
+        int command = selected ? FCTL_GETSELECTEDPANELITEM : FCTL_GETPANELITEM;
 
         PanelInfo pi;
 
-        if (theFar.Control(h, FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&pi)))
+        if (theFar.Control(hPanel, FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&pi)))
         {
-            int count = selected?pi.SelectedItemsNumber:pi.ItemsNumber;
+            int count = selected ? pi.SelectedItemsNumber : pi.ItemsNumber;
 
             if (count > 0)
             {
@@ -485,13 +416,12 @@ PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
 
                     for (i = 0; i < count; ++i)
                     {
-                        FarGetPanelItem(h, command, i, res[i]);
+                        FarGetPanelItem(hPanel, command, i, res[i]);
 
                     }
-                }
-                else
+                } else
                 {
-                    FarGetPanelItem(h, command, selected?0:pi.CurrentItem, res[0]);
+                    FarGetPanelItem(hPanel, command, selected ? 0 : pi.CurrentItem, res[0]);
                 }
             }
         }
@@ -499,16 +429,80 @@ PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
 
     return res;
 }
+#else
+static bool FarGetPanelItem(HANDLE panel, FILE_CONTROL_COMMANDS command, size_t itemIndex, PluginPanelItemW& item)
+{
+    size_t size = theFar.PanelControl(panel, command, itemIndex, 0);
 
+    if (size < sizeof(PluginPanelItem))
+    {
+        return false;
+    }
+
+    PluginPanelItem* tmp = reinterpret_cast<PluginPanelItem*>(
+        malloc(size));
+
+    if (!tmp)
+    {
+        return false;
+    }
+
+    FarGetPluginPanelItem ppi = { sizeof(ppi), size, tmp };
+    if (!theFar.PanelControl(panel, command, itemIndex, &ppi))
+        return false;
+
+    item.cFileName = tmp->FileName;
+
+    free(tmp);
+
+    return true;
+}
+PluginPanelItemsW FarGetPanelItems(HANDLE hPanel, bool selected)
+{
+    PluginPanelItemsW res;
+
+    if (theFar.PanelControl)
+    {
+        FILE_CONTROL_COMMANDS command = selected ? FCTL_GETSELECTEDPANELITEM : FCTL_GETPANELITEM;
+
+        PanelInfo pi;
+        pi.StructSize = sizeof(pi);
+
+        if (theFar.PanelControl(hPanel, FCTL_GETPANELINFO, 0, &pi))
+        {
+            size_t count = selected ? pi.SelectedItemsNumber : pi.ItemsNumber;
+
+            if (count > 0)
+            {
+                res.size(count);
+
+                if (count > 1)
+                {
+                    for (size_t i = 0; i < count; ++i)
+                    {
+                        FarGetPanelItem(hPanel, command, i, res[i]);
+
+                    }
+                } else
+                {
+                    FarGetPanelItem(hPanel, command, selected ? 0 : pi.CurrentItem, res[0]);
+                }
+            }
+        }
+    }
+
+    return res;
+}
+#endif
 
 PluginPanelItemsW FarGetActivePanelItems(bool selected)
 {
-    return FarGetPanelItems(true, selected);
+    return FarGetPanelItems(PANEL_ACTIVE, selected);
 }
 
 PluginPanelItemsW FarGetPassivePanelItems(bool selected)
 {
-    return FarGetPanelItems(false, selected);
+    return FarGetPanelItems(PANEL_PASSIVE, selected);
 }
 
 /**
@@ -522,7 +516,11 @@ HWND GetFarWindow()
         if (!theFar.AdvControl)
             return NULL;
 
+#ifdef FAR2
         hwnd = (HWND)theFar.AdvControl(theFar.ModuleNumber, ACTL_GETFARHWND, NULL);
+#else
+        hwnd = (HWND)theFar.AdvControl(&PluginGuid, ACTL_GETFARHWND, 0, NULL);
+#endif
 
         // The case of ConEmu
         HWND parent = GetAncestor(hwnd, GA_PARENT);
@@ -546,10 +544,11 @@ HWND GetFarWindow()
     return hwnd;
 }
 
+#ifdef FAR2
 /**
  * Writes data to the registry
  */
-bool FarWriteRegistry(const wchar_t* name, DWORD type, const void* value, size_t size)
+static bool FarWriteRegistry(const wchar_t* name, DWORD type, const void* value, size_t size)
 {
     HKEY key = 0;
 
@@ -576,7 +575,7 @@ bool FarWriteRegistry(const wchar_t* name, const DWORD value)
 /**
  * Reads data from the registry
  */
-size_t FarReadRegistry(const wchar_t* name, DWORD type, void* value, size_t size)
+static size_t FarReadRegistry(const wchar_t* name, DWORD type, void* value, size_t size)
 {
     HKEY key = 0;
 
@@ -605,16 +604,51 @@ DWORD FarReadRegistry(const wchar_t* name, DWORD defaultValue)
 
     return res;
 }
+#else
+/**
+* Writes data to the registry
+*/
+bool FarWriteRegistry(const wchar_t* name, const DWORD value)
+{
+    FarSettingsCreate settingsCreate;
+    settingsCreate.StructSize = sizeof(settingsCreate);
+    settingsCreate.Guid = PluginGuid;
+    if (!theFar.SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, PSL_ROAMING, &settingsCreate))
+        return false;
+    FarSettingsItem item;
+    item.StructSize = sizeof(item);
+    item.Root = 0;
+    item.Name = name;
+    item.Type = FST_QWORD;
+    item.Number = value;
+    bool ret = (theFar.SettingsControl(settingsCreate.Handle, SCTL_SET, 0, &item) != FALSE);
+    theFar.SettingsControl(settingsCreate.Handle, SCTL_FREE, 0, nullptr);
+    return ret;
+}
 
 /**
- * Truncates a string.
- */
-MyStringA TruncPathStr(const MyStringA& s, int maxLen)
+* Reads data from the registry
+*/
+DWORD FarReadRegistry(const wchar_t* name, DWORD defaultValue)
 {
-    MyStringW sW = a2w(s, CP_OEMCP);
-
-    return w2a(TruncPathStr(sW, maxLen), CP_OEMCP);
+    FarSettingsCreate settingsCreate;
+    settingsCreate.StructSize = sizeof(settingsCreate);
+    settingsCreate.Guid = PluginGuid;
+    if (!theFar.SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, PSL_ROAMING, &settingsCreate))
+        return defaultValue;
+    FarSettingsItem item;
+    item.StructSize = sizeof(item);
+    item.Root = 0;
+    item.Name = name;
+    item.Type = FST_QWORD;
+    bool ret = (theFar.SettingsControl(settingsCreate.Handle, SCTL_GET, 0, &item) != FALSE);
+    theFar.SettingsControl(settingsCreate.Handle, SCTL_FREE, 0, nullptr);
+    if (ret) {
+        return (DWORD)item.Number;
+    }
+    return defaultValue;
 }
+#endif
 
 MyStringW TruncPathStr(const MyStringW& s, int maxLen)
 {
@@ -626,4 +660,3 @@ MyStringW TruncPathStr(const MyStringW& s, int maxLen)
 }
 
 // vim: set et ts=4 sw=4 ai :
-

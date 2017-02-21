@@ -38,6 +38,7 @@ protected:
     void releaseItems();
     int itemsCount();
     DWORD flags();
+    const GUID* guid();
 public:
     enum RetCode
     {

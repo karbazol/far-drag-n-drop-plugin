@@ -75,13 +75,18 @@ void __cdecl _purecall(
 #undef RtlMoveMemory
 #endif
 
+#ifdef RtlFillMemory
+#undef RtlFillMemory
+#endif
+
 void WINAPI RtlMoveMemory ( void *, const void *, size_t count );
+void WINAPI RtlFillMemory ( void *, size_t, unsigned char );
 
 #ifdef memmove
 #undef memmove
 #endif
 
-#ifndef _M_X64
+#if !defined(_M_X64) || _MSC_VER >= 1900
 void * __cdecl memmove (
         void * dst,
         const void * src,
@@ -97,6 +102,19 @@ void * __cdecl memmove (
     return ret;
 }
 
+#pragma function(memset) // not intrinsic
+void * __cdecl memset(
+        void * dst,
+        int c,
+        size_t count
+        )
+{
+    RtlFillMemory(dst, count, c);
+    return dst;
+}
+#endif
+
+#ifndef _M_X64
 int main()
 {
     return 0;

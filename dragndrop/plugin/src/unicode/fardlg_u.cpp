@@ -6,10 +6,10 @@
 
 #include "../fardlg.h"
 
-HANDLE DialogInit(int X1, int Y1, int X2, int Y2,
+HANDLE DialogInit(const GUID* guid, int X1, int Y1, int X2, int Y2,
   const wchar_t *HelpTopic, struct FarDialogItem *Item, int ItemsNumber,
-  DWORD Reserved, DWORD Flags, FARWINDOWPROC DlgProc, long Param=NULL);
-int DialogRun(HANDLE hdlg);
+  DWORD Reserved, DWORD Flags, FARWINDOWPROC DlgProc, FAR_LPARAM_TYPE Param=NULL);
+intptr_t DialogRun(HANDLE hdlg);
 void DialogFree(HANDLE hDlg);
 
 /**
@@ -27,6 +27,7 @@ static void InitDialogItems(
     struct FarDialogItem *PItem=Item;
     for (I=0; I < ItemsNumber; I++,PItem++,PInit++)
     {
+#ifdef FAR2
         PItem->Type=PInit->Type;
         PItem->X1=PInit->X1;
         PItem->Y1=PInit->Y1;
@@ -36,9 +37,9 @@ static void InitDialogItems(
         PItem->Selected=PInit->Selected;
         PItem->Flags=PInit->Flags;
         PItem->DefaultButton=PInit->DefaultButton;
-        if ((unsigned int)PInit->Data < 2000)
+        if ((uintptr_t)PInit->Data < 2000)
         {
-           PItem->PtrData = GetMsg((int)PInit->Data);
+           PItem->PtrData = GetMsg((int)(uintptr_t)PInit->Data);
         }
         else
         {
@@ -46,18 +47,37 @@ static void InitDialogItems(
         }
         
         PItem->MaxLen = lstrlen(PItem->PtrData);
+#else
+        PItem->Type = PInit->Type;
+        PItem->X1 = PInit->X1;
+        PItem->Y1 = PInit->Y1;
+        PItem->X2 = PInit->X2;
+        PItem->Y2 = PInit->Y2;
+        PItem->Selected = PInit->Selected;
+        PItem->History = nullptr;
+        PItem->Mask = nullptr;
+        PItem->Flags = PInit->Flags;
+        if ((uintptr_t)PInit->Data < 2000)
+            PItem->Data = GetMsg((int)(uintptr_t)PInit->Data);
+        else
+            PItem->Data = PInit->Data;
+        PItem->MaxLength = lstrlen(PItem->Data);
+        PItem->UserData = 0;
+        PItem->Reserved[0] = 0;
+        PItem->Reserved[1] = 0;
+#endif
     }
 }
 
-int FarDialog::run(void*& farItems)
+intptr_t FarDialog::run(void*& farItems)
 {
     int count = itemsCount();
     FarDialogItem* theItems = new FarDialogItem[count];
     farItems = theItems;
     InitDialogItems(items(), theItems, count);
 
-    _hwnd = DialogInit(left(), top(), right(), bottom(), help(), theItems, count, 0,
-            flags(), &dlgProc, (long)this);
+    _hwnd = DialogInit(guid(), left(), top(), right(), bottom(), help(), theItems, count, 0,
+            flags(), &dlgProc, (FAR_LPARAM_TYPE)this);
 
     return DialogRun(_hwnd);
 }
@@ -71,11 +91,17 @@ void FarDialog::restoreItems()
         int i;
         for (i = 0; i < itemsCount(); i++)
         {
-            item = reinterpret_cast<FarDialogItem*>(malloc(sendMessage(DM_GETDLGITEM, i, 0)));
+            size_t size = sendMessage(DM_GETDLGITEM, i, 0);
+            item = reinterpret_cast<FarDialogItem*>(malloc(size));
             if (item)
             {
-                sendMessage(DM_GETDLGITEM, i, reinterpret_cast<LONG_PTR>(item));
-                initItems[i].Selected = item->Selected;
+#ifdef FAR2
+                sendMessage(DM_GETDLGITEM, i, reinterpret_cast<FAR_LPARAM_TYPE>(item));
+#else
+                FarGetDialogItem gdi = { sizeof(gdi), size, item };
+                sendMessage(DM_GETDLGITEM, i, &gdi);
+#endif
+                initItems[i].Selected = (item->Selected != 0);
                 free(item);
             }
         }
@@ -95,4 +121,3 @@ bool FarDialog::checked(int id)
 }
 
 // vim: set et ts=4 sw=4 ai :
-

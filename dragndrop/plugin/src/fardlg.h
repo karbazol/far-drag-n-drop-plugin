@@ -14,7 +14,11 @@
  */
 struct InitDialogItem
 {
+#ifndef FAR2
+    FARDIALOGITEMTYPES Type;
+#else
     int Type;
+#endif
     int X1;
     int Y1;
     int X2;
@@ -37,13 +41,14 @@ private:
     HANDLE _hwnd;
     HANDLE _running;
     volatile long _destructing;
-    static LONG_PTR WINAPI dlgProc(HANDLE dlg, int msg, int param1, LONG_PTR param2);
-    int doShow();
-    int run(void*& farItems);
+    static FAR_RETURN_TYPE WINAPI dlgProc(HANDLE dlg, FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2);
+    intptr_t doShow();
+    intptr_t run(void*& farItems);
     void restoreItems();
     void freeFarItems(void* farItems);
 protected:
-    virtual LONG_PTR handle(int msg, int param1, LONG_PTR param2);
+    virtual FAR_RETURN_TYPE handle(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2);
+    virtual const GUID* guid() = 0;
     virtual int left();
     virtual int top();
     virtual int right();
@@ -57,7 +62,7 @@ protected:
 
     // HANDLERS
     virtual bool onInit();
-    virtual bool onClose(int closeId);
+    virtual bool onClose(intptr_t closeId);
     bool lock();
     void unlock();
 public:
@@ -80,11 +85,11 @@ public:
      */
     virtual int itemsCount();
 
-    int show(bool modal);
+    intptr_t show(bool modal);
     int hide();
 
-    LONG_PTR sendMessage(int msg, int param1, LONG_PTR param2);
-    void postMessage(int msg, int param1, LONG_PTR param2);
+    FAR_RETURN_TYPE sendMessage(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2);
+    void postMessage(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2);
 
     // Operations with the dialog controls
     bool enable(int id);

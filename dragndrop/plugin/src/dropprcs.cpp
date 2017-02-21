@@ -56,7 +56,7 @@ HRESULT DropProcessor::processDrop(IDataObject* obj, DWORD* effect, const wchar_
 
 HRESULT DropProcessor::canProcess(IDataObject* _data)
 {
-    static CLIPFORMAT _supported[] =
+    CLIPFORMAT _supported[] =
     {
         CF_HDROP,
         CF_FILEDESCRIPTORW,
@@ -66,7 +66,7 @@ HRESULT DropProcessor::canProcess(IDataObject* _data)
     size_t i;
     for (i = 0; i < LENGTH(_supported); i++)
     {
-        FORMATETC fmt = {_supported[i], NULL, DVASPECT_CONTENT, (DWORD)-1, (DWORD)-1};
+        FORMATETC fmt = {_supported[i], NULL, DVASPECT_CONTENT, -1, (DWORD)-1};
         if (SUCCEEDED(_data->QueryGetData(&fmt)))
             return S_OK;
     }

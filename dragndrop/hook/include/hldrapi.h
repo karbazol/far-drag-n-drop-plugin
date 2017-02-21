@@ -8,7 +8,7 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__HLDRAPI_H__
 #define __KARBAZOL_DRAGNDROP_2_0__HLDRAPI_H__
 
-#include <common/hldrdefs.h>
+#include <hldrdefs.h>
 #include "hldrintf.h"
 #include "hook.h"
 

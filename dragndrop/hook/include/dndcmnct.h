@@ -3,7 +3,7 @@
 
 #include <windows.h>
 #include "dndmsgs.h"
-#include <common/hldrdefs.h>
+#include <hldrdefs.h>
 
 inline void showDndWindow(HWND hwnd){SendMessage(hwnd, WM_SHOWDNDWINDOW, 0, 0);}
 inline void hideDndWindow(HWND hwnd){SendMessage(hwnd, WM_HIDEDNDWINDOW, 0, 0);}

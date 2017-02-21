@@ -10,69 +10,28 @@
 #pragma warning(push, 3)
 #include "plugin.hpp"
 #pragma warning(pop)
-#include <dll/mystring.h>
-#include <common/growarry.h>
-
-struct FAR_FIND_DATA_W
-{
-    DWORD     dwFileAttributes;
-    FILETIME  ftCreationTime;
-    FILETIME  ftLastAccessTime;
-    FILETIME  ftLastWriteTime;
-    DWORD     nFileSizeHigh;
-    DWORD     nFileSizeLow;
-    DWORD     dwReserved0;
-    DWORD     dwReserved1;
-    MyStringW cFileName;
-    MyStringW cAlternateFileName;
-    FAR_FIND_DATA_W(): cFileName(), cAlternateFileName(){}
-};
+#include <mystring.h>
+#include <growarry.h>
 
 struct PluginPanelItemW
 {
-    FAR_FIND_DATA_W FindData;
-    DWORD           PackSizeHigh;
-    DWORD           PackSize;
-    DWORD           Flags;
-    DWORD           NumberOfLinks;
-    MyStringW       Description;
-    MyStringW       Owner;
-    GrowOnlyArray<MyStringW> CustomColumnData;
-    DWORD_PTR       UserData;
-    DWORD           CRC32;
-    DWORD_PTR       Reserved[2];
-    PluginPanelItemW(): FindData(), Description(), Owner(), CustomColumnData(){}
+    MyStringW cFileName;
 };
 
 typedef GrowOnlyArray<PluginPanelItemW> PluginPanelItemsW;
 
 struct PanelInfoW
 {
-    int PanelType;
     int Plugin;
     RECT PanelRect;
-    int CurrentItem;
-    int TopPanelItem;
     int Visible;
-    int Focus;
-    int ViewMode;
-    int ShortNames;
-    int SortMode;
     DWORD Flags;
-    DWORD Reserved;
-    PanelInfoW(){}
 };
 
 struct WindowInfoW
 {
-  int  Pos;
-  int  Type;
-  int  Modified;
-  int  Current;
-  MyStringW TypeName;
-  MyStringW Name;
-
-  WindowInfoW(): Pos(0), Type(0), Modified(0), Current(0), TypeName(), Name(){}
+  intptr_t Pos;
+  int Type;
 };
 
 // Standard Far Functions
@@ -119,6 +78,16 @@ extern BOOL (*IsActiveFar)();
 // Registry access functions
 bool FarWriteRegistry(const wchar_t* name, const DWORD value);
 DWORD FarReadRegistry(const wchar_t* name, DWORD defaultValue=0);
+
+#ifdef FAR2
+typedef int FAR_WPARAM_TYPE;
+typedef LONG_PTR FAR_LPARAM_TYPE;
+typedef LONG_PTR FAR_RETURN_TYPE;
+#else
+typedef intptr_t FAR_WPARAM_TYPE;
+typedef void* FAR_LPARAM_TYPE;
+typedef intptr_t FAR_RETURN_TYPE;
+#endif
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__FAR_H__
 // vim: set et ts=4 ai :

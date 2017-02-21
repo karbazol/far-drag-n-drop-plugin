@@ -47,6 +47,10 @@ struct ConfigDlgItems
  */
 #define getMyItemId(i) getFarDlgItemId(ConfigDlgItems,i)
 
+ // {A0CB6CD8-AE4F-4878-AA67-1837A9E26390}
+static const GUID ConfigDlgGuid =
+{ 0xa0cb6cd8, 0xae4f, 0x4878,{ 0xaa, 0x67, 0x18, 0x37, 0xa9, 0xe2, 0x63, 0x90 } };
+
 /**
  * @brief Configuration dialog
  */
@@ -57,7 +61,7 @@ public:
     ConfigDlg(): FarDialog(){}
     ~ConfigDlg(){}
 protected:
-    LONG_PTR handle(int msg, int param1, LONG_PTR param2)
+    FAR_RETURN_TYPE handle(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2) override
     {
         switch (msg)
         {
@@ -87,6 +91,10 @@ protected:
     int bottom()
     {
         return _items.configTitle.Y2+2;
+    }
+    const GUID* guid()
+    {
+        return &ConfigDlgGuid;
     }
 
     friend int doConfigure(int);

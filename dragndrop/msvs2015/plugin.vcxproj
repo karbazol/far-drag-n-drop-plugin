@@ -1,0 +1,290 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{08EC852E-F438-4C71-A4E6-7EB0AF5A80E4}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>plugin</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>drgndrop</TargetName>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>drgndrop</TargetName>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>drgndrop</TargetName>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>drgndrop</TargetName>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>TARGET_ARCH_x86;WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>generated;..\common\include;..\dll\include;..\hook\include;C:\Program Files\Far Manager\PluginSDK\Headers.c</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>TARGET_ARCH_x86;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <MinimumRequiredVersion>5.1</MinimumRequiredVersion>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>..\plugin\src\unicode\drgndrop_u3.def</ModuleDefinitionFile>
+      <ImportLibrary>$(OutDir)\plugin.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>TARGET_ARCH_x86_64;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>generated;..\common\include;..\dll\include;..\hook\include;C:\Program Files\Far Manager\PluginSDK\Headers.c</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>TARGET_ARCH_x86_64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <MinimumRequiredVersion>5.2</MinimumRequiredVersion>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>..\plugin\src\unicode\drgndrop_u3.def</ModuleDefinitionFile>
+      <ImportLibrary>$(OutDir)\plugin.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MinSpace</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;TARGET_ARCH_x86;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>generated;..\common\include;..\dll\include;..\hook\include;C:\Program Files\Far Manager\PluginSDK\Headers.c</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <AssemblerOutput>All</AssemblerOutput>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <OmitFramePointers>true</OmitFramePointers>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>TARGET_ARCH_x86;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <MinimumRequiredVersion>5.1</MinimumRequiredVersion>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;crt\support_x86.lib;crt\libmsvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>..\plugin\src\unicode\drgndrop_u3.def</ModuleDefinitionFile>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <ImportLibrary>$(OutDir)\plugin.lib</ImportLibrary>
+      <GenerateMapFile>true</GenerateMapFile>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MinSpace</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>TARGET_ARCH_x86_64;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>generated;..\common\include;..\dll\include;..\hook\include;C:\Program Files\Far Manager\PluginSDK\Headers.c</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <AssemblerOutput>All</AssemblerOutput>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>TARGET_ARCH_x86_64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <MinimumRequiredVersion>5.2</MinimumRequiredVersion>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;crt\exchandler_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>..\plugin\src\unicode\drgndrop_u3.def</ModuleDefinitionFile>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <ImportLibrary>$(OutDir)\plugin.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\plugin\src\configure.hpp" />
+    <ClInclude Include="..\plugin\src\cperrdlg.h" />
+    <ClInclude Include="..\plugin\src\cpydlg.h" />
+    <ClInclude Include="..\plugin\src\cstmdata.h" />
+    <ClInclude Include="..\plugin\src\datacont.h" />
+    <ClInclude Include="..\plugin\src\dataobj.h" />
+    <ClInclude Include="..\plugin\src\dircrtr.h" />
+    <ClInclude Include="..\plugin\src\dlgfmwk.h" />
+    <ClInclude Include="..\plugin\src\dragbmp.h" />
+    <ClInclude Include="..\plugin\src\dragging.h" />
+    <ClInclude Include="..\plugin\src\dropprcs.h" />
+    <ClInclude Include="..\plugin\src\enumfmt.h" />
+    <ClInclude Include="..\plugin\src\far.h" />
+    <ClInclude Include="..\plugin\src\fardlg.h" />
+    <ClInclude Include="..\plugin\src\filecopy.h" />
+    <ClInclude Include="..\plugin\src\filelist.h" />
+    <ClInclude Include="..\plugin\src\fldsitrt.h" />
+    <ClInclude Include="..\plugin\src\fldsprcs.h" />
+    <ClInclude Include="..\plugin\src\fmtprcsr.h" />
+    <ClInclude Include="..\plugin\src\hdrpprcs.h" />
+    <ClInclude Include="..\plugin\src\hookfuncs.h" />
+    <ClInclude Include="..\plugin\src\inpprcsr.h" />
+    <ClInclude Include="..\plugin\src\mainthrd.h" />
+    <ClInclude Include="..\plugin\src\modules.hpp" />
+    <ClInclude Include="..\plugin\src\myunknown.h" />
+    <ClInclude Include="..\plugin\src\protect.h" />
+    <ClInclude Include="..\plugin\src\thrdpool.h" />
+    <ClInclude Include="..\plugin\src\toolwnd.h" />
+    <ClInclude Include="..\plugin\src\winthrd.h" />
+    <ClInclude Include="..\plugin\src\wrkrthrd.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\plugin\src\configure.cpp" />
+    <ClCompile Include="..\plugin\src\cperrdlg.cpp" />
+    <ClCompile Include="..\plugin\src\cpydlg.cpp" />
+    <ClCompile Include="..\plugin\src\datacont.cpp" />
+    <ClCompile Include="..\plugin\src\dataobj.cpp" />
+    <ClCompile Include="..\plugin\src\dircrtr.cpp" />
+    <ClCompile Include="..\plugin\src\dlgfmwk.cpp" />
+    <ClCompile Include="..\plugin\src\dragbmp.cpp" />
+    <ClCompile Include="..\plugin\src\dragging.cpp" />
+    <ClCompile Include="..\plugin\src\dropprcs.cpp" />
+    <ClCompile Include="..\plugin\src\enumfmt.cpp" />
+    <ClCompile Include="..\plugin\src\fardlg.cpp" />
+    <ClCompile Include="..\plugin\src\filecopy.cpp" />
+    <ClCompile Include="..\plugin\src\filelist.cpp" />
+    <ClCompile Include="..\plugin\src\fldsitrt.cpp" />
+    <ClCompile Include="..\plugin\src\fldsprcs.cpp" />
+    <ClCompile Include="..\plugin\src\fmtprcsr.cpp" />
+    <ClCompile Include="..\plugin\src\hdrpprcs.cpp" />
+    <ClCompile Include="..\plugin\src\hookfuncs.cpp" />
+    <ClCompile Include="..\plugin\src\inpprcsr.cpp" />
+    <ClCompile Include="..\plugin\src\mainthrd.cpp" />
+    <ClCompile Include="..\plugin\src\modules.cpp" />
+    <ClCompile Include="..\plugin\src\protect.cpp" />
+    <ClCompile Include="..\plugin\src\thrdpool.cpp" />
+    <ClCompile Include="..\plugin\src\toolwnd.cpp" />
+    <ClCompile Include="..\plugin\src\unicode\fardlg_u.cpp" />
+    <ClCompile Include="..\plugin\src\unicode\far_u.cpp" />
+    <ClCompile Include="..\plugin\src\winthrd.cpp" />
+    <ClCompile Include="..\plugin\src\wrkrthrd.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="generated\plugin_version_info.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="common.vcxproj">
+      <Project>{911f51dd-2793-473d-879c-c5de9c92de5c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="dll.vcxproj">
+      <Project>{f26a01c4-231f-4fe0-bf1a-1263b86c4799}</Project>
+    </ProjectReference>
+    <ProjectReference Include="hook.vcxproj">
+      <Project>{c98dd1b6-3e41-421e-83d2-10ecda61b999}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\plugin\src\unicode\drgndrop_u3.def" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

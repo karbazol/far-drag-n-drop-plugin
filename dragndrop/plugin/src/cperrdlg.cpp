@@ -120,6 +120,15 @@ int CopyErrorDialog::itemsCount()
     return _itemsCount;
 }
 
+// {DF9FDB3D-73F1-40AE-B8D3-79C98FA9731C}
+static const GUID CopyErrorDialogGuid =
+{ 0xdf9fdb3d, 0x73f1, 0x40ae,{ 0xb8, 0xd3, 0x79, 0xc9, 0x8f, 0xa9, 0x73, 0x1c } };
+
+const GUID* CopyErrorDialog::guid()
+{
+    return &CopyErrorDialogGuid;
+}
+
 CopyErrorDialog::RetCode CopyErrorDialog::show(const wchar_t* source, const wchar_t* dest, unsigned int error)
 {
     _errorMessage = getErrorDesc(error);

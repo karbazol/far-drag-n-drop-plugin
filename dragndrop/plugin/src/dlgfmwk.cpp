@@ -11,7 +11,7 @@
 #include "growarry.h"
 #include "mainthrd.h"
 
-LONG_PTR SendDlgMessage(HANDLE hDlg, int Msg, int Param1, LONG_PTR Param2);
+FAR_RETURN_TYPE SendDlgMessage(HANDLE hDlg, FAR_WPARAM_TYPE Msg, FAR_WPARAM_TYPE Param1, FAR_LPARAM_TYPE Param2);
 
 /**
  * @brief Dialog entry
@@ -128,7 +128,7 @@ public:
         }
     }
 
-    bool setControlText(int id, const wchar_t* s)
+    bool setControlText(intptr_t id, const wchar_t* s)
     {
         if (!_texts.size())
             _texts.size(_dlg->itemsCount());
@@ -140,7 +140,7 @@ public:
         return res;
     }
 
-    bool getControlText(int id, MyStringW& s)
+    bool getControlText(intptr_t id, MyStringW& s)
     {
         if (!_texts.size())
             _texts.size(_dlg->itemsCount());
@@ -152,7 +152,7 @@ public:
 
         return res;
     }
-    RunningDialogs::Message& addMessage(HANDLE h, int msg, int p1, LONG_PTR p2)
+    RunningDialogs::Message& addMessage(HANDLE h, FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE p1, FAR_LPARAM_TYPE p2)
     {
         RunningDialogs::Message m;
         m.h = h;
@@ -296,8 +296,8 @@ void RunningDialogs::unregisterDialog(FarDialog* dlg)
     TRACE("RunningDialogs::unregisterDialog called for %p\n", dlg);
 }
 
-LONG_PTR RunningDialogs::sendSafeMessage(HANDLE handle,
-        int msg, int param0, LONG_PTR param1)
+FAR_RETURN_TYPE RunningDialogs::sendSafeMessage(HANDLE handle,
+        FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param0, FAR_LPARAM_TYPE param1)
 {
     LOCKIT(_dialogsLock);
 
@@ -309,7 +309,7 @@ LONG_PTR RunningDialogs::sendSafeMessage(HANDLE handle,
 }
 
 void RunningDialogs::postMessage(FarDialog* dlg,
-        int msg, int param0, LONG_PTR param1)
+        FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param0, FAR_LPARAM_TYPE param1)
 {
     LOCKIT(_dialogsLock);
 
@@ -336,7 +336,7 @@ void RunningDialogs::postMessage(FarDialog* dlg,
     }
 }
 
-LONG_PTR RunningDialogs::sendMessage(FarDialog* dlg, int msg, int param0, LONG_PTR param1)
+FAR_RETURN_TYPE RunningDialogs::sendMessage(FarDialog* dlg, FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param0, FAR_LPARAM_TYPE param1)
 {
     Message m;
     {
@@ -385,7 +385,7 @@ void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
         if (e->getControlText(i, s))
         {
             wchar_t* str = s;
-            SendDlgMessage(dlg->hwnd(), DM_SETTEXTPTR, i, (LONG_PTR)str);
+            SendDlgMessage(dlg->hwnd(), DM_SETTEXTPTR, i, (FAR_LPARAM_TYPE)str);
         }
     }
     SendDlgMessage(dlg->hwnd(), DM_ENABLEREDRAW, TRUE, 0);
@@ -399,26 +399,26 @@ void RunningDialogs::processPostedDlgMessages(FarDialog* dlg)
     }
 }
 
-LONG_PTR RunningDialogs::processPostedSetText(HANDLE dlg,
-        int id, const wchar_t* s)
+FAR_RETURN_TYPE RunningDialogs::processPostedSetText(HANDLE dlg,
+        FAR_WPARAM_TYPE id, const wchar_t* s)
 {
     LOCKIT(_dialogsLock);
 
     DialogEntry* e = _head->find(dlg);
 
     if (!e)
-        return sendSafeMessage(dlg, DM_SETTEXTPTR, id, (LONG_PTR)s);
+        return sendSafeMessage(dlg, DM_SETTEXTPTR, id, (FAR_LPARAM_TYPE)s);
     else
     {
         MyStringW str;
         if (e->getControlText(id, str))
             s = str;
-        return sendSafeMessage(dlg, DM_SETTEXTPTR, id, (LONG_PTR)s);
+        return sendSafeMessage(dlg, DM_SETTEXTPTR, id, (FAR_LPARAM_TYPE)s);
     }
 }
 
-LONG_PTR RunningDialogs::processPostedMessage(HANDLE dlg,
-        int msg, int param0, LONG_PTR param1)
+FAR_RETURN_TYPE RunningDialogs::processPostedMessage(HANDLE dlg,
+        FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param0, FAR_LPARAM_TYPE param1)
 {
     LOCKIT(_dialogsLock);
 
@@ -454,7 +454,7 @@ void RunningDialogs::notifyDialog(FarDialog* dlg, bool shown)
     }
 }
 
-LONG_PTR RunningDialogs::processMessages(Message* msg)
+FAR_RETURN_TYPE RunningDialogs::processMessages(Message* msg)
 {
     LOCKIT(_dialogsLock);
 
