@@ -151,6 +151,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <AssemblerOutput>All</AssemblerOutput>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>TARGET_ARCH_x86;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>

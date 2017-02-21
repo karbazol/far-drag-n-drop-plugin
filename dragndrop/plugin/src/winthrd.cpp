@@ -11,9 +11,9 @@ WinThread::WinThread(): _handle(0), _leftButtonEvent(0), _rightButtonEvent(0),
     HolderApi* holderApi = HolderApi::instance();
     if (holderApi)
     {
+        holderApi->setHolder(static_cast<IHolder*>(this)); // this CreateEvent-s, so must come first
         _leftButtonEvent = OpenEvent(SYNCHRONIZE, FALSE, HOLDER_LEFT_EVENT);
         _rightButtonEvent = OpenEvent(SYNCHRONIZE, FALSE, HOLDER_RIGHT_EVENT);
-        holderApi->setHolder(static_cast<IHolder*>(this));
     }
 }
 

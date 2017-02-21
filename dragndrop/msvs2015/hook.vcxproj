@@ -147,6 +147,7 @@
       <ExceptionHandling>false</ExceptionHandling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>TARGET_ARCH_x86;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
