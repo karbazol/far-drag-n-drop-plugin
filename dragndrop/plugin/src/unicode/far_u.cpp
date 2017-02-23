@@ -298,6 +298,7 @@ bool FarGetWindowInfo(struct WindowInfoW& wi)
 static bool FarGetPanelInfo(HANDLE hPanel, PanelInfoW& pw)
 {
     PanelInfo pi;
+    SMALL_RECT farRect;
 #ifdef FAR2
     if (!theFar.Control)
         return false;
@@ -305,6 +306,10 @@ static bool FarGetPanelInfo(HANDLE hPanel, PanelInfoW& pw)
         return false;
     pw.Plugin = pi.Plugin;
     pw.Visible = pi.Visible;
+    if (!theFar.AdvControl || !theFar.AdvControl(theFar.ModuleNumber, ACTL_GETPANELRECT, &farRect)) {
+        farRect.Left = 0;
+        farRect.Top = 0;
+    }
 #else
     pi.StructSize = sizeof(pi);
     if (!theFar.PanelControl)
@@ -313,8 +318,15 @@ static bool FarGetPanelInfo(HANDLE hPanel, PanelInfoW& pw)
         return false;
     pw.Plugin = (pi.Flags & PFLAGS_PLUGIN);
     pw.Visible = (pi.Flags & PFLAGS_VISIBLE);
+    if (!theFar.AdvControl || !theFar.AdvControl(&PluginGuid, ACTL_GETFARRECT, 0, &farRect)) {
+        farRect.Left = 0;
+        farRect.Top = 0;
+    }
 #endif
-    pw.PanelRect = pi.PanelRect;
+    pw.PanelRect.left = pi.PanelRect.left + farRect.Left;
+    pw.PanelRect.top = pi.PanelRect.top + farRect.Top;
+    pw.PanelRect.right = pi.PanelRect.right + farRect.Left;
+    pw.PanelRect.bottom = pi.PanelRect.bottom + farRect.Top;
     pw.Flags = (DWORD)pi.Flags;
     return true;
 }
