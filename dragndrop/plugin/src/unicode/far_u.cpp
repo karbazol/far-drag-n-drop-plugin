@@ -33,7 +33,7 @@ void WINAPI GetGlobalInfoW(GlobalInfo* info)
 {
     info->StructSize = sizeof(*info);
     info->MinFarVersion = FARMANAGERVERSION;
-    info->Version = MAKEFARVERSION(2, 0, 1, 0, VS_RELEASE);
+    info->Version = MAKEFARVERSION(3, 0, 1, 0, VS_RELEASE);
     info->Guid = PluginGuid;
     info->Title = L"drag-n-drop";
     info->Description = L"This plugin enables drag'n'drop operations between Far and other apps.";
