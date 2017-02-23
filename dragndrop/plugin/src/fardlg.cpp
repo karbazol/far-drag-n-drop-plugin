@@ -325,8 +325,8 @@ int FarDialog::switchCheckBox(int id, int state)
     }
     else
     {
-        int ret = (items()[id].Selected & 0x3);
-        items()[id].Selected |= state;
+        int ret = items()[id].Selected;
+        items()[id].Selected = state;
 
         return ret;
     }
