@@ -54,6 +54,7 @@ struct MyStringTraits
 
 void myStringLock();
 void myStringUnlock();
+void ensureStringLockExists();
 
 /**
  * Utility class to wrap locking/unlocking of string inter-thread guard.
@@ -378,21 +379,25 @@ public:
     {
         freeData();
     }
-    MyString(): data(0){}
-    MyString(const CharType* p): data(0)
+    /*
+        When the dll is unloaded, Dll::Main calls all finalizers in order reverse to registration order.
+        MyString::~MyString requires lockString to be alive,
+        so destructor of anything with MyString should be called before the finalizer for lockString.
+        One way to achieve it is to ensure that lockString is initialized before anything with MyString,
+        making sure that all constructors (except copying one) either use lockString themselves
+        or initialize the infrastructure via ensureStringLockExists().
+    */
+    MyString() : data(0) { ensureStringLockExists(); }
+    MyString(const CharType* p) : data(0)
     {
-        if (p != data->data)
+        lockString l;
+        data = tryData(p);
+        if (data)
         {
-            lockString l;
-            data = tryData(p);
-            if (data)
-            {
-                data->refCount++;
-            }
-            else
-            {
-                data = allocData(p);
-            }
+            data->refCount++;
+        } else
+        {
+            data = allocData(p);
         }
     }
     MyString(const MyString& s): data(s.data)
@@ -428,7 +433,7 @@ public:
     }
     MyString& operator=(const CharType* s)
     {
-        if (data->data != s)
+        if (!data || data->data != s)
         {
             freeData();
 

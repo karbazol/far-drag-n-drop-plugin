@@ -217,5 +217,13 @@ void myStringUnlock()
     MyStringCS::instance()->unlock();
 }
 
+/**
+ * Ensures that String critical section is initialized.
+ */
+void ensureStringLockExists()
+{
+    (void)MyStringCS::instance();
+}
+
 // vim: set et ts=4 ai :
 
