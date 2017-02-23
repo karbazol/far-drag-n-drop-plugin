@@ -57,6 +57,8 @@ static void InitDialogItems(
         PItem->History = nullptr;
         PItem->Mask = nullptr;
         PItem->Flags = PInit->Flags;
+        if (PInit->DefaultButton)
+            PItem->Flags |= DIF_DEFAULTBUTTON;
         if ((uintptr_t)PInit->Data < 2000)
             PItem->Data = GetMsg((int)(uintptr_t)PInit->Data);
         else
