@@ -12,6 +12,6 @@ source = [('include/' + x) for x in (
     'dndmsgs.h',
     'mystring.h',
 )]
-env.SdkInclude(source, sub_dir = 'dll')
+env.SdkInclude(source)
 
 # vim: set et ts=4 sw=4 ai ft=python :

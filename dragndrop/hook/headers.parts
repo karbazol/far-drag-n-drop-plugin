@@ -8,6 +8,6 @@ source = [('include/' + x) for x in (
     'hldrintf.h',
     'hook.h',
 )]
-env.SdkInclude(source, sub_dir = 'hook')
+env.SdkInclude(source)
 
 # vim: set et ts=4 sw=4 ai ft=python :

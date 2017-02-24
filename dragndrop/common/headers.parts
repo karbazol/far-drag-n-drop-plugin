@@ -15,7 +15,7 @@ source = [('include/' + x) for x in (
     'oleholder.hpp',
     'refcounted.hpp'
     )]
-env.SdkInclude(source, sub_dir = 'common')
+env.SdkInclude(source)
 
 # vim: set et ts=4 sw=4 ai ft=python :
 

@@ -1,5 +1,5 @@
 #include <tut/tut.hpp>
-#include <dll/mystring.h>
+#include <mystring.h>
 
 namespace tut
 {

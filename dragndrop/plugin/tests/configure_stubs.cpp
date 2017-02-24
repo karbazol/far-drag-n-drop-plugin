@@ -1,6 +1,6 @@
 #include <list>
 #include "../src/fardlg.h"
-#include <dll/dll.h>
+#include <dll.h>
 
 #include "../../common/src/ddlock.cpp"
 
