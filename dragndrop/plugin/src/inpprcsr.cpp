@@ -6,8 +6,8 @@
 
 #include <windows.h>
 
-#include <common/utils.h>
-#include <dll/dll.h>
+#include <utils.h>
+#include <dll.h>
 
 #include "inpprcsr.h"
 #include "dragging.h"

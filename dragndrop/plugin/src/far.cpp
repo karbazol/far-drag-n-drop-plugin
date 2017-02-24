@@ -8,9 +8,9 @@
 #include <math.h>
 #include <shlwapi.h>
 
-#include <common/utils.h>
-#include <dll/dll.h>
-#include <dll/mystring.h>
+#include <utils.h>
+#include <dll.h>
+#include <mystring.h>
 
 #include "ddlng.h"
 

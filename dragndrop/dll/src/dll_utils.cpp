@@ -5,7 +5,7 @@
  */
 
 #include <windows.h>
-#include <dll/dll_utils.h>
+#include <dll_utils.h>
 
 MyStringW getErrorDesc(unsigned int e)
 {

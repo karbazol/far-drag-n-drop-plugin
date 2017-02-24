@@ -6,10 +6,10 @@
 
 #include <shlobj.h>
 #include <guiddef.h>
-#include <common/myshptr.h>
-#include <common/myunknown.h>
-#include <common/shutils.h>
-#include <common/utils.h>
+#include <myshptr.h>
+#include <myunknown.h>
+#include <shutils.h>
+#include <utils.h>
 
 #include "dataobj.h"
 #include "enumfmt.h"

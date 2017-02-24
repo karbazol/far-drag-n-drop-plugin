@@ -6,8 +6,8 @@
 
 #include <windows.h>
 
-#include <common/utils.h>
-#include <dll/dll.h>
+#include <utils.h>
+#include <dll.h>
 
 /**
  * Utility class used by the Dll singleton to store linked list of 

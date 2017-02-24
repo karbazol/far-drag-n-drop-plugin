@@ -4,8 +4,8 @@
  *
  */
 
-#include <common/myunknown.h>
-#include <common/utils.h>
+#include <myunknown.h>
+#include <utils.h>
 
 /**
  * Returns pointers to supported interfaces. 

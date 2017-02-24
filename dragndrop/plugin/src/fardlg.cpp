@@ -6,9 +6,9 @@
  * $Id: fardlg.cpp 81 2011-11-07 08:50:02Z Karbazol $
  */
 
-#include <common/refcounted.hpp>
-#include <dll/dll_utils.h>
-#include <dll/mystring.h>
+#include <refcounted.hpp>
+#include <dll_utils.h>
+#include <mystring.h>
 
 #include "fardlg.h"
 #include "mainthrd.h"

@@ -1,9 +1,9 @@
 #include <windows.h>
 #include <shlobj.h>
 
-#include <common/myshptr.h>
-#include <common/shutils.h>
-#include <common/utils.h>
+#include <myshptr.h>
+#include <shutils.h>
+#include <utils.h>
 
 HRESULT PathToIDList(unsigned int /*cp*/, LPCITEMIDLIST /*parent*/, const char* /*path*/, LPITEMIDLIST* /*pidl*/)
 {

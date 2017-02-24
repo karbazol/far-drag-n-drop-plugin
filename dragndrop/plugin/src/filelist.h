@@ -8,9 +8,9 @@
 #define __KARBAZOL_DRAGNDROP_2_0__FILELIST_H__
 
 #include <windows.h>
-#include <common/ddlock.h>
-#include <common/refcounted.hpp>
-#include <dll/mystring.h>
+#include <ddlock.h>
+#include <refcounted.hpp>
+#include <mystring.h>
 
 /**
  * @brief File list entry.

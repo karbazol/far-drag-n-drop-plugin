@@ -1,5 +1,5 @@
 #include <windows.h>
-#include <common/utils.h>
+#include <utils.h>
 
 #include "hookfuncs.h"
 #include "modules.hpp"

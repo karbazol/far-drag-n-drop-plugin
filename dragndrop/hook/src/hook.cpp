@@ -1,9 +1,9 @@
 
-#include <common/utils.h>
-#include <dll/dll.h>
-#include <dll/mystring.h>
-#include <hook/hldrapi.h>
-#include <hook/hook.h>
+#include <utils.h>
+#include <dll.h>
+#include <mystring.h>
+#include <hldrapi.h>
+#include <hook.h>
 
 #include "thrdfltr.h"
 

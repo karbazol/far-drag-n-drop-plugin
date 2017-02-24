@@ -7,7 +7,7 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DATACONT_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DATACONT_H__
 
-#include <dll/mystring.h>
+#include <mystring.h>
 
 #include "far.h"
 #include "cstmdata.h"

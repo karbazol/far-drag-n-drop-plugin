@@ -11,7 +11,7 @@
 #include <windows.h>
 #include <shlobj.h>
 
-#include <dll/mystring.h>
+#include <mystring.h>
 
 /**
  * Class to iterate through CF_FILEDESCRIPTOR data.

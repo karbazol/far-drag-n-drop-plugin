@@ -1,4 +1,4 @@
-#include <dll/dll.h>
+#include <dll.h>
 
 #include "thrdpool.h"
 #include "wrkrthrd.h"

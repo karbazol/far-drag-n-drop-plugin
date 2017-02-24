@@ -1,5 +1,5 @@
 #include <windows.h>
-#include <common/refcounted.hpp>
+#include <refcounted.hpp>
 
 uintptr_t RefCounted::addRef()
 {

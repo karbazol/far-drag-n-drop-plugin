@@ -1,9 +1,9 @@
 #include <shlobj.h>
 #include <shellapi.h>
 
-#include <common/shutils.h>
-#include <common/utils.h>
-#include <dll/dll.h>
+#include <shutils.h>
+#include <utils.h>
+#include <dll.h>
 
 #include "far.h"
 #include "dropprcs.h"

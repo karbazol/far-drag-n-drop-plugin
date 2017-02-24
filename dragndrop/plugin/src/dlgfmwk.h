@@ -7,7 +7,7 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLGFMWK_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DLGFMWK_H__
 
-#include <common/ddlock.h>
+#include <ddlock.h>
 
 #include "fardlg.h"
 

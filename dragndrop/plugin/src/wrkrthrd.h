@@ -9,8 +9,8 @@
 
 #include <windows.h>
 
-#include <common/myshptr.h>
-#include <dll/mystring.h>
+#include <myshptr.h>
+#include <mystring.h>
 
 /**
  * @brief Worker thread object.

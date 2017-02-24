@@ -1,7 +1,7 @@
 #include <shlobj.h>
-#include <common/myshptr.h>
-#include <common/utils.h>
-#include <dll/dll.h>
+#include <myshptr.h>
+#include <utils.h>
+#include <dll.h>
 
 #include "dragging.h"
 #include "far.h"

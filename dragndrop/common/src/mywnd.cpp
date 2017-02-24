@@ -3,8 +3,8 @@
  * The file contains implementation of MyWindow class.
  *
  */
-#include <common/mywnd.h>
-#include <common/utils.h>
+#include <mywnd.h>
+#include <utils.h>
 
 void MyWindow::beforeCreation(DWORD& /*style*/,DWORD& /*styleEx*/)
 {

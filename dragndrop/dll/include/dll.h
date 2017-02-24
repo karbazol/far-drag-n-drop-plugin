@@ -7,7 +7,7 @@
 #define __KARBAZOL_DRAGNDROP_2_0__DLL_H__
 
 #include <windows.h>
-#include <common/ddlock.h>
+#include <ddlock.h>
 
 class CallBackInfo;
 

@@ -5,7 +5,7 @@
 
 #include <windows.h>
 #include <shlwapi.h>
-#include <common/utils.h>
+#include <utils.h>
 
 #ifdef _DEBUG
 static char debugProcessName[4096]={0};

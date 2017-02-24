@@ -1,4 +1,4 @@
-#include <common/oleholder.hpp>
+#include <oleholder.hpp>
 
 #include "wrkrthrd.h"
 #include "fmtprcsr.h"

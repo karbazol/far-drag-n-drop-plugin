@@ -8,8 +8,8 @@
 #define __KARBAZOL_DRAGNDROP_2_0__MYSTRING_H__
 
 #include <stddef.h>
-#include <common/utils.h>
-#include <common/growarry.h>
+#include <utils.h>
+#include <growarry.h>
 
 #ifndef EXCEPTION_EXECUTE_HANDLER
 #define EXCEPTION_EXECUTE_HANDLER       1

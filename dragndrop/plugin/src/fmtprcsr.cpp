@@ -1,5 +1,5 @@
-#include <common/shutils.h>
-#include <common/utils.h>
+#include <shutils.h>
+#include <utils.h>
 
 #include "fmtprcsr.h"
 #include "hdrpprcs.h"

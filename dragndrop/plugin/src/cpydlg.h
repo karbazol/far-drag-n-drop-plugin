@@ -8,8 +8,8 @@
 #define __KARBAZOL_DRAGNDROP_2_0__CPYDLG_H__
 
 #include "fardlg.h"
-#include <common/refcounted.hpp>
-#include <dll/mystring.h>
+#include <refcounted.hpp>
+#include <mystring.h>
 #include "filelist.h"
 #include "filecopy.h"
 

@@ -1,7 +1,7 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__REFCOUNTED_HPP__
 #define __KARBAZOL_DRAGNDROP_2_0__REFCOUNTED_HPP__
 
-#include <common/irefcounted.hpp>
+#include <irefcounted.hpp>
 
 class RefCounted: IRefCounted
 {

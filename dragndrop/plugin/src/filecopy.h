@@ -10,8 +10,8 @@
 #include <stdint.h>
 
 #include <windows.h>
-#include <common/irefcounted.hpp>
-#include <dll/mystring.h>
+#include <irefcounted.hpp>
+#include <mystring.h>
 
 /**
  * Instances of this class perform copying of a single file.

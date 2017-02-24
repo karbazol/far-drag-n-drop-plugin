@@ -4,9 +4,9 @@
  *
  */
 
-#include <common/utils.h>
-#include <dll/dndmsgs.h>
-#include <hook/hldrapi.h>
+#include <utils.h>
+#include <dndmsgs.h>
+#include <hldrapi.h>
 
 #include "far.h"
 #include "toolwnd.h"

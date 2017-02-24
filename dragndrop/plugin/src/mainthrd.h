@@ -8,10 +8,10 @@
 #define __KARBAZOL_DRAGNDROP_2_0__MAINTHRD_H_
 
 #include <windows.h>
-#include <common/ddlock.h>
-#include <common/growarry.h>
-#include <common/irefcounted.hpp>
-#include <dll/mystring.h>
+#include <ddlock.h>
+#include <growarry.h>
+#include <irefcounted.hpp>
+#include <mystring.h>
 
 // Main thread message identifiers
 

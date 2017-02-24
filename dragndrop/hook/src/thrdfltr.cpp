@@ -1,6 +1,6 @@
-#include <common/utils.h>
-#include <hook/hldrapi.h>
-#include <hook/dndcmnct.h>
+#include <utils.h>
+#include <hldrapi.h>
+#include <dndcmnct.h>
 
 #include "thrdfltr.h"
 

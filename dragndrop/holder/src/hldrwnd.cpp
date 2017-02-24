@@ -1,7 +1,7 @@
 
-#include <common/utils.h>
-#include <hook/dndcmnct.h>
-#include <hook/hook.h>
+#include <utils.h>
+#include <dndcmnct.h>
+#include <hook.h>
 
 #include "hldrwnd.h"
 #include "holder.h"

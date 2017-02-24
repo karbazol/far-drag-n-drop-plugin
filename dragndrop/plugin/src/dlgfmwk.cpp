@@ -4,9 +4,9 @@
  *
  */
 
-#include <common/growarry.h>
-#include <dll/dll.h>
-#include <dll/mystring.h>
+#include <growarry.h>
+#include <dll.h>
+#include <mystring.h>
 
 #include "dlgfmwk.h"
 #include "mainthrd.h"

@@ -4,8 +4,8 @@
  *
  */
 #include <ddlng.h>
-#include <common/utils.h>
-#include <dll/dll.h>
+#include <utils.h>
+#include <dll.h>
 
 #include "fardlg.h"
 #include "configure.hpp"

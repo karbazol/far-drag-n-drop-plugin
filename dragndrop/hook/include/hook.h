@@ -2,7 +2,7 @@
 #define __KARBAZOL_DRAGNDROP_2_0__HOOK_H__
 
 #include <windows.h>
-#include <common/hldrdefs.h>
+#include <hldrdefs.h>
 
 #ifdef _HOOK_EXPORTS
 #define _HOOK_SPEC __declspec(dllexport)

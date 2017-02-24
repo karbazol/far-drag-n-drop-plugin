@@ -5,8 +5,8 @@
  * $Id: mainthrd.cpp 81 2011-11-07 08:50:02Z Karbazol $
  */
 
-#include <common/utils.h>
-#include <dll/dll.h>
+#include <utils.h>
+#include <dll.h>
 
 #include "mainthrd.h"
 #include "dragging.h"

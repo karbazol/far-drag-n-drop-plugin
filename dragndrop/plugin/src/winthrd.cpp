@@ -1,6 +1,6 @@
-#include <common/oleholder.hpp>
-#include <dll/dll.h>
-#include <dll/dndmsgs.h>
+#include <oleholder.hpp>
+#include <dll.h>
+#include <dndmsgs.h>
 
 #include "far.h"
 #include "winthrd.h"

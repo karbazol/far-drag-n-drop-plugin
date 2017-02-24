@@ -1,8 +1,8 @@
 #include <shlwapi.h>
 
-#include <common/myshptr.h>
-#include <common/shutils.h>
-#include <common/utils.h>
+#include <myshptr.h>
+#include <shutils.h>
+#include <utils.h>
 
 #include "fldsprcs.h"
 #include "fldsitrt.h"

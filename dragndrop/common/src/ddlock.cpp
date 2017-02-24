@@ -1,5 +1,5 @@
 #include <windows.h>
-#include <common/ddlock.h>
+#include <ddlock.h>
 
 bool Lock::tryLock()
 {

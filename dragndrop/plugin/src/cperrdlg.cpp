@@ -4,7 +4,7 @@
  *
  */
 
-#include <dll/dll_utils.h>
+#include <dll_utils.h>
 #include "cperrdlg.h"
 #include "ddlng.h"
 #include "dndguids.h"
