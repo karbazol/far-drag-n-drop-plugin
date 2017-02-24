@@ -119,6 +119,7 @@ bool Dragging::start()
     if (!inputProcessor->isMouseWithinRect(info.PanelRect.left, info.PanelRect.top,
          info.PanelRect.right, info.PanelRect.bottom))
     {
+        TRACE("No. Because mouse is out of the rect\n");
         return false;
     }
 

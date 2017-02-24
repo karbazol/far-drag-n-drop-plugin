@@ -26,8 +26,7 @@ env.Append(
 
 if env.isConfigBasedOn('release'):
     env.Append(
-        LINKFLAGS=['/entry:DllMain'],
-        LIBS=['libcmt'], # for _alldiv and _allmul functions
+        SHLINKFLAGS=['/entry:DllMain'],
         )
 
 sources  = [('src/' + x) for x in (

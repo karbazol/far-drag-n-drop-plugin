@@ -84,12 +84,6 @@ intptr_t FarDialog::sendMessage(intptr_t msg, intptr_t param1, void* param2)
 	return 0;
 }
 
-void FarDialog::postMessage(intptr_t msg, intptr_t param1, void* param2)
-{
-	return;
-}
-
-
 // Operations with the dialog controls
 bool FarDialog::enable(intptr_t id)
 {

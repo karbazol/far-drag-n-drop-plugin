@@ -13,18 +13,7 @@
 
 static HANDLE getMyHeap()
 {
-    ULONG  HeapFragValue = 2;
-    static HANDLE heap = 0;
-    if (!heap)
-    {
-        heap = HeapCreate(HEAP_GENERATE_EXCEPTIONS, 1024*1024, 0);
-        HeapSetInformation(heap,
-                       HeapCompatibilityInformation,
-                       &HeapFragValue,
-                       sizeof(HeapFragValue));
-    }
-
-    return heap;
+    return GetProcessHeap();
 }
 
 #if _MSC_VER >= 1400
@@ -55,11 +44,11 @@ void* realloc(void* p, size_t size)
 {
     if (p)
     {
-        return HeapReAlloc(getMyHeap(), HEAP_GENERATE_EXCEPTIONS, p, size);
+        return HeapReAlloc(getMyHeap(), 0, p, size);
     }
     else
     {
-        return HeapAlloc(getMyHeap(), HEAP_GENERATE_EXCEPTIONS, size);
+        return HeapAlloc(getMyHeap(), 0, size);
     }
 //    return CoTaskMemRealloc(p, size);
 }
@@ -96,6 +85,26 @@ void * __cdecl memmove (
     return ret;
 }
 
+#ifdef memcpy
+#undef memcpy
+#endif
+
+#pragma function(memcpy)
+void * __cdecl memcpy (
+        void * dst,
+        const void * src,
+        size_t count
+        )
+{
+    void * ret = dst;
+
+    {
+        RtlMoveMemory(dst, src, count);
+    }
+
+    return ret;
+}
+
 #ifdef RtlFillMemory
 #undef RtlFillMemory
 #endif
@@ -116,19 +125,6 @@ void * __cdecl memset (
     RtlFillMemory(dst, count, ch);
     return dst;
 }
-
-
-#ifdef _M_IX86_ // These two functions should be picked up from libcmt
-LONGLONG _alldiv(LONGLONG a, LONGLONG b)
-{
-    return 0;
-}
-
-LONGLONG _allmul(LONGLONG a, LONGLONG b)
-{
-    return 0;
-}
-#endif
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // _DEBUG
