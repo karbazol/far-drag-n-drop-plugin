@@ -1,13 +1,15 @@
 ﻿# -*- coding: utf-8 -*-
-# Template for lng files:
+'''
+Template for lng files:
+'''
 
 ENCODING = 'utf-8' # optional
 
 HEADER_NAME = 'ddlng.h'
 
 LANGUAGES = [
-('dndrus.lng', 'Russian', u'Russian (Русский)'),
-('dndeng.lng', 'English', 'English'),
+    ('dndrus.lng', 'Russian', u'Russian (Русский)'),
+    ('dndeng.lng', 'English', 'English'),
 ]
 
 # h file header
@@ -26,264 +28,252 @@ FOOTER = \
 """
 
 ITEMS = [
-(
-"MOK=0",
-u"Продолжить",
-"OK"
-),
+    (
+        "MOK=0",
+        u"Продолжить",
+        "OK"
+    ),
 
-(
-"MCancel",
-u"Отменить",
-"Cancel"
-),
+    (
+        "MCancel",
+        u"Отменить",
+        "Cancel"
+    ),
 
-(
-"MConfigMenu",
-"Drag'n'drop",
-"Drag'n'drop"
-),
+    (
+        "MConfigMenu",
+        "Drag'n'drop",
+        "Drag'n'drop"
+    ),
 
-(
-"MConfigTitle",
-u"Drag'n'drop - настройки",
-"Drag'n'drop - Options"
-),
+    (
+        "MConfigTitle",
+        u"Drag'n'drop - настройки",
+        "Drag'n'drop - Options"
+    ),
 
-(
-"MUseKeyToStartDND",
-u"Drag'n'drop если нажата к&лавиша",
-"Start drag only if the &key pressed"
-),
+    (
+        "MUseKeyToStartDND",
+        u"Drag'n'drop если нажата к&лавиша",
+        "Start drag only if the &key pressed"
+    ),
 
-(
-"MLeftCtl",
-u"Левый Ctrl",
-"Left Ctrl"
-),
+    (
+        "MLeftCtl",
+        u"Левый Ctrl",
+        "Left Ctrl"
+    ),
 
-(
-"MLeftAlt",
-u"Левый Alt",
-"Left Alt"
-),
+    (
+        "MLeftAlt",
+        u"Левый Alt",
+        "Left Alt"
+    ),
 
-(
-"MShift",
-"Shift",
-"Shift"
-),
+    (
+        "MShift",
+        "Shift",
+        "Shift"
+    ),
 
-(
-"MRightCtl",
-u"Правый Ctrl",
-"Right Ctrl"
-),
+    (
+        "MRightCtl",
+        u"Правый Ctrl",
+        "Right Ctrl"
+    ),
 
-(
-"MRightAlt",
-u"Правый Alt",
-"Right Alt"
-),
+    (
+        "MRightAlt",
+        u"Правый Alt",
+        "Right Alt"
+    ),
 
-(
-"MPanels",
-u"Панели",
-"Panels"
-),
+    (
+        "MPanels",
+        u"Панели",
+        "Panels"
+    ),
 
-#(
-#"MEditor",
-#u"Редактор",
-#"Editor"
-#),
+    (
+        "MOptions",
+        u"Дополнительно",
+        "Options"
+    ),
 
-#(
-#"MEnableDrag",
-#u"Разрешить Drag",
-#"Enable drag"
-#),
+    (
+        "MUseShellCopy",
+        u"Копировать Проводником",
+        "Use Explorer copy function"
+    ),
 
-(
-"MEnableDrop",
-u"Разрешить Drop",
-"Enable drop"
-),
+    (
+        "MShowMenu",
+        u"Показывать меню по правой кнопке",
+        "Right click shows menu"
+    ),
 
-(
-"MOptions",
-u"Дополнительно",
-"Options"
-),
+    (
+        "MPixelsPassed",
+        u"Количество пикселей, после которого",
+        "Number of pixels to pass"
+    ),
 
-(
-"MUseShellCopy",
-u"Копировать Проводником",
-"Use Explorer copy function"
-),
+    (
+        "MPixelsPassed2",
+        u"следует начинать Drag",
+        "before start dragging"
+    ),
 
-(
-"MShowMenu",
-u"Показывать меню по правой кнопке",
-"Right click shows menu"
-),
+    (
+        "MOpCaneling",
+        u"Действие прервано",
+        "Operation has been interrupted"
+    ),
+    (
+        "MRUSureCancel",
+        u"Вы действительно хотите его прервать?",
+        "Are you sure to cancel it?"
+    ),
 
-(
-"MPixelsPassed",
-u"Количество пикселей, после которого",
-"Number of pixels to pass"
-),
+    (
+        "MMove",
+        u"Перемещение",
+        "Move"
+    ),
+    (
+        "MCopy",
+        u"Копирование",
+        "Copy"
+    ),
 
-(
-"MPixelsPassed2",
-u"следует начинать Drag",
-"before start dragging"
-),
+    (
+        "MMovingTheFile",
+        u"Перемещение файла:",
+        "Moving the file:"
+    ),
+    (
+        "MCopyingTheFile",
+        u"Копирование файла:",
+        "Copying the file:"
+    ),
 
-(
-"MOpCaneling",
-u"Действие прервано",
-"Operation has been interrupted"
-),
-(
-"MRUSureCancel",
-u"Вы действительно хотите его прервать?",
-"Are you sure to cancel it?"
-),
+    (
+        "MCopyingTo",
+        u"в",
+        "to"
+    ),
+    (
+        "MFilesProcessed",
+        u"Обработано файлов: %d of %d",
+        "Files processed: %d of %d"
+    ),
 
-(
-"MMove",
-u"Перемещение",
-"Move"
-),
-(
-"MCopy",
-u"Копирование",
-"Copy"
-),
+    (
+        "MFileCopyingTimes",
+        u"Время: %.2d:%.2d:%.2d Ост: %.2d:%.2d:%.2d %6dКб/с",
+        "Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"
+    ),
+    (
+        "MTotalSize",
+        u" Всего: %s ",
+        " Total: %s "
+    ),
 
-(
-"MMovingTheFile",
-u"Перемещение файла:",
-"Moving the file:"
-),
-(
-"MCopyingTheFile",
-u"Копирование файла:",
-"Copying the file:"
-),
+    #Overwrite dialog
+    (
+        "MWarning",
+        u"Предупреждение",
+        "Warning"
+    ),
 
-(
-"MCopyingTo",
-u"в",
-"to"
-),
-(
-"MFilesProcessed",
-u"Обработано файлов: %d of %d",
-"Files processed: %d of %d"
-),
+    (
+        "MFileExists",
+        u"Файл уже существует",
+        "File already exists"
+    ),
 
-(
-"MFileCopyingTimes",
-u"Время: %.2d:%.2d:%.2d Ост: %.2d:%.2d:%.2d %6dКб/с",
-"Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"
-),
-(
-"MTotalSize",
-u" Всего: %s ",
-" Total: %s "
-),
+    (
+        "MNew",
+        u"Новый",
+        "New"
+    ),
 
-#Overwrite dialog
-(
-"MWarning",
-u"Предупреждение",
-"Warning"
-),
+    (
+        "MExisting",
+        u"Существующий",
+        "Existing"
+    ),
 
-(
-"MFileExists",
-u"Файл уже существует",
-"File already exists"
-),
+    (
+        "MOverwrite",
+        u"В&место",
+        "&Overwrite"
+    ),
 
-(
-"MNew",
-u"Новый",
-"New"
-),
+    (
+        "MAll",
+        u"&Все",
+        "&All"
+    ),
 
-(
-"MExisting",
-u"Существующий",
-"Existing"
-),
+    (
+        "MSkip",
+        u"&Пропустить",
+        "&Skip"
+    ),
 
-(
-"MOverwrite",
-u"В&место",
-"&Overwrite"
-),
+    (
+        "MSkipall",
+        u"П&ропустить все",
+        "S&kip all"
+    ),
 
-(
-"MAll",
-u"&Все",
-"&All"
-),
+    (
+        "MAppend",
+        u"&Дописать",
+        "A&ppend"
+    ),
 
-(
-"MSkip",
-u"&Пропустить",
-"&Skip"
-),
+    (
+        "MResume",
+        u"Возоб&новить",
+        "&Resume"
+    ),
 
-(
-"MSkipall",
-u"П&ропустить все",
-"S&kip all"
-),
+    (
+        "MAmpCancel",
+        u"&Отменить",
+        "&Cancel"
+    ),
 
-(
-"MAppend",
-u"&Дописать",
-"A&ppend"
-),
+    (
+        "MHolderFailed",
+        u"Ошибка запуска HOLDER.DND. Сброс файлов на FAR невозможен.",
+        "HOLDER.DND failed to initialize. No drop will available to FAR."
+    ),
 
-(
-"MResume",
-u"Возоб&новить",
-"&Resume"
-),
+    (
+        "MError",
+        u"Ошибка",
+        "Error"
+    ),
 
-(
-"MAmpCancel",
-u"&Отменить",
-"&Cancel"
-),
+    (
+        "MCopyError",
+        u"Невозможно скопировать",
+        "Cannot copy"
+    ),
 
-(
-"MHolderFailed",
-u"Ошибка запуска HOLDER.DND. Сброс файлов на FAR невозможен.",
-"HOLDER.DND failed to initialize. No drop will available to FAR."
-),
+    (
+        "MCopyOverwrite",
+        u"Переписать",
+        "&Overwrite"
+    ),
 
-(
-"MError",
-u"Ошибка",
-"Error"
-),
-
-(
-"MCopyError",
-u"Невозможно скопировать",
-"Cannot copy"
-),
-
-(
-"MRetry",
-u"Повторить",
-"&Retry"
-)
+    (
+        "MRetry",
+        u"Повторить",
+        "&Retry"
+    )
 ]
 

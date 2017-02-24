@@ -2,10 +2,9 @@
  * @file mywnd.cpp
  * The file contains implementation of MyWindow class.
  *
- * $Id$
  */
-#include "mywnd.h"
-#include "utils.h"
+#include <common/mywnd.h>
+#include <common/utils.h>
 
 void MyWindow::beforeCreation(DWORD& /*style*/,DWORD& /*styleEx*/)
 {

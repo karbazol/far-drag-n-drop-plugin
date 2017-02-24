@@ -1,7 +1,5 @@
-// $Id$
-
 #include <windows.h>
-#include "ddlock.h"
+#include <common/ddlock.h>
 
 bool Lock::tryLock()
 {

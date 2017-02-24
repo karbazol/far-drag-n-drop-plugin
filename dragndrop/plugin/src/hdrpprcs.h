@@ -1,4 +1,3 @@
-// $Id$
 #ifndef __KARBAZOL_DRAGNDROP_2_0__HDRPPRCS_H__
 #define __KARBAZOL_DRAGNDROP_2_0__HDRPPRCS_H__
 

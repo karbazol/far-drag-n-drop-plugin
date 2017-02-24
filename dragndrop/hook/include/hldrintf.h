@@ -2,7 +2,6 @@
  * @file hldrintf.h
  * Contains declaration of IHolder interface used by HolderApi class
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__HLDRINTF_H__

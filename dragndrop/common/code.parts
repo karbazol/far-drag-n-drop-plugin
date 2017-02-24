@@ -4,13 +4,24 @@ env.PartName(env.subst('code_${TARGET_ARCH}'))
 
 env.DependsOn([Component('common.headers')])
 
-source = env.Glob('src/*.cpp') + env.Glob('src/*.c')
+source = [env.SharedObject('src/' + x) for x in (
+    'mycrt.c',
+    'ddlock.cpp',
+    'debug.cpp',
+    'myunknown.cpp',
+    'mywnd.cpp',
+    'new.cpp',
+    'refcounted.cpp',
+    'shutils.cpp',
+    'utils.cpp',
+    )]
 
 env.SdkLib(
     env.StaticLibrary(
-        target = '${PART_PARENT_NAME}_${TARGET_ARCH}', source = source
+        target='${PART_PARENT_NAME}_${TARGET_ARCH}', source=source
     )
 )
 
 # vim: set et ts=4 sw=4 ft=python :
+
 

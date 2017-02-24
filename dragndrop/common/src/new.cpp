@@ -10,6 +10,11 @@ void operator delete(void* p)
     free(p);
 }
 
+void operator delete(void* p, size_t /*size*/)
+{
+    free(p);
+}
+
 // nobody expects std::bad_alloc
 void* operator new[](size_t size)
 {
@@ -21,12 +26,7 @@ void operator delete[](void* p)
     free(p);
 }
 
-void operator delete(void* p, size_t)
-{
-    free(p);
-}
-
-void operator delete[](void* p, size_t)
+void operator delete[](void* p, size_t /*size*/)
 {
     free(p);
 }

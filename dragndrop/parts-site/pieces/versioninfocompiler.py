@@ -59,20 +59,23 @@ def buildVersioInfo(target, source, env):
 def emittVersionInfo(target, source, env):
     if len(target) < 1:
         target.append(env.File('${PART_NAME}_version_info.rc'))
-    for node in target:
-        node.set_always_build()
 
     return target, source
 
 api.register.add_builder(
     'VersionInfo',
     SCons.Builder.Builder(
-        action = SCons.Action.Action(
+        action=SCons.Action.Action(
             buildVersioInfo,
-            cmdstr = 'Building version info ${TARGETS[0]}'
+            cmdstr='Building version info ${TARGETS[0]}',
+            varlist=['PRODUCT_VERSION_STRING', 'COMPANY_NAME',
+                     'PRODUCT_VERSION', 'FILE_VERSION', 'FILE_VERSION_STRING'
+                     'FILE_DESCRIPTION', 'INTERNAL_NAME', 'ORIGINAL_FILE_NAME',
+                     'LEGAL_COPYRIGHT', 'PRODUCT_NAME', 'VERSION_INFO_RC_TEMPLATE'
+                    ]
             ),
-        suffix = '.rc',
-        emitter = emittVersionInfo
+        suffix='.rc',
+        emitter=emittVersionInfo
         )
     )
 

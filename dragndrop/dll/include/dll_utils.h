@@ -2,13 +2,12 @@
  * @file dll_utils.h
  * The file contains declaration of utility classes and routines used by DLLs.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLL_UTILS_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DLL_UTILS_H__
 
-#include <utils.h>
+#include <common/utils.h>
 #include "mystring.h"
 
 MyStringW getErrorDesc(unsigned int e);

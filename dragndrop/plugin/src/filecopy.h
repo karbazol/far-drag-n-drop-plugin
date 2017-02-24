@@ -2,14 +2,16 @@
  * @file filecopy.h
  * Contains declaration of FileCopier class.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FILECOPY_H__
 #define __KARBAZOL_DRAGNDROP_2_0__FILECOPY_H__
 
+#include <stdint.h>
+
 #include <windows.h>
-#include "mystring.h"
+#include <common/irefcounted.hpp>
+#include <dll/mystring.h>
 
 /**
  * Instances of this class perform copying of a single file.
@@ -20,9 +22,8 @@ public:
     /**
      * Interface used to notify about file copying progress
      */
-    struct FileCopyNotify
+    struct FileCopyNotify: public IRefCounted
     {
-        virtual ~FileCopyNotify(){};
         /**
          * @brief What to do if the file allready exists
          *
@@ -31,7 +32,7 @@ public:
          * Return true to overrwrite existing file
          */
         virtual bool onFileExists(const wchar_t* src, const wchar_t* dest) = 0;
-        virtual bool onFileStep(const __int64& step) = 0;
+        virtual bool onFileStep(const int64_t& step) = 0;
         /**
          * @brief What to do in case of error
          *
@@ -44,7 +45,7 @@ private:
     MyStringW _src;
     MyStringW _dest;
     FileCopyNotify* _notify;
-    __int64 _copied;
+    int64_t _copied;
     bool _result;
     static DWORD CALLBACK winCallBack(LARGE_INTEGER totalSize, LARGE_INTEGER transferred,
             LARGE_INTEGER streamSize, LARGE_INTEGER streamBytesTransferred,
@@ -59,7 +60,7 @@ public:
      *           notifications during file copy/move operation.
      */
     FileCopier(const wchar_t* src, const wchar_t* dest, FileCopyNotify* p = NULL);
-    ~FileCopier(){}
+    ~FileCopier();
 
     /**
      * This method allows to get result of copy/move operation performed.

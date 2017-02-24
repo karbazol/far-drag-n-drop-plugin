@@ -2,7 +2,20 @@ Import('*')
 
 env.PartName('headers')
 
-source = env.Glob('include/*.h') + env.Glob('include/*.hpp')
+source = [('include/' + x) for x in (
+    'ddlock.h',
+    'growarry.h',
+    'hldrdefs.h',
+    'myshptr.h',
+    'myunknown.h',
+    'mywnd.h',
+    'shutils.h',
+    'utils.h',
+    'irefcounted.hpp',
+    'oleholder.hpp',
+    'refcounted.hpp'
+    )]
 env.SdkInclude(source, sub_dir = 'common')
 
 # vim: set et ts=4 sw=4 ai ft=python :
+

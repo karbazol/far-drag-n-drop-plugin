@@ -2,15 +2,15 @@
  * @file wrkrthrd.h
  * Contains declaration of WorkerThread class.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__WRKRTHRD_H__
 #define __KARBAZOL_DRAGNDROP_2_0__WRKRTHRD_H__
 
 #include <windows.h>
-#include "mystring.h"
-#include "myshptr.h"
+
+#include <common/myshptr.h>
+#include <dll/mystring.h>
 
 /**
  * @brief Worker thread object.

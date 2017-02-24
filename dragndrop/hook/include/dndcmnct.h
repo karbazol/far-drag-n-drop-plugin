@@ -2,8 +2,9 @@
 #define __KARBAZOL_DRAGNDROP_2_0__DNDCMNCT_H__
 
 #include <windows.h>
-#include "dndmsgs.h"
-#include <hldrdefs.h>
+
+#include <common/hldrdefs.h>
+#include <dll/dndmsgs.h>
 
 inline void showDndWindow(HWND hwnd){SendMessage(hwnd, WM_SHOWDNDWINDOW, 0, 0);}
 inline void hideDndWindow(HWND hwnd){SendMessage(hwnd, WM_HIDEDNDWINDOW, 0, 0);}

@@ -2,22 +2,17 @@
  * The author disclaims copyright to this source code.
  * @file mainthrd.cpp
  *
- * $Id$
+ * $Id: mainthrd.cpp 81 2011-11-07 08:50:02Z Karbazol $
  */
 
+#include <common/utils.h>
+#include <dll/dll.h>
+
 #include "mainthrd.h"
-#include "dll.h"
-#include "utils.h"
 #include "dragging.h"
 #include "far.h"
 #include "fardlg.h"
 #include "dlgfmwk.h"
-
-void MainThread::Callable::free()
-{
-    if (this)
-        delete this;
-}
 
 MainThread::MainThread():_posted(), _sendGuard(), _postGuard()
 {
@@ -67,14 +62,14 @@ void* MainThread::handleMessage(unsigned int msg, void* param0, void* param1,
     switch (msg)
     {
     case MTM_SETDRAGGING:
-        onSetDragging(param0?true:false);
+        onSetDragging(!!param0);
         break;
     case MTM_GETDIRFROMPT:
         return (void*)onGetDirFromScreenPoint(*(POINT*)param0, *(MyStringW*)param1);
     case MTM_SENDDLGMSG:
         return (void*)onSendDlgMessage(param0);
     case MTM_CALLTHEOBJECT:
-        return onCallIt(reinterpret_cast<Callable*>(param0));
+        return onCallIt(reinterpret_cast<void*(*)(void*)>(param0), param1);
     }
     return NULL;
 }
@@ -196,7 +191,7 @@ void MainThread::onSetDragging(bool value)
 
 bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
 {
-    WindowInfoW wi;
+    WindowInfo wi = {sizeof(wi)};
     wi.Pos = -1;
 
     FarGetWindowInfo(wi);
@@ -214,7 +209,7 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
     pt.x = pt.x * ci.srWindow.Right / rect.right;
     pt.y = pt.y * ci.srWindow.Bottom / rect.bottom;
 
-    PanelInfoW info;
+    PanelInfo info;
     if (FarGetActivePanelInfo(info))
     {
         if (pt.x > info.PanelRect.left && pt.x < info.PanelRect.right &&
@@ -238,14 +233,12 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
     return false;
 }
 
-void* MainThread::onCallIt(Callable* p)
+void* MainThread::onCallIt(void* (*function)(void*), void* param)
 {
-    if (!p)
+    if (!function)
         return reinterpret_cast<void*>(-1);
 
-    void* res = p->call();
-    p->free();
-    return res;
+    return function(param);
 }
 
 LONG_PTR MainThread::onSendDlgMessage(void* msg)

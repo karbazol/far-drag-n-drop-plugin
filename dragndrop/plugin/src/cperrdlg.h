@@ -5,7 +5,6 @@
  * @file cperrdlg.h
  * This file contains declaration of CopyErrorDialog class.
  *
- * $Id$
  */
 
 #include "fardlg.h"
@@ -25,6 +24,7 @@ private:
         InitDialogItem sysErrMessage[1];
     };
     static CopyErrorDialogItems itemsTemplate;
+    bool _useOverwrite;
     InitDialogItem* _items;
     int _itemsCount;
     MyStringW _errorMessage;
@@ -33,12 +33,12 @@ private:
     GrowOnlyArray<MyStringW> _errorLines;
     void allocItems(size_t additionalErrorLines);
 protected:
+    const GUID& Id() const;
     void prepareItems(int consoleWidth, int consoleHeight);
     InitDialogItem* items();
     void releaseItems();
-    int itemsCount();
+    size_t itemsCount();
     DWORD flags();
-    const GUID* guid();
 public:
     enum RetCode
     {
@@ -47,8 +47,9 @@ public:
         skipAll,
         cancel
     };
-    CopyErrorDialog(): FarDialog(), _items(0), _itemsCount(0), _errorMessage(),
-        _srcFileName(), _dstFileName(), _errorLines(){}
+    CopyErrorDialog(bool useOverwrite=false): FarDialog(),
+        _useOverwrite(useOverwrite), _items(0), _itemsCount(0),
+        _errorMessage(), _srcFileName(), _dstFileName(), _errorLines(){}
     ~CopyErrorDialog(){}
     RetCode show(const wchar_t* source, const wchar_t* dest, unsigned int error);
 };

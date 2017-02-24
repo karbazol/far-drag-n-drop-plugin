@@ -1,5 +1,3 @@
-// $Id$
-
 /**
  * @file fardlg.h
  * Contains declarationa of FarDialog class.
@@ -7,6 +5,7 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FARDLG_H__
 #define __KARBAZOL_DRAGNDROP_2_0__FARDLG_H__
 
+#include <common/refcounted.hpp>
 #include "far.h"
 
 /**
@@ -14,17 +13,13 @@
  */
 struct InitDialogItem
 {
-#ifndef FAR2
-    FARDIALOGITEMTYPES Type;
-#else
-    int Type;
-#endif
+    enum FARDIALOGITEMTYPES Type;
     int X1;
     int Y1;
     int X2;
     int Y2;
     int Focus;
-    int Selected;
+    intptr_t Selected;
     unsigned int Flags;
     int DefaultButton;
     const wchar_t *Data;
@@ -35,20 +30,20 @@ class DialogShower;
 /**
  * Use this class as base for your dialogs.
  */
-class FarDialog
+class FarDialog: public RefCounted
 {
 private:
     HANDLE _hwnd;
     HANDLE _running;
     volatile long _destructing;
-    static FAR_RETURN_TYPE WINAPI dlgProc(HANDLE dlg, FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2);
+    static intptr_t WINAPI dlgProc(HANDLE dlg, intptr_t msg, intptr_t param1, void* param2);
     intptr_t doShow();
     intptr_t run(void*& farItems);
     void restoreItems();
     void freeFarItems(void* farItems);
 protected:
-    virtual FAR_RETURN_TYPE handle(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2);
-    virtual const GUID* guid() = 0;
+    virtual intptr_t handle(intptr_t msg, intptr_t param1, void* param2);
+    virtual const GUID& Id() const = 0;
     virtual int left();
     virtual int top();
     virtual int right();
@@ -83,20 +78,20 @@ public:
     /**
      * Override this function to allow Dialog framework to show the dialog.
      */
-    virtual int itemsCount();
+    virtual size_t itemsCount();
 
     intptr_t show(bool modal);
-    int hide();
+    intptr_t hide();
 
-    FAR_RETURN_TYPE sendMessage(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2);
-    void postMessage(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2);
+    intptr_t sendMessage(intptr_t msg, intptr_t param1, void* param2);
+    void postMessage(intptr_t msg, intptr_t param1, void* param2);
 
     // Operations with the dialog controls
-    bool enable(int id);
-    bool disable(int id);
-    int switchCheckBox(int id, int state);
-    int checkState(int id);
-    bool checked(int id);
+    bool enable(intptr_t id);
+    bool disable(intptr_t id);
+    intptr_t switchCheckBox(intptr_t id, intptr_t state);
+    intptr_t checkState(intptr_t id);
+    bool checked(intptr_t id);
     friend class DialogShower;
 };
 

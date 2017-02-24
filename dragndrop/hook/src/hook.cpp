@@ -1,9 +1,11 @@
-#include "hldrapi.h"
-#include "hook.h"
-#include "utils.h"
-#include "dll.h"
+
+#include <common/utils.h>
+#include <dll/dll.h>
+#include <dll/mystring.h>
+#include <hook/hldrapi.h>
+#include <hook/hook.h>
+
 #include "thrdfltr.h"
-#include "mystring.h"
 
 class HookImpl: public Hook
 {
@@ -28,22 +30,22 @@ class HookImpl: public Hook
         ThreadFilter* f = reinterpret_cast<ThreadFilter*>(TlsGetValue(_tlsId));
         if (!f)
         {
-            f = new ThreadFilter;
+            f = new ThreadFilter();
             TlsSetValue(_tlsId, f);
         }
 
         return f;
     }
 
-    static void thrdEnd(HookImpl* p)
+    static void thrdEnd(intptr_t tlsId)
     {
-        if (p)
+        if (tlsId)
         {
-            ThreadFilter* f = reinterpret_cast<ThreadFilter*>(TlsGetValue(p->_tlsId));
+            ThreadFilter* f = reinterpret_cast<ThreadFilter*>(TlsGetValue(static_cast<DWORD>(tlsId)));
             if (f)
             {
+                TlsSetValue(static_cast<DWORD>(tlsId), 0);
                 delete f;
-                TlsSetValue(p->_tlsId, 0);
             }
         }
     }
@@ -52,7 +54,7 @@ class HookImpl: public Hook
     {
         if (p)
         {
-            thrdEnd(p);
+            thrdEnd(p->_tlsId);
             TlsFree(p->_tlsId);
             delete p;
         }
@@ -130,7 +132,7 @@ class HookImpl: public Hook
                 if (dll)
                 {
                     dll->registerProcessEndCallBack(reinterpret_cast<PdllCallBack>(&kill), p);
-                    dll->registerThreadEndCallBack(reinterpret_cast<PdllCallBack>(&thrdEnd), p);
+                    dll->registerThreadEndCallBack(reinterpret_cast<PdllCallBack>(&thrdEnd), (void*)(intptr_t)p->_tlsId);
                 }
             }
         }

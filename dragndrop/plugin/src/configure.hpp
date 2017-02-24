@@ -2,7 +2,6 @@
  * @file configure.hpp
  * The file contains declaration of Config class.
  * 
- * $Id$
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__CONFIGURE_HPP__
 #define __KARBAZOL_DRAGNDROP_2_0__CONFIGURE_HPP__
@@ -14,14 +13,12 @@ class Config
 {
 private:
     // Registry manipulation stuff
-    static const wchar_t* _allowDropName;
     static const wchar_t* _checkKeyName;
     static const wchar_t* _shellCopyName;
     static const wchar_t* _showMenuName;
     static const wchar_t* _useShellObjectName;
 private:
     unsigned int _checkKey;
-    bool _allowDrop;
     bool _shellCopy;
     bool _showMenu;
     bool _useShellObject;
@@ -34,8 +31,6 @@ public:
     static Config* instance();
     inline unsigned int checkKey() const {return _checkKey;}
     void checkKey(unsigned int value);
-    inline bool allowDrop() const {return _allowDrop;}
-    void allowDrop(bool value);
     inline bool shellCopy() const {return _shellCopy;}
     void shellCopy(bool value);
     inline bool showMenu() const {return _showMenu;}

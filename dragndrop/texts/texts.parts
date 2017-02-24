@@ -1,11 +1,11 @@
 Import('*')
 
 env.PartName('texts')
-env.PartVersion('$PRODUCT_VERSION_STRING')
+env.PartVersion(env.subst('$PRODUCT_VERSION_STRING'))
 
 if not env.get('UNICODE'):
     env.Replace(ENCODING='cp866')
-env.Lng('dndlng.py')
+env.Lng([], 'dndlng.py')
 env.SdkInclude('ddlng.h')
 env.InstallBin('dndrus.lng')
 env.InstallBin('dndeng.lng')

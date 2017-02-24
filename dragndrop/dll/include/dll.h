@@ -2,13 +2,12 @@
  * @file dll.h
  * Contains declaration of Dll class
  *
- * $Id$
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLL_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DLL_H__
 
 #include <windows.h>
-#include <ddlock.h>
+#include <common/ddlock.h>
 
 class CallBackInfo;
 

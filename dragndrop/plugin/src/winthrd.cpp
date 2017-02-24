@@ -1,9 +1,11 @@
+#include <common/oleholder.hpp>
+#include <dll/dll.h>
+#include <dll/dndmsgs.h>
+
 #include "far.h"
-#include "dll.h"
 #include "winthrd.h"
 #include "dragging.h"
 #include "mainthrd.h"
-#include "dndmsgs.h"
 
 WinThread::WinThread(): _handle(0), _leftButtonEvent(0), _rightButtonEvent(0),
     _id(0), _window()
@@ -11,9 +13,9 @@ WinThread::WinThread(): _handle(0), _leftButtonEvent(0), _rightButtonEvent(0),
     HolderApi* holderApi = HolderApi::instance();
     if (holderApi)
     {
-        holderApi->setHolder(static_cast<IHolder*>(this)); // this CreateEvent-s, so must come first
         _leftButtonEvent = OpenEvent(SYNCHRONIZE, FALSE, HOLDER_LEFT_EVENT);
         _rightButtonEvent = OpenEvent(SYNCHRONIZE, FALSE, HOLDER_RIGHT_EVENT);
+        holderApi->setHolder(static_cast<IHolder*>(this));
     }
 }
 
@@ -129,34 +131,26 @@ DWORD WinThread::runInstnace(WinThread* p)
 
 void WinThread::run()
 {
-    OleInitialize(NULL);
+    OleHolder oleHolder;
 
-    __try
+    _window.create(GetFarWindow());
+
+    MainThread::instance()->winThreadStarted();
+
+    for (;;)
     {
+        MSG msg;
+        DWORD res;
 
-        _window.create(GetFarWindow());
-
-        MainThread::instance()->winThreadStarted();
-
-        for (;;)
+        res = GetMessageW(&msg, 0, 0, 0);
+        if (!res || res == -1)
         {
-            MSG msg;
-            DWORD res;
-
-            res = GetMessageW(&msg, 0, 0, 0);
-            if (!res || res == -1)
-            {
-                _window.destroy();
-                break;
-            }
-
-            TranslateMessage(&msg);
-            DispatchMessageW(&msg);
+            _window.destroy();
+            break;
         }
-    }
-    __finally
-    {
-        OleUninitialize();
+
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
     }
 }
 

@@ -3,7 +3,6 @@
  * Contains declarations of public classes and functions used to
  * manipulate with modules' imports/exports sections.
  *
- * $Id$
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__MODULES_HPP__
 #define __KARBAZOL_DRAGNDROP_2_0__MODULES_HPP__

@@ -2,14 +2,13 @@
  * @file holder.h
  * The file contains declaration of Holder class.
  *
- * $Id$
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__HOLDER_H__
 #define __KARBAZOL_DRAGNDROP_2_0__HOLDER_H__
 
 #include "hldrwnd.h"
 #include "faritem.h"
-#include <hldrapi.h>
+#include <hook/hldrapi.h>
 
 /**
  * Array of FarItem objects
@@ -57,6 +56,8 @@ public:
     FarItem* findFar(HWND hFar, bool append=false);
     FarItem* findDnd(HWND dnd, HWND hFar=NULL, size_t* dndIndex=NULL);
     inline size_t farsCount() const {return _fars.size();}
+
+    void notifyOtherHolder(UINT msg, WPARAM wParam, LPARAM lParam);
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__HOLDER_H__

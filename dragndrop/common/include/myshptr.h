@@ -1,8 +1,5 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__MYSHPTR_H__
 #define __KARBAZOL_DRAGNDROP_2_0__MYSHPTR_H__
-
-#include <ShlObj.h>
-
 /**
  * Template class used to manage interfaces derrived from IUnknown.
  */
@@ -53,10 +50,5 @@ public:
     operator I*(){return _p;}
 };
 
-#ifdef __IDataObjectAsyncCapability_INTERFACE_DEFINED__
-// are you having fun, Microsoft?
-#define IAsyncOperation IDataObjectAsyncCapability
-#define IID_IAsyncOperation IID_IDataObjectAsyncCapability
-#endif
-
 #endif // __KARBAZOL_DRAGNDROP_2_0__MYSHPTR_H__
+

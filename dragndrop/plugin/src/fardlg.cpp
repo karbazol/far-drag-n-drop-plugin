@@ -3,18 +3,20 @@
  * @file fardlg.cpp
  * Contains implementation of FarDialog class.
  *
- * $Id$
+ * $Id: fardlg.cpp 81 2011-11-07 08:50:02Z Karbazol $
  */
 
-#include "dll_utils.h"
+#include <common/refcounted.hpp>
+#include <dll/dll_utils.h>
+#include <dll/mystring.h>
+
 #include "fardlg.h"
 #include "mainthrd.h"
 #include "dlgfmwk.h"
-#include "mystring.h"
 
-FAR_RETURN_TYPE WINAPI DefDlgProc(HANDLE hDlg, FAR_WPARAM_TYPE Msg, FAR_WPARAM_TYPE Param1, FAR_LPARAM_TYPE Param2);
+LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, intptr_t Msg, intptr_t Param1, void* Param2);
 
-FarDialog::FarDialog(): _hwnd(0), _running(0), _destructing(0)
+FarDialog::FarDialog(): RefCounted(), _hwnd(0), _running(0), _destructing(0)
 {
     _running = CreateEvent(NULL, TRUE, TRUE, NULL);
     RunningDialogs* runningDialogs = RunningDialogs::instance();
@@ -39,7 +41,7 @@ FarDialog::~FarDialog()
     TRACE("Leaving FarDialog::~FarDialog\n");
 }
 
-int FarDialog::itemsCount()
+size_t FarDialog::itemsCount()
 {
     return 0;
 }
@@ -49,7 +51,7 @@ InitDialogItem* FarDialog::items()
     return 0;
 }
 
-FAR_RETURN_TYPE FarDialog::dlgProc(HANDLE dlg, FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2)
+intptr_t FarDialog::dlgProc(HANDLE dlg, intptr_t msg, intptr_t param1, void* param2)
 {
     FarDialog* This = 0;
     RunningDialogs* runningDialogs = RunningDialogs::instance();
@@ -59,7 +61,7 @@ FAR_RETURN_TYPE FarDialog::dlgProc(HANDLE dlg, FAR_WPARAM_TYPE msg, FAR_WPARAM_T
         if (This)
         {
             InterlockedExchangePointer(&This->_hwnd, dlg);
-            This->sendMessage(DM_SETDLGDATA, 0, (FAR_LPARAM_TYPE)This);
+            This->sendMessage(DM_SETDLGDATA, 0, This);
             if (runningDialogs)
             {
                 runningDialogs->notifyDialog(This, true);
@@ -92,12 +94,11 @@ FAR_RETURN_TYPE FarDialog::dlgProc(HANDLE dlg, FAR_WPARAM_TYPE msg, FAR_WPARAM_T
         }
         return TRUE;
     }
-    FAR_RETURN_TYPE res = This->handle(msg, param1, param2);
+    intptr_t res = This->handle(msg, param1, param2);
 
     if (msg == DN_CLOSE && res)
     {
         This->restoreItems();
-        //This->_hwnd = 0;
         if (runningDialogs)
         {
             runningDialogs->notifyDialog(This, false);
@@ -124,15 +125,15 @@ bool FarDialog::onClose(intptr_t /*closeId*/)
     return true;
 }
 
-FAR_RETURN_TYPE FarDialog::handle(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2)
+intptr_t FarDialog::handle(intptr_t msg, intptr_t param1, void* param2)
 {
     switch (msg)
     {
     case DN_INITDIALOG:
-        return (LONG_PTR)onInit();
+        return onInit();
     case DN_CLOSE:
         {
-            LONG_PTR res = (LONG_PTR)onClose(param1);
+            intptr_t res = onClose(param1);
             return res;
         }
         break;
@@ -144,9 +145,9 @@ FAR_RETURN_TYPE FarDialog::handle(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, F
 /**
  * Hides running dialog
  */
-int FarDialog::hide()
+intptr_t FarDialog::hide()
 {
-    int res = static_cast<int>(sendMessage(DM_CLOSE, 0, 0));
+    intptr_t res = sendMessage(DM_CLOSE, 0, 0);
 
     if (res)
     {
@@ -187,21 +188,6 @@ intptr_t FarDialog::doShow()
  * Implementation of MainThread::Callable interface used to
  * inter-thread communications during dialog showing
  */
-class DialogShower : public MainThread::Callable
-{
-private:
-    FarDialog* _dlg;
-public:
-    DialogShower(FarDialog* dlg):_dlg(dlg){}
-    void* call()
-    {
-        if (_dlg)
-            return (void*)_dlg->doShow();
-
-        return (void*)-1;
-    }
-};
-
 intptr_t FarDialog::show(bool modal)
 {
     MainThread* mainThread = MainThread::instance();
@@ -211,13 +197,22 @@ intptr_t FarDialog::show(bool modal)
     }
 
     ResetEvent(_running);
-    DialogShower* d = new DialogShower(this);
     if (modal)
     {
-        return reinterpret_cast<intptr_t>(mainThread->callIt(d));
+        return reinterpret_cast<intptr_t>(mainThread->callIt([](void* param)
+                    {
+                        return reinterpret_cast<void*>(reinterpret_cast<FarDialog*>(param)->doShow());
+                    }, this));
     }
 
-    mainThread->callItAsync(d);
+    addRef();
+    mainThread->callItAsync([](void* param)
+                {
+                    FarDialog* that = reinterpret_cast<FarDialog*>(param);
+                    that->doShow();
+                    that->release();
+                    return reinterpret_cast<void*>(-1);
+                }, this);
     return -1;
 }
 
@@ -261,7 +256,7 @@ DWORD FarDialog::flags()
     return 0;
 }
 
-FAR_RETURN_TYPE FarDialog::sendMessage(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2)
+intptr_t FarDialog::sendMessage(intptr_t msg, intptr_t param1, void* param2)
 {
     RunningDialogs* runningDialogs = RunningDialogs::instance();
     if (runningDialogs)
@@ -272,7 +267,7 @@ FAR_RETURN_TYPE FarDialog::sendMessage(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE para
     return 0;
 }
 
-void FarDialog::postMessage(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPARAM_TYPE param2)
+void FarDialog::postMessage(intptr_t msg, intptr_t param1, void* param2)
 {
     RunningDialogs* runningDialogs = RunningDialogs::instance();
     if (runningDialogs)
@@ -284,11 +279,11 @@ void FarDialog::postMessage(FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param1, FAR_LPA
 /**
  * @return - previous state of the control
  */
-bool FarDialog::enable(int id)
+bool FarDialog::enable(intptr_t id)
 {
     if (running())
     {
-        return sendMessage(DM_ENABLE, id, (FAR_LPARAM_TYPE)TRUE)?true:false;
+        return sendMessage(DM_ENABLE, id, (void*)TRUE)?true:false;
     }
     else
     {
@@ -302,7 +297,7 @@ bool FarDialog::enable(int id)
 /**
  * @return - previous state of the control
  */
-bool FarDialog::disable(int id)
+bool FarDialog::disable(intptr_t id)
 {
     if (running())
     {
@@ -317,26 +312,26 @@ bool FarDialog::disable(int id)
     }
 }
 
-int FarDialog::switchCheckBox(int id, int state)
+intptr_t FarDialog::switchCheckBox(intptr_t id, intptr_t state)
 {
     if (running())
     {
-        return (int)sendMessage(DM_SETCHECK, id, (FAR_LPARAM_TYPE)(intptr_t)state);
+        return sendMessage(DM_SETCHECK, id, reinterpret_cast<void*>(state));
     }
     else
     {
-        int ret = (items()[id].Selected & 0x3);
+        intptr_t ret = (items()[id].Selected & 0x3);
         items()[id].Selected |= state;
 
         return ret;
     }
 }
 
-int FarDialog::checkState(int id)
+intptr_t FarDialog::checkState(intptr_t id)
 {
     if (running())
     {
-        return static_cast<int>(sendMessage(DM_GETCHECK, id, 0));
+        return sendMessage(DM_GETCHECK, id, 0);
     }
     else
     {
@@ -363,6 +358,109 @@ void FarDialog::unlock()
     {
         runningDialogs->unlockDialog(this);
     }
+}
+
+HANDLE DialogInit(const GUID* Id, intptr_t X1, intptr_t Y1, intptr_t X2, intptr_t Y2,
+  const wchar_t *HelpTopic, struct FarDialogItem *Item, size_t ItemsNumber,
+  intptr_t Reserved, FARDIALOGFLAGS Flags, FARWINDOWPROC DlgProc, void* Param=NULL);
+intptr_t DialogRun(HANDLE hdlg);
+void DialogFree(HANDLE hDlg);
+
+/**
+ * This function converts a vector of InitDialogItem objects to vector of FarDialogItem objects
+ * used by Dialog and DialogEx functions.
+ */
+static void InitDialogItems(
+       const struct InitDialogItem *Init,
+       struct FarDialogItem *Item,
+       size_t ItemsNumber
+)
+{
+    size_t I;      
+    const struct InitDialogItem *PInit=Init;
+    struct FarDialogItem *PItem=Item;
+    for (I=0; I < ItemsNumber; I++,PItem++,PInit++)
+    {
+        memset(PItem, 0, sizeof(*PItem));
+        PItem->Type=PInit->Type;
+        PItem->X1=PInit->X1;
+        PItem->Y1=PInit->Y1;
+        PItem->X2=PInit->X2;
+        PItem->Y2=PInit->Y2;
+        PItem->Selected=PInit->Selected;
+        PItem->Flags=PInit->Flags;
+        if ((uintptr_t)PInit->Data < 2000)
+        {
+           PItem->Data = GetMsg((int)(uintptr_t)PInit->Data);
+        }
+        else
+        {
+            PItem->Data = PInit->Data;
+        }
+        
+        PItem->MaxLength = lstrlen(PItem->Data);
+    }
+}
+
+intptr_t FarDialog::run(void*& farItems)
+{
+    size_t count = itemsCount();
+    FarDialogItem* theItems = new FarDialogItem[count];
+    farItems = theItems;
+    InitDialogItems(items(), theItems, count);
+
+    _hwnd = DialogInit(&Id(), left(), top(), right(), bottom(), help(), theItems, count, 0,
+            flags(), &dlgProc, this);
+
+    if (_hwnd == INVALID_HANDLE_VALUE)
+    {
+        TRACE("Could not initialize dialog");
+        LASTERROR();
+        return -2;
+    }
+
+    return DialogRun(_hwnd);
+}
+
+void FarDialog::restoreItems()
+{
+    InitDialogItem* initItems = items();
+    if (initItems)
+    {
+        size_t i;
+        for (i = 0; i < itemsCount(); i++)
+        {
+            FarGetDialogItem item = {
+                sizeof(item),
+                static_cast<size_t>(sendMessage(DM_GETDLGITEM, i, 0))
+            };
+            if (static_cast<intptr_t>(item.Size) > 0)
+            {
+                item.Item = reinterpret_cast<FarDialogItem*>(malloc(item.Size));
+                if (item.Item)
+                {
+                    sendMessage(DM_GETDLGITEM, i, &item);
+                    initItems[i].Selected = item.Item->Selected;
+                    free(item.Item);
+                }
+            }
+        }
+    }
+}
+
+void FarDialog::freeFarItems(void* farItems)
+{
+    if (_hwnd)
+    {
+        DialogFree(_hwnd);
+        _hwnd = 0;
+    }
+    delete [] reinterpret_cast<FarDialogItem*>(farItems);
+}
+
+bool FarDialog::checked(intptr_t id)
+{
+    return checkState(id) != BSTATE_UNCHECKED;
 }
 
 // vim: set et ts=4 ai :

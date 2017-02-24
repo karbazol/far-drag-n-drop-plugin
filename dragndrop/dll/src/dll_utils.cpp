@@ -2,11 +2,10 @@
  * @file dll_utils.cpp
  * The file contains definations of utility classes and routines used by DLLs.
  *
- * $Id$
  */
 
 #include <windows.h>
-#include "dll_utils.h"
+#include <dll/dll_utils.h>
 
 MyStringW getErrorDesc(unsigned int e)
 {

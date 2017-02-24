@@ -34,6 +34,7 @@ config.VersionRange("7-*",
                             '/INCREMENTAL:NO',
                             '/OPT:REF,ICF=4' # Put only used functions to the resulting binary
                             ],
+                        LINKTRAILFLAGS=['libcmt.lib', 'libcpmt.lib', 'libcpmt1.lib'],
                         PDB=['${TARGETS[0]}.pdb']
                         )
                     )

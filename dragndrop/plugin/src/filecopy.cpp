@@ -1,11 +1,22 @@
-// $Id$
-
 #include "filecopy.h"
 
 FileCopier::FileCopier(const wchar_t* src, const wchar_t* dest, FileCopyNotify* p):
     _src(src), _dest(dest), _notify(p), _copied(0)
 {
+    if (_notify)
+    {
+        _notify->addRef();
+    }
     _result = doCopy();
+}
+
+FileCopier::~FileCopier()
+{
+    if (_notify)
+    {
+        _notify->release();
+        _notify = 0;
+    }
 }
 
 bool FileCopier::doCopy()
@@ -15,8 +26,15 @@ bool FileCopier::doCopy()
         BOOL cancel = FALSE;
         if (CopyFileEx(
             _src, _dest, reinterpret_cast<LPPROGRESS_ROUTINE>(&winCallBack),
-            this, &cancel, 0) || cancel)
+            this, &cancel, 0|
+            COPY_FILE_FAIL_IF_EXISTS|
+            0
+            ) || cancel)
+        {
             return true;
+        }
+        DWORD err = GetLastError();
+        LASTERROR();
 
     } while (_notify && _notify->onFileError(_src, _dest, GetLastError()));
 
@@ -28,7 +46,7 @@ DWORD FileCopier::winCallBack(LARGE_INTEGER /*totalSize*/, LARGE_INTEGER transfe
             DWORD /*streamNumber*/, DWORD /*dwCallBackReason*/, HANDLE /*hSourcefile*/,
             HANDLE /*hDestinationFile*/, FileCopier* This)
 {
-    __int64 step = transferred.QuadPart - This->_copied;
+    int64_t step = transferred.QuadPart - This->_copied;
     This->_copied = transferred.QuadPart;
     if (This->_notify && !This->_notify->onFileStep(step))
     {

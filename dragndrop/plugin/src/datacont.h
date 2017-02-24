@@ -2,15 +2,15 @@
  * @file datacont.h
  * Contains declaration of DataContainer class.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DATACONT_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DATACONT_H__
 
+#include <dll/mystring.h>
+
 #include "far.h"
 #include "cstmdata.h"
-#include "mystring.h"
 
 /**
  * @brief Data container object

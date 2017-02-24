@@ -2,12 +2,12 @@
  * @file modules.cpp
  * Contains implementation of modules walker classes.
  *
- * $Id$
  */
+
+#include <common/utils.h>
 
 #include "modules.hpp"
 #include "protect.h"
-#include "utils.h"
 
 /**
  * @brief MemProtect wrappers
@@ -50,7 +50,7 @@ class ModuleImportsWalker : public CommonWalker, public ModuleWalker
 {
 protected:
     void** _current;
-    DWORD_PTR* _names;
+    int* _names;
     PIMAGE_IMPORT_DESCRIPTOR _importedModule;
 public:
     ModuleImportsWalker(void* module): CommonWalker(module), _current(0), _names(0){}
@@ -67,7 +67,7 @@ public:
         _current = (void**)((DWORD_PTR)pDos + _importedModule->FirstThunk);
         _protect = new MemProtect(_current, PAGE_EXECUTE_READWRITE);
         if (_importedModule->OriginalFirstThunk)
-            _names = (DWORD_PTR*)((DWORD_PTR)pDos + _importedModule->OriginalFirstThunk);
+            _names = (int*)((DWORD_PTR)pDos + _importedModule->OriginalFirstThunk);
     }
     bool next()
     {
@@ -80,7 +80,7 @@ public:
             if (!_importedModule->OriginalFirstThunk)
                 return false;
             _current = (void**)((DWORD_PTR)_module + _importedModule->FirstThunk);
-            _names = (DWORD_PTR*)((DWORD_PTR)_module + _importedModule->OriginalFirstThunk);
+            _names = (int*)((DWORD_PTR)_module + _importedModule->OriginalFirstThunk);
             return true;
         }
 
