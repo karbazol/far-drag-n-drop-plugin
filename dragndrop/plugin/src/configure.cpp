@@ -133,9 +133,6 @@ public:
                 key = getMyItemId(radioLeftCtl);
             }
 
-            enable(key);
-            switchCheckBox(key, BSTATE_CHECKED);
-
             int i;
             for (i = getMyItemId(radioLeftCtl); i < key ; i++)
             {
@@ -149,14 +146,15 @@ public:
                 switchCheckBox(i, BSTATE_UNCHECKED);
             }
 
+            enable(key);
+            switchCheckBox(key, BSTATE_CHECKED);
+
         }
     }
 
     int getKeyToStartDnd()
     {
-        if (!checked(getMyItemId(checkKeyToStartDrag)))
-            return 0;
-        else if (checked(getMyItemId(radioLeftCtl)))
+        if (checked(getMyItemId(radioLeftCtl)))
             return LEFT_CTRL_PRESSED;
         else if (checked(getMyItemId(radioLeftAlt)))
             return LEFT_ALT_PRESSED;
@@ -220,7 +218,14 @@ int doConfigure(int /*Number*/)
             break;
         }
 
-        config->checkKey(dlg.getKeyToStartDnd());
+        if (dlg.checked(getMyItemId(checkKeyToStartDrag)))
+        {
+            config->checkKey(dlg.getKeyToStartDnd());
+        }
+        else
+        {
+            config->checkKey(0);
+        }
         config->shellCopy(dlg.checked(getMyItemId(checkUseShellCopy)));
         config->showMenu(dlg.checked(getMyItemId(checkShowMenu)));
 

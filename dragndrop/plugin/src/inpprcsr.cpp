@@ -229,7 +229,10 @@ bool InputProcessor::checkKeyBoard(INPUT_RECORD& record)
     Config* config = Config::instance();
     if (config && (record.Event.MouseEvent.dwControlKeyState & config->checkKey())
             != config->checkKey())
+    {
+        TRACE("CheckKeyBoard return true for %d\n", record.Event.MouseEvent.dwControlKeyState);
         return true;
+    }
     return false;
 }
 
@@ -253,7 +256,7 @@ bool InputProcessor::checkMouseButtons(INPUT_RECORD& record)
 
 bool InputProcessor::checkEvent(INPUT_RECORD& record)
 {
-    if (record.EventType != MOUSE_EVENT && record.EventType != KEY_EVENT)
+    if (record.EventType != MOUSE_EVENT /*&& record.EventType != KEY_EVENT*/)
         return true;
     return false;
 }
