@@ -1,12 +1,13 @@
-#ifndef FARCOLOR_HPP_57151931_4591_44A5_92CF_8E51D1FBC57E
-#define FARCOLOR_HPP_57151931_4591_44A5_92CF_8E51D1FBC57E
+﻿#ifndef COLORS_HPP_57151931_4591_44A5_92CF_8E51D1FBC57E
+#define COLORS_HPP_57151931_4591_44A5_92CF_8E51D1FBC57E
 #pragma once
 
 /*
-farcolor.hpp
+  farcolor.hpp
 
-Colors Index for FAR Manager 3.0 build 4774
+  Colors Index for FAR Manager 3.0 build 4700
 */
+
 /*
 Copyright © 1996 Eugene Roshal
 Copyright © 2000 Far Group
@@ -38,7 +39,6 @@ EXCEPTION:
 Far Manager plugins that use this header file can be distributed under any
 other possible license with no implications from the above license on them.
 */
-
 
 
 enum PaletteColors
@@ -216,4 +216,4 @@ enum PaletteColors
 	COL_LASTPALETTECOLOR
 };
 
-#endif // FARCOLOR_HPP_57151931_4591_44A5_92CF_8E51D1FBC57E
+#endif // COLORS_HPP_57151931_4591_44A5_92CF_8E51D1FBC57E
