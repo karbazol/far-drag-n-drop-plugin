@@ -73,7 +73,7 @@ env.InstallTarget(env.SharedLibrary(target='${PART_PARENT_NAME}_${TARGET_ARCH}',
 envUt = env.Clone()
 envUt.Replace(
         LINKFLAGS=[x for x in env.subst_list('$LINKFLAGS')[0] if str(x).lower() != '/nodefaultlib'],
-        LINKTRAILFLAGS=[])
+        LIBEXS=[])
 
 envUt.UnitTest('configure_test${TARGET_ARCH}', 
         ['tests/configure_test.cpp',

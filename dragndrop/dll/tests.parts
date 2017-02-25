@@ -13,6 +13,10 @@ env.Append(
         'kernel32', 'uuid'],
     )
 
+env.Replace(
+        LINKFLAGS=[x for x in env.subst_list('$LINKFLAGS')[0] if str(x).lower() != '/nodefaultlib'],
+        LIBEXS=[])
+
 env.UnitTest('mystring_test', [
         'tests/mystring_test.cpp',
         'tests/mystring_stubs.cpp',
