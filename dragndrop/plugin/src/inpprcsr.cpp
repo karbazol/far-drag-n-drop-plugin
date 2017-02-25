@@ -192,7 +192,13 @@ bool InputProcessor::checkMouseAndShowPopupMenu(INPUT_RECORD& record)
             _left = 0;
         }
 
-        if (record.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED)
+        // If we are not going to show the pop-up menu don't change dwButtonState.
+        if (!Config::instance()->showMenu()) 
+        {
+            return false;
+        }
+
+        if (record.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED)                                       
         {
             _right++;
             if (!_left)
