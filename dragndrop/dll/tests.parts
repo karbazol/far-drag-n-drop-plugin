@@ -8,12 +8,11 @@ env.DependsOn([
         ])
 
 env.Append(
-    CXXFLAGS=['/EHsc', '/GR'],
-    LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32',
-        'kernel32', 'uuid'],
+        LIBS=['shlwapi'],
     )
 
 env.Replace(
+        CXXFLAGS=[x for x in env.subst_list('$CXXFLAGS')[0] if not x in ['/EHs-', '/EHc-', '/GR-']] + ['/EHsc', '/GR'],
         LINKFLAGS=[x for x in env.subst_list('$LINKFLAGS')[0] if str(x).lower() != '/nodefaultlib'],
         LIBEXS=[])
 
