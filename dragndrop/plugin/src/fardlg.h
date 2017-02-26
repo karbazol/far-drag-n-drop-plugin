@@ -5,6 +5,7 @@
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FARDLG_H__
 #define __KARBAZOL_DRAGNDROP_2_0__FARDLG_H__
 
+#include <ddlock.h>
 #include <refcounted.hpp>
 #include "far.h"
 
