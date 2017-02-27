@@ -50,7 +50,7 @@ class ModuleImportsWalker : public CommonWalker, public ModuleWalker
 {
 protected:
     void** _current;
-    intptr_t* _names;
+    PIMAGE_THUNK_DATA _names;
     PIMAGE_IMPORT_DESCRIPTOR _importedModule;
 public:
     ModuleImportsWalker(void* module): CommonWalker(module), _current(0), _names(0){}
@@ -67,7 +67,7 @@ public:
         _current = (void**)((DWORD_PTR)pDos + _importedModule->FirstThunk);
         _protect = new MemProtect(_current, PAGE_EXECUTE_READWRITE);
         if (_importedModule->OriginalFirstThunk)
-            _names = (intptr_t*)((DWORD_PTR)pDos + _importedModule->OriginalFirstThunk);
+            _names = (PIMAGE_THUNK_DATA)((DWORD_PTR)pDos + _importedModule->OriginalFirstThunk);
     }
     bool next()
     {
@@ -80,7 +80,7 @@ public:
             if (!_importedModule->OriginalFirstThunk)
                 return false;
             _current = (void**)((DWORD_PTR)_module + _importedModule->FirstThunk);
-            _names = (intptr_t*)((DWORD_PTR)_module + _importedModule->OriginalFirstThunk);
+            _names = (PIMAGE_THUNK_DATA)((DWORD_PTR)_module + _importedModule->OriginalFirstThunk);
             return true;
         }
 
@@ -104,16 +104,17 @@ public:
     }
     bool isName(const char* value) const
     {
-        if (!value || !_names || !*_names || IMAGE_SNAP_BY_ORDINAL(*_names))
+        if (!value || !_names || !_names->u1.AddressOfData || IMAGE_SNAP_BY_ORDINAL(_names->u1.Ordinal))
             return false;
 
         return lstrcmpA(funcName(), value)==0;
     }
     const char* funcName() const
     {
-        if (!_module || !_names || !*_names || IMAGE_SNAP_BY_ORDINAL(*_names))
+        if (!_module || !_names || !_names->u1.AddressOfData || IMAGE_SNAP_BY_ORDINAL(_names->u1.Ordinal))
             return "";
-        char* res = (char*)_module + *_names + 2;
+        //char* res = (char*)_module + *_names + 2;
+        char* res = ((PIMAGE_IMPORT_BY_NAME)((char*)_module + _names->u1.AddressOfData))->Name;
         if (!IsBadReadPtr(res, 1))
             return res;
         return "";
