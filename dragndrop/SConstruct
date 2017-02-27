@@ -8,8 +8,8 @@ from parts import *
 # Set up version information
 SetOptionDefault('COMPANY_NAME', 'Eugene Leskinen')
 SetOptionDefault('PRODUCT_NAME', 'Drag & drop plug-in for FAR manage')
-SetOptionDefault('LEGAL_COPYRIGHT', '2005-2016 Eugene Leskinen')
-SetOptionDefault('PRODUCT_VERSION_STRING', '2.0.0.78')
+SetOptionDefault('LEGAL_COPYRIGHT', '2005-2017 Eugene Leskinen')
+SetOptionDefault('PRODUCT_VERSION_STRING', '2.0.0.79')
 
 # Enable smart logging
 SetOptionDefault('LOGGER', '$TEXT_LOGGER')
@@ -68,7 +68,8 @@ Part(
     platform_independent=True,
     )
 
-#Alias('pack', DefaultEnvironment().ZipPackage('drgndrop', ['plugin']))
+Alias('pack', DefaultEnvironment().ZipPackage('drgndrop', ['plugin']))
+Alias('farinstall', DefaultEnvironment().DirInstall(r'D:\personal\far_3.0.4900\Debug.64.vc\Plugins\Dragndrop', ['plugin']))
 # vim: set et ts=4 sw=4 ai ft=python :
 
 

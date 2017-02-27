@@ -513,13 +513,17 @@ HRESULT ToolWindow::Drop(IDataObject* obj, DWORD keyState, POINTL ptl, DWORD* ef
     }
 
     if (*effect == DROPEFFECT_NONE)
+    {
+        TRACE("Drop is not processed because of DROPEFFECT_NONE\n");
         return S_OK;
+    }
 
     POINT pt = {ptl.x, ptl.y};
 
     MyStringW dir;
     if (!MainThread::instance()->getDirFromScreenPoint(pt, dir))
     {
+        TRACE("Could not get dir from screen point\n");
         *effect = DROPEFFECT_NONE;
         return S_OK;
     }
@@ -532,9 +536,11 @@ HRESULT ToolWindow::Drop(IDataObject* obj, DWORD keyState, POINTL ptl, DWORD* ef
 
     if (!dropProcessor)
     {
+        TRACE("Could not get drop processor\n");
         return E_OUTOFMEMORY;
     }
 
+    TRACE("Processing drop\n");
     HRESULT hr = dropProcessor->processDrop(obj, effect, dir);
 
     return hr;

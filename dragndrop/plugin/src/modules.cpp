@@ -50,7 +50,7 @@ class ModuleImportsWalker : public CommonWalker, public ModuleWalker
 {
 protected:
     void** _current;
-    int* _names;
+    intptr_t* _names;
     PIMAGE_IMPORT_DESCRIPTOR _importedModule;
 public:
     ModuleImportsWalker(void* module): CommonWalker(module), _current(0), _names(0){}
@@ -67,7 +67,7 @@ public:
         _current = (void**)((DWORD_PTR)pDos + _importedModule->FirstThunk);
         _protect = new MemProtect(_current, PAGE_EXECUTE_READWRITE);
         if (_importedModule->OriginalFirstThunk)
-            _names = (int*)((DWORD_PTR)pDos + _importedModule->OriginalFirstThunk);
+            _names = (intptr_t*)((DWORD_PTR)pDos + _importedModule->OriginalFirstThunk);
     }
     bool next()
     {
@@ -80,7 +80,7 @@ public:
             if (!_importedModule->OriginalFirstThunk)
                 return false;
             _current = (void**)((DWORD_PTR)_module + _importedModule->FirstThunk);
-            _names = (int*)((DWORD_PTR)_module + _importedModule->OriginalFirstThunk);
+            _names = (intptr_t*)((DWORD_PTR)_module + _importedModule->OriginalFirstThunk);
             return true;
         }
 
@@ -142,10 +142,13 @@ bool patchModuleImports(void* module, PatchInfo* patches, size_t count)
     AutoWalker m(ImportsWalker(module));
     do
     {
-#ifdef _DEBUG__
+#ifdef _DEBUG
         const char* modName = m->modName();
         const char* funcName = m->funcName();
-        TRACE("Imported function %s::%s\n", modName, funcName);
+        if (!strcmp("FlushFileBuffers", funcName))
+        {
+            TRACE("Imported function %s::%s\n", modName, funcName);
+        }
 #endif
         size_t i;
         for (i = 0; i < count; i++)
