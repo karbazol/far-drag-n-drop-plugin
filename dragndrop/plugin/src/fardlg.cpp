@@ -13,7 +13,7 @@
 
 LONG_PTR WINAPI DefDlgProc(HANDLE hDlg, intptr_t Msg, intptr_t Param1, void* Param2);
 
-FarDialog::FarDialog(): RefCounted(), _hwnd(0), _textGuard(), _controlTexts(0)
+FarDialog::FarDialog(): RefCounted(), _running(false), _hwnd(0), _textGuard(), _controlTexts(0)
 {
 }
 
@@ -50,6 +50,10 @@ intptr_t FarDialog::dlgProc(HANDLE dlg, intptr_t msg, intptr_t param1, void* par
             This->sendMessage(DM_SETDLGDATA, 0, This);
         }
     }
+    else
+    {
+        This = reinterpret_cast<FarDialog*>(SendDlgMessage(dlg, DM_GETDLGDATA, 0, 0));
+    }
 
     if (!This)
     {
@@ -61,7 +65,7 @@ intptr_t FarDialog::dlgProc(HANDLE dlg, intptr_t msg, intptr_t param1, void* par
     if (msg == DN_CLOSE && res)
     {
         This->restoreItems();
-        return res;
+        InterlockedExchangePointer(&This->_hwnd, 0);
     }
 
     return res;
@@ -188,12 +192,6 @@ intptr_t FarDialog::doShow()
     return res;
 }
 
-/**
- * @brief Dialog shower
- *
- * Implementation of MainThread::Callable interface used to
- * inter-thread communications during dialog showing
- */
 intptr_t FarDialog::show(bool modal)
 {
     MainThread* mainThread = MainThread::instance();
@@ -202,12 +200,15 @@ intptr_t FarDialog::show(bool modal)
         return -1;
     }
 
+    _running = true;
     if (modal)
     {
-        return reinterpret_cast<intptr_t>(mainThread->callIt([](void* param)
+        intptr_t result = reinterpret_cast<intptr_t>(mainThread->callIt([](void* param)
                     {
                         return reinterpret_cast<void*>(reinterpret_cast<FarDialog*>(param)->doShow());
                     }, this));
+        _running = false;
+        return result;
     }
 
     addRef();
@@ -215,6 +216,7 @@ intptr_t FarDialog::show(bool modal)
                 {
                     FarDialog* that = reinterpret_cast<FarDialog*>(param);
                     that->doShow();
+                    that->_running = false;
                     that->release();
                     return reinterpret_cast<void*>(-1);
                 }, this);
@@ -263,9 +265,33 @@ DWORD FarDialog::flags()
 
 intptr_t FarDialog::sendMessage(intptr_t msg, intptr_t param1, void* param2)
 {
-    if (_hwnd)
+    MainThread* mainThread = MainThread::instance();
+    if (!mainThread)
     {
+        return 0;
+    }
+
+    if (mainThread->isMainThread())
+    {
+        if (!_hwnd)
+        {
+            return 0;
+        }
         return SendDlgMessage(_hwnd, msg, param1, param2);
+    }
+    else
+    {
+        struct Params {
+            FarDialog* This;
+            intptr_t msg;
+            intptr_t param1;
+            void* param2;
+        } params = {this, msg, param1, param2};
+        return reinterpret_cast<intptr_t>(mainThread->callIt([](void* param) {
+                Params* params = static_cast<Params*>(param);
+                return reinterpret_cast<void*>(params->This->sendMessage(
+                            params->msg, params->param1, params->param2));
+                }, &params));
     }
     return 0;
 }

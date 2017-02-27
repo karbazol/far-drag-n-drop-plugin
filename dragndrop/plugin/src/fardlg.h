@@ -34,6 +34,7 @@ class DialogShower;
 class FarDialog: public RefCounted
 {
 private:
+    volatile bool _running;
     volatile HANDLE _hwnd;
     CriticalSection _textGuard;
     MyStringW** volatile _controlTexts;
@@ -72,7 +73,7 @@ public:
     /**
      * Allows to determine whether the dialog is running
      */
-    inline bool running(){return !!_hwnd;}
+    inline bool running(){return !!_hwnd || _running;}
 
     /**
      * Override this function to allow Dialog framework to show the dialog.
