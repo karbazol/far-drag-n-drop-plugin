@@ -99,6 +99,8 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
     if (Info->StructSize < sizeof(*Info))
         return;
 #endif
+    initializeStringLock();
+
     checkConman();
 
     if (!patchImports())
