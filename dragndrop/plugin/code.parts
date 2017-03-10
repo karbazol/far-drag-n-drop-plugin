@@ -8,21 +8,59 @@ env.DependsOn([
         Component(env.subst('hook.code_${TARGET_ARCH}')),
         ])
 
+conf = Environment().Configure()
+if not conf.TryCompile('''
+#include <Shldisp.h>
+class MyObject: public IAsyncOperation {};
+''', '.cpp'):
+    env.Append(CPPDEFINES=[('IAsyncOperation', 'IDataObjectAsyncCapability'),
+            ('IID_IAsyncOperation', 'IID_IDataObjectAsyncCapability')])
+conf.Finish()
+
 env.Append(
-    CPPPATH=['#/../common_${A_OR_U}', '.'],
-    CPPDEFINES=['_FAR_USE_FARFINDDATA'],
+    CPPPATH=['#/../farheaders', '.'],
+    CPPDEFINES=['_FAR_USE_FARFINDDATA', ('PRODUCT_VERSION', '$PRODUCT_VERSION')],
     LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32',
         'kernel32', 'uuid'],
     )
 
 if env.isConfigBasedOn('release'):
-    env.Append(LINKFLAGS=['/entry:DllMain'])
-    env.Append(LIBS=['libcmt'])
+    env.Append(
+        SHLINKFLAGS=['/entry:DllMain'],
+        )
 
-sources  = env.Glob('src/*.cpp') + env.Glob('src/*.c')
-sources += env.Glob('src/$ANSI_OR_UNICODE/*.cpp')
-sources += env.Glob('src/$ANSI_OR_UNICODE/*.c')
-sources += env.Glob('src/$ANSI_OR_UNICODE/*.def')
+sources  = [('src/' + x) for x in (
+        'dndguids.c',
+        'configure.cpp',
+        'cperrdlg.cpp',
+        'cpydlg.cpp',
+        'datacont.cpp',
+        'dataobj.cpp',
+        'dircrtr.cpp',
+        'dlgfmwk.cpp',
+        'dragbmp.cpp',
+        'dragging.cpp',
+        'dropprcs.cpp',
+        'enumfmt.cpp',
+        'far.cpp',
+        'fardlg.cpp',
+        'filecopy.cpp',
+        'filelist.cpp',
+        'fldsitrt.cpp',
+        'fldsprcs.cpp',
+        'fmtprcsr.cpp',
+        'hdrpprcs.cpp',
+        'hookfuncs.cpp',
+        'inpprcsr.cpp',
+        'mainthrd.cpp',
+        'modules.cpp',
+        'protect.cpp',
+        'thrdpool.cpp',
+        'toolwnd.cpp',
+        'winthrd.cpp',
+        'wrkrthrd.cpp'
+        )]
+sources += ['src/drgndrop.def']
 
 sources += env.RES(target='plugin.res', source=env.VersionInfo(
     FILE_DESCRIPTION = 'FAR manager plug-in module.',
@@ -31,6 +69,21 @@ sources += env.RES(target='plugin.res', source=env.VersionInfo(
 )
 
 env.InstallTarget(env.SharedLibrary(target='${PART_PARENT_NAME}_${TARGET_ARCH}', source=sources))
+
+envUt = env.Clone()
+envUt.Replace(
+        LINKFLAGS=[x for x in env.subst_list('$LINKFLAGS')[0] if str(x).lower() != '/nodefaultlib'],
+        LIBEXS=[])
+
+envUt.UnitTest('configure_test${TARGET_ARCH}', 
+        ['tests/configure_test.cpp',
+        'src/configure.cpp',
+        'src/dndguids.c',
+        'tests/configure_stubs.cpp'],
+        make_pdb = True,
+        depends=[Component(env.PartName(), env.PartVersion()),
+            Component('tut')],
+        CXXFLAGS=['$CXXFLAGS', '/EHsc', '/GR'])
 
 # vim: set et ts=4 sw=4 ft=python :
 

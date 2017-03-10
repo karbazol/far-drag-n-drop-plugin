@@ -2,12 +2,12 @@
  * @file cperrdlg.cpp
  * This file contains implementation of CopyErrorDialog class.
  *
- * $Id$
  */
 
-#include "dll_utils.h"
+#include <dll_utils.h>
 #include "cperrdlg.h"
 #include "ddlng.h"
+#include "dndguids.h"
 
 /**
  * Utility macro used to determine id of dialog item
@@ -29,6 +29,11 @@ CopyErrorDialog::CopyErrorDialogItems CopyErrorDialog::itemsTemplate =
     {DI_BUTTON,0,7,0,0,0,0,DIF_CENTERGROUP|DIF_NOBRACKETS,0,(wchar_t*)MCancel},
     {DI_TEXT,5,2,32,0,0,0,DIF_CENTERGROUP,0,L""}, // this member has been moved to the end of structure
 };
+
+const GUID& CopyErrorDialog::Id() const
+{
+    return copyErrDialogGuid;
+}
 
 void CopyErrorDialog::allocItems(size_t additionalErrorLines)
 {
@@ -64,6 +69,8 @@ void CopyErrorDialog::prepareItems(int consoleWidth, int consoleHeight)
     CopyErrorDialogItems& items(*reinterpret_cast<CopyErrorDialogItems*>(_items));
 
     items = itemsTemplate;
+
+    items.btnRetry.Data = reinterpret_cast<const wchar_t*>(_useOverwrite ? MCopyOverwrite : MRetry);
 
     items.srcFileName.Data = _srcFileName;
     items.dstFileName.Data = _dstFileName;
@@ -115,18 +122,9 @@ InitDialogItem* CopyErrorDialog::items()
     return _items;
 }
 
-int CopyErrorDialog::itemsCount()
+size_t CopyErrorDialog::itemsCount()
 {
     return _itemsCount;
-}
-
-// {DF9FDB3D-73F1-40AE-B8D3-79C98FA9731C}
-static const GUID CopyErrorDialogGuid =
-{ 0xdf9fdb3d, 0x73f1, 0x40ae,{ 0xb8, 0xd3, 0x79, 0xc9, 0x8f, 0xa9, 0x73, 0x1c } };
-
-const GUID* CopyErrorDialog::guid()
-{
-    return &CopyErrorDialogGuid;
 }
 
 CopyErrorDialog::RetCode CopyErrorDialog::show(const wchar_t* source, const wchar_t* dest, unsigned int error)

@@ -1,8 +1,9 @@
 #include <windows.h>
+#include <utils.h>
+
 #include "hookfuncs.h"
 #include "modules.hpp"
 #include "inpprcsr.h"
-#include "utils.h"
 #include "dragging.h"
 
 BOOL WINAPI MyReadConsoleInputA(HANDLE h, PINPUT_RECORD b, DWORD l, LPDWORD r)

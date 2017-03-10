@@ -161,6 +161,7 @@
     <ClCompile Include="..\common\src\myunknown.cpp" />
     <ClCompile Include="..\common\src\mywnd.cpp" />
     <ClCompile Include="..\common\src\new.cpp" />
+    <ClCompile Include="..\common\src\refcounted.cpp" />
     <ClCompile Include="..\common\src\shutils.cpp" />
     <ClCompile Include="..\common\src\utils.cpp" />
   </ItemGroup>

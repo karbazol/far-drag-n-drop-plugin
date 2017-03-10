@@ -1,4 +1,3 @@
-#include <tut.h>
 #include <tut/tut.hpp>
 #include <tut/tut_reporter.hpp>
 #include "../src/configure.hpp"
@@ -21,7 +20,6 @@ namespace tut
         Config* config = Config::instance();
         ensure(!!config);
         ensure(config->checkKey() == 0);
-        ensure(config->allowDrop() == true);
         ensure(config->shellCopy() == true);
         ensure(config->showMenu() == false);
         ensure(config->useShellObject() == false);
@@ -37,9 +35,6 @@ namespace tut
         config->checkKey(1);
         ensure(config->checkKey() == 1);
 
-        config->allowDrop(false);
-        ensure(!config->allowDrop());
-
         config->shellCopy(false);
         ensure(!config->shellCopy());
 
@@ -51,9 +46,6 @@ namespace tut
 
         config->checkKey(0);
         ensure(config->checkKey() == 0);
-
-        config->allowDrop(true);
-        ensure(config->allowDrop());
 
         config->shellCopy(true);
         ensure(config->shellCopy());

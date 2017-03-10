@@ -2,7 +2,6 @@
  * @file dropprcs.h
  * Contains declaration of DropProcessor class.
  * 
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DROPPRCS_H__
@@ -10,9 +9,9 @@
 
 #include <windows.h>
 #include <shlobj.h>
-#include "growarry.h"
-#include "mystring.h"
-#include "myshptr.h"
+#include <growarry.h>
+#include <myshptr.h>
+#include <mystring.h>
 
 /**
  * Unicode strings array.

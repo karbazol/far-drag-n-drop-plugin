@@ -2,16 +2,15 @@
  * @file growarry.h
  * Contains declaration of GrowOnlyArray template class.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__GROWARRY_H__
 #define __KARBAZOL_DRAGNDROP_2_0__GROWARRY_H__
 
-#include <utils.h>
+#include "utils.h"
 
 /**
- * Class represants container of T type.
+ * Class represents container of T type.
  */
 template<class T>
 class GrowOnlyArray
@@ -202,14 +201,14 @@ public:
 
     /**
      * Appends new element to the container.
+     * If for some reason an item cannot be added returns reference to null ponter
      */
     T& append(const T& item)
     {
         size_t i = _count;
         if (!grow())
         {
-            /** @todo raise "Out of memory" exception */
-            return _values[0];
+            return *reinterpret_cast<T*>(0);
         }
         _values[i] = item;
         return _values[i];

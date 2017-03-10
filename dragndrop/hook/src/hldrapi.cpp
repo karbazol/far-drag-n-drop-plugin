@@ -1,9 +1,10 @@
 #include <shlwapi.h>
-#include "dndmsgs.h"
-#include "hldrapi.h"
-#include "utils.h"
-#include "dll.h"
-#include "mystring.h"
+
+#include <utils.h>
+#include <dll.h>
+#include <dndmsgs.h>
+#include <mystring.h>
+#include <hldrapi.h>
 
 static bool checkMutex(const wchar_t* holderMutex)
 {
@@ -102,8 +103,6 @@ class HolderApiImpl: public HolderApi
 
     ~HolderApiImpl()
     {
-        //CloseHandle(_leftEvent);
-        //CloseHandle(_rightEvent);
         _holder = NULL;
     }
 
@@ -130,7 +129,7 @@ class HolderApiImpl: public HolderApi
     HWND window()
     {
         static HWND hldr = NULL;
-        if (HOLDER_YES == SendMessage(hldr, WM_ARE_YOU_HOLDER, 0, 0))
+        if (hldr && HOLDER_YES == SendMessage(hldr, WM_ARE_YOU_HOLDER, 0, 0))
         {
             return hldr;
         }

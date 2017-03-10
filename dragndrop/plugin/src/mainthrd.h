@@ -2,16 +2,16 @@
  * @file mainthrd.h
  * The file contains declaration of MainThread class
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__MAINTHRD_H_
 #define __KARBAZOL_DRAGNDROP_2_0__MAINTHRD_H_
 
 #include <windows.h>
-#include "growarry.h"
-#include "mystring.h"
-#include "ddlock.h"
+#include <ddlock.h>
+#include <growarry.h>
+#include <irefcounted.hpp>
+#include <mystring.h>
 
 // Main thread message identifiers
 
@@ -43,7 +43,8 @@
 
 /**
  * Send callable object
- *  param0 - pointer to a Callable object instance
+ *  param0 - pointer to a Callable object instance.
+ *  after the object is called it will be release'ed therefore it has to be addRef'ed before posting the message
  */
 #define MTM_CALLTHEOBJECT 5
 
@@ -56,12 +57,10 @@ public:
     /**
      * Interface of callable object.
      */
-    class Callable
+    class Callable: public IRefCounted
     {
     public:
-        virtual ~Callable(){}
         virtual void* call() = 0;
-        virtual void free();
     };
 private:
     DWORD _threadId;
@@ -96,7 +95,7 @@ private:
     // Message handlers
     void onSetDragging(bool value);
     bool onGetDirFromScreenPoint(POINT&pt, MyStringW& dir);
-    void* onCallIt(Callable* p);
+    void* onCallIt(void* (*function)(void*), void* param);
     LONG_PTR onSendDlgMessage(void* msg);
 public:
     static MainThread* instance();
@@ -117,8 +116,8 @@ public:
     {
         postMessage(MTM_SENDDLGMSG, 0);
     }
-    inline void* callIt(Callable* p){return sendMessage(MTM_CALLTHEOBJECT, p);}
-    inline void callItAsync(Callable* p){postMessage(MTM_CALLTHEOBJECT, p);}
+    inline void* callIt(void* (*function)(void*), void* param){return sendMessage(MTM_CALLTHEOBJECT, function, param);}
+    inline void callItAsync(void* (*function)(void*), void* param){postMessage(MTM_CALLTHEOBJECT, function, param);}
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__MAINTHRD_H_

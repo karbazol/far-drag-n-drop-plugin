@@ -1,12 +1,12 @@
 #include <shlobj.h>
+#include <myshptr.h>
+#include <utils.h>
+#include <dll.h>
+
 #include "dragging.h"
-#include "dll.h"
 #include "far.h"
-#include "utils.h"
 #include "inpprcsr.h"
 #include "winthrd.h"
-#include "dataobj.h"
-#include "myshptr.h"
 #include "datacont.h"
 #include "configure.hpp"
 
@@ -69,26 +69,17 @@ bool Dragging::isReadyForDragging()
         return false;
     }
 
-    if (FAR_CONSOLE_FULLSCREEN == ConsoleMode(FAR_CONSOLE_GET_MODE))
-    {
-        /**
-         * We cannot start dragging when Far is running in hardware console mode.
-         * (Beginning from Windows Vista such mode is not supported).
-         */
-        return false;
-    }
-
-    WindowInfoW wi;
+    WindowInfo wi = {sizeof(wi)};
     wi.Pos = -1;
 
     if (!FarGetWindowInfo(wi) || wi.Type != WTYPE_PANELS)
         return false;
 
-    PanelInfoW info;
-    if (!FarGetActivePanelInfo(info) || info.Plugin && !(info.Flags & PFLAGS_REALNAMES))
+    PanelInfo info = {sizeof(info)};
+    if (!FarGetActivePanelInfo(info) || info.PluginHandle && !(info.Flags & PFLAGS_REALNAMES))
         return false;
 
-    if (!info.Visible)
+    if (!(info.Flags & PFLAGS_VISIBLE))
         return false;
 
     return true;
@@ -119,8 +110,8 @@ bool Dragging::start()
         return false;
     }
 
-    PanelInfoW info;
-    if (!FarGetActivePanelInfo(info) || info.Plugin && !(info.Flags & PFLAGS_REALNAMES))
+    PanelInfo info = {sizeof(info)};
+    if (!FarGetActivePanelInfo(info) || info.PluginHandle && !(info.Flags & PFLAGS_REALNAMES))
     {
         return false;
     }
@@ -128,13 +119,13 @@ bool Dragging::start()
     if (!inputProcessor->isMouseWithinRect(info.PanelRect.left, info.PanelRect.top,
          info.PanelRect.right, info.PanelRect.bottom))
     {
+        TRACE("No. Because mouse is out of the rect\n");
         return false;
     }
 
     MyStringW dir = FarGetActivePanelDirectory();
     PluginPanelItemsW items = FarGetActivePanelItems(true);
 
-    ShPtr<IDataObject> dataObj;
     DataContainer* data = new DataContainer(dir, items);
 
     if (!data)

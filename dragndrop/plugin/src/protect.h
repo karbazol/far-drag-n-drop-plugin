@@ -2,7 +2,6 @@
  * @file protect.h
  * Contains declaration of MemProtect class.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__PROTECT_H__

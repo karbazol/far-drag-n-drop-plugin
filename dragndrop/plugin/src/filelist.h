@@ -2,15 +2,15 @@
  * @file filelist.h
  * The file contains declarations of file list related classes.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__FILELIST_H__
 #define __KARBAZOL_DRAGNDROP_2_0__FILELIST_H__
 
 #include <windows.h>
-#include "mystring.h"
-#include "ddlock.h"
+#include <ddlock.h>
+#include <refcounted.hpp>
+#include <mystring.h>
 
 /**
  * @brief File list entry.
@@ -41,7 +41,7 @@ public:
  * Declares interface of notifiable object which
  * receives notifications from a FileList object.
  */
-struct FileListNotify
+struct FileListNotify: public IRefCounted
 {
     virtual bool onNextEntry(const int reason, const FileListEntry& e) = 0;
     virtual bool onAllProcessed() = 0;
@@ -54,7 +54,7 @@ class FileListEntryContainer;
  *
  * Represents a list of files.
  */
-class FileList
+class FileList: public RefCounted
 {
 private:
     FileListNotify* _notify;

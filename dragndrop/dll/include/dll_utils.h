@@ -2,7 +2,6 @@
  * @file dll_utils.h
  * The file contains declaration of utility classes and routines used by DLLs.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLL_UTILS_H__

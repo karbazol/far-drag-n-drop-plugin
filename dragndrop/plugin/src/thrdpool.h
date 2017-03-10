@@ -2,7 +2,6 @@
  * @file: thrdpool.h
  * The file contains declaration for ThreadPool class.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__THRDPOOL_H__

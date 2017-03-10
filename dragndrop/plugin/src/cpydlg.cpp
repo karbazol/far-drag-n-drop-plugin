@@ -1,39 +1,44 @@
-// $Id$
+
+#include <utils.h>
 
 #include "cpydlg.h"
 #include "cperrdlg.h"
+#include "dndguids.h"
 #include "ddlng.h"
-#include "utils.h"
+
+#define ITEM_X1 5
+#define ITEM_X2 44
+#define ITEM_LENGTH (ITEM_X2 - ITEM_X1 + 1)
 
 CopyDialog::CopyDialogItems CopyDialog::copyDialogItemsTemplate =
 {
-        /*  0 */{DI_DOUBLEBOX,3,1,46,13,0,0,0,0,(wchar_t*)MCopy},
-        /*  1 */{DI_TEXT,5, 2,44,0,0,0,0,0,(wchar_t*)MCopyingTheFile},
-        /*  2 */{DI_TEXT,5, 3,44,0,0,0,0,0,L""},
-        /*  3 */{DI_TEXT,5, 4,44,0,0,0,0,0,(wchar_t*)MCopyingTo},
-        /*  4 */{DI_TEXT,5, 5,44,0,0,0,0,0,L""},
-        /*  5 */{DI_TEXT,5, 6,44,0,0,0,0,0,L"\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591"}, // u+2591 0xb0
-        /*  6 */{DI_TEXT,5, 7,44,0,0,0,0,0,L"Total size:"},
-        /*  7 */{DI_TEXT,5, 8,44,0,0,0,0,0,L"\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591"},
-        /*  8 */{DI_TEXT,5, 9,44,0,0,0,0,0,L"\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500"}, // u+2500 0xc4
-        /*  9 */{DI_TEXT,5,10,44,0,0,0,0,0,L""},
-        /* 10 */{DI_TEXT,5,11,44,0,0,0,0,0,L"\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500"}, // u+2500 0xc4
-        /* 11 */{DI_TEXT,5,12,44,0,0,0,0,0,L"Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"}
+        /*  0 */{DI_DOUBLEBOX,ITEM_X1-2,1,ITEM_X2+2,13,0,0,0,0,(wchar_t*)MCopy},
+        /*  1 */{DI_TEXT,ITEM_X1, 2,ITEM_X2,0,0,0,0,0,(wchar_t*)MCopyingTheFile},
+        /*  2 */{DI_TEXT,ITEM_X1, 3,ITEM_X2,0,0,0,0,0,L""},
+        /*  3 */{DI_TEXT,ITEM_X1, 4,ITEM_X2,0,0,0,0,0,(wchar_t*)MCopyingTo},
+        /*  4 */{DI_TEXT,ITEM_X1, 5,ITEM_X2,0,0,0,0,0,L""},
+        /*  5 */{DI_TEXT,ITEM_X1, 6,ITEM_X2,0,0,0,0,0,L"\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591"}, // u+2591 0xb0
+        /*  6 */{DI_TEXT,ITEM_X1, 7,ITEM_X2,0,0,0,0,0,L"Total size:"},
+        /*  7 */{DI_TEXT,ITEM_X1, 8,ITEM_X2,0,0,0,0,0,L"\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591\x2591"},
+        /*  8 */{DI_TEXT,ITEM_X1, 9,ITEM_X2,0,0,0,0,0,L"\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500"}, // u+2500 0xc4
+        /*  9 */{DI_TEXT,ITEM_X1,10,ITEM_X2,0,0,0,0,0,L""},
+        /* 10 */{DI_TEXT,ITEM_X1,11,ITEM_X2,0,0,0,0,0,L"\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500\x2500"}, // u+2500 0xc4
+        /* 11 */{DI_TEXT,ITEM_X1,12,ITEM_X2,0,0,0,0,0,L"Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"}
 };
 
 #define getMyItemId(structItem) getFarDlgItemId(CopyDialogItems,structItem)
 #define NANOSECPERSEC 10000000
 
+const GUID& CopyDialog::Id() const
+{
+    return copyDialogGuid;
+}
+
 CopyDialog::CopyDialog(): FarDialog(), _items(copyDialogItemsTemplate),
     _totalProcessedSize(0), _totalSize(0), _currentProcessedSize(0),
-    _currentSize(0), /*_srcFile(), _destFile(),*/ _filesToProcess(0),
-    _filesProcessed(-1), _fileListProcessed(0), _speed(0)
+    _currentSize(0), _filesToProcess(0),
+    _filesProcessed(-1), _fileListProcessed(0), _timeStart(0)
 {
-    wsprintf(szFilesProcessed, GetMsg(MFilesProcessed), 0, 0);
-
-    _items.lblFilesProcessed.Data = szFilesProcessed;
-
-    _timeStart.QuadPart = 0;
 }
 
 bool CopyDialog::onInit()
@@ -49,6 +54,7 @@ bool CopyDialog::onClose(intptr_t id)
 {
     id;
     /** @todo Ask user are they sure to cancel copy/move operation */
+    TRACE("Copy Dialog is about to be closed with %d code\n", id);
     return true;
 }
 
@@ -57,7 +63,7 @@ bool CopyDialog::onClose(intptr_t id)
  * comma as 'Digit grouping symbol'.
  * I.e. number 999999999 will be converted to "999,999,999".
  */
-static wchar_t* sizeToString(wchar_t* buff, const __int64& value)
+static wchar_t* sizeToString(wchar_t* buff, const int64_t& value)
 {
     wsprintf(buff, L"%I64d", value);
 
@@ -107,18 +113,18 @@ static wchar_t* centerAndFill(wchar_t* buff, size_t size /*of buff including NUL
 
 void CopyDialog::updateTotalSize()
 {
-    wchar_t totalSizeValue[41];
-    wchar_t totalSizeString[41];
+    wchar_t totalSizeValue[] = L"9,223,372,036,854,775,807"; // Maximum value of int64
+    wchar_t totalSizeString[ITEM_LENGTH + 1];
 
     wsprintf(totalSizeString, GetMsg(MTotalSize), sizeToString(totalSizeValue, _totalSize));
 
     postMessage(DM_SETTEXTPTR, getMyItemId(lblTotalSize),
-            (FAR_LPARAM_TYPE)centerAndFill(totalSizeString, LENGTH(totalSizeString), L'\x2500'));
+            centerAndFill(totalSizeString, LENGTH(totalSizeString), L'\x2500'));
 }
 
 void CopyDialog::updateFilesProcessed()
 {
-    wchar_t filesProcessed[41];
+    wchar_t filesProcessed[ITEM_LENGTH + 1];
 
     int processed;
     if (_filesProcessed < 0)
@@ -128,10 +134,10 @@ void CopyDialog::updateFilesProcessed()
 
     wsprintf(filesProcessed, GetMsg(MFilesProcessed), processed, _filesToProcess);
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblFilesProcessed), (FAR_LPARAM_TYPE)filesProcessed);
+    postMessage(DM_SETTEXTPTR, getMyItemId(lblFilesProcessed), filesProcessed);
 }
 
-static int calcPercents(const __int64& value, const __int64& base, int len)
+static int calcPercents(const int64_t& value, const int64_t& base, int len)
 {
     if (!value)
     {
@@ -151,18 +157,17 @@ void CopyDialog::updatePercents()
     int percents;
     if (_fileListProcessed)
     {
-        percents = calcPercents(_totalProcessedSize, _totalSize, 40);
+        percents = calcPercents(_totalProcessedSize, _totalSize, ITEM_LENGTH);
         updateProgressBar(percents, getMyItemId(progressTotal));
     }
 
-    percents = calcPercents(_currentProcessedSize, _currentSize, 40);
+    percents = calcPercents(_currentProcessedSize, _currentSize, ITEM_LENGTH);
     updateProgressBar(percents, getMyItemId(progressCurrent));
 }
 
 void CopyDialog::updateProgressBar(int value, int controlId)
 {
-    /** @todo Get rid of magic numbers. The dialog width maybe variable */
-    wchar_t stringValue[41];
+    wchar_t stringValue[ITEM_LENGTH + 1];
 
     ASSERT(value < LENGTH(stringValue));
 
@@ -177,22 +182,29 @@ void CopyDialog::updateProgressBar(int value, int controlId)
     }
     stringValue[j] = L'\0';
 
-    postMessage(DM_SETTEXTPTR, controlId, (FAR_LPARAM_TYPE)stringValue);
+    postMessage(DM_SETTEXTPTR, controlId, stringValue);
 }
 
 void CopyDialog::updateTimesAndSpeed()
 {
-    if (!_timeStart.QuadPart)
-        GetSystemTimeAsFileTime(reinterpret_cast<LPFILETIME>(&_timeStart));
-    LARGE_INTEGER spent;
+    int64_t spent;
     GetSystemTimeAsFileTime(reinterpret_cast<LPFILETIME>(&spent));
-    spent.QuadPart -= _timeStart.QuadPart;
-
-    LARGE_INTEGER left = {0};
-
-    if (_speed)
+    if (!_timeStart)
     {
-        left.QuadPart = (_totalSize - _totalProcessedSize) / (_speed) * NANOSECPERSEC;
+        _timeStart = spent;
+        spent = 0;
+    }
+    else
+    {
+        spent -= _timeStart;
+    }
+
+    int64_t left = 0;
+    int speed = 0;
+    if (spent && _totalProcessedSize)
+    {
+        left = (_totalSize - _totalProcessedSize) * spent / _totalProcessedSize;
+        speed = static_cast<int>(_totalProcessedSize * NANOSECPERSEC / spent);
     }
 
     SYSTEMTIME spentTime, leftTime;
@@ -206,28 +218,13 @@ void CopyDialog::updateTimesAndSpeed()
             GetMsg(MFileCopyingTimes), // "Time: %.2d:%.2d:%.2d Left: %.2d:%.2d:%.2d %6dKb/s"
             spentTime.wHour, spentTime.wMinute, spentTime.wSecond,
             leftTime.wHour, leftTime.wMinute, leftTime.wSecond,
-            _speed >> 10);
+            // TODO Use specific suffix for large speed
+            speed ? speed >> 10 : 0);
 
-    postMessage(DM_SETTEXTPTR, getMyItemId(lblTimeInfo), (FAR_LPARAM_TYPE)timeString);
+    postMessage(DM_SETTEXTPTR, getMyItemId(lblTimeInfo), timeString);
 }
 
-void CopyDialog::calcSpeed()
-{
-    LARGE_INTEGER now;
-    GetSystemTimeAsFileTime(reinterpret_cast<LPFILETIME>(&now));
-
-    __int64 delta = now.QuadPart - _timeStart.QuadPart;
-    if (delta)
-    {
-        _speed = static_cast<int>(_totalProcessedSize * NANOSECPERSEC / delta);
-    }
-    else
-    {
-        _speed = 1;
-    }
-}
-
-bool CopyDialog::appendFile(const __int64& size, bool lastOne)
+bool CopyDialog::appendFile(const int64_t& size, bool lastOne)
 {
     if (!running())
     {
@@ -253,7 +250,7 @@ bool CopyDialog::appendFile(const __int64& size, bool lastOne)
 }
 
 bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
-        const __int64& size)
+        const int64_t& size)
 {
     if (running())
     {
@@ -265,11 +262,11 @@ bool CopyDialog::nextFile(const wchar_t* src, const wchar_t* dest,
         InterlockedExchange64(&_currentProcessedSize, 0);
         _currentSize = size;
 
-        TruncPathStr(srcFile, 40);
-        TruncPathStr(destFile, 40);
+        TruncPathStr(srcFile, ITEM_LENGTH);
+        TruncPathStr(destFile, ITEM_LENGTH);
 
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (FAR_LPARAM_TYPE)(wchar_t*)srcFile);
-        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (FAR_LPARAM_TYPE)(wchar_t*)destFile);
+        postMessage(DM_SETTEXTPTR, getMyItemId(lblSrcFile), (wchar_t*)srcFile);
+        postMessage(DM_SETTEXTPTR, getMyItemId(lblDestFile), (wchar_t*)destFile);
 
         updateFilesProcessed();
         updatePercents();
@@ -285,7 +282,7 @@ InitDialogItem* CopyDialog::items()
     return reinterpret_cast<InitDialogItem*>(&_items);
 }
 
-int CopyDialog::itemsCount()
+size_t CopyDialog::itemsCount()
 {
     return sizeof(CopyDialogItems)/sizeof(InitDialogItem);
 }
@@ -303,15 +300,6 @@ int CopyDialog::bottom()
 DWORD CopyDialog::flags()
 {
     return 0x10;
-}
-
-// {E1197B18-EB86-45EC-B319-5F1E4C600B65}
-static const GUID CopyDialogGUID =
-{ 0xe1197b18, 0xeb86, 0x45ec,{ 0xb3, 0x19, 0x5f, 0x1e, 0x4c, 0x60, 0xb, 0x65 } };
-
-const GUID* CopyDialog::guid()
-{
-    return &CopyDialogGUID;
 }
 
 bool CopyDialog::onNextEntry(const int /*reason*/, const FileListEntry& e)
@@ -356,14 +344,12 @@ bool CopyDialog::onFileExists(const wchar_t* src, const wchar_t* dest)
     return true;
 }
 
-bool CopyDialog::onFileStep(const __int64& step)
+bool CopyDialog::onFileStep(const int64_t& step)
 {
     if (running())
     {
         _currentProcessedSize += step;
         _totalProcessedSize += step;
-
-        calcSpeed();
 
         updateTimesAndSpeed();
         updatePercents();
@@ -379,17 +365,21 @@ bool CopyDialog::onFileError(const wchar_t* src, const wchar_t* dest, DWORD erro
     if (running())
     {
         // give the _dialog a chance to appear
-#ifdef FAR2
-        while (sendMessage(DM_GETTEXTPTR, 0, 0) == 0)
-#else
-        while (sendMessage(DM_GETFOCUS, 0, 0) == -1)
-#endif
+        while (sendMessage(DM_GETTEXT, 0, 0) == 0)
         {
             Sleep(1);
         }
     }
-    CopyErrorDialog dlg;
-    if (CopyErrorDialog::cancel == dlg.show(src, dest, errorNumber))
+    CopyErrorDialog* dlg = new CopyErrorDialog();
+    if (!dlg)
+    {
+        return false;
+    }
+
+    dlg->addRef();
+    int res = dlg->show(src, dest, errorNumber);
+    dlg->release();
+    if (CopyErrorDialog::cancel == res)
     {
         return true;
     }

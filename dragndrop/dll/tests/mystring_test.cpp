@@ -1,5 +1,5 @@
-#include <tut.h>
-#include <dll/mystring.h>
+#include <tut/tut.hpp>
+#include <mystring.h>
 
 namespace tut
 {
@@ -49,6 +49,14 @@ namespace tut
         MyStringA a("    a");
 
         ensure(lstrip(a) == "a");
+    }
+
+    template<>
+    template<>
+    void MyStringAObject::test<5>()
+    {
+        MyStringA a("12345678 12345678  12345678");
+        ensure(wrapString(a, 8) == "12345678\n12345678\n 12345678");
     }
 }
 

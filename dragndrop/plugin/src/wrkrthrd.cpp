@@ -1,3 +1,5 @@
+#include <oleholder.hpp>
+
 #include "wrkrthrd.h"
 #include "fmtprcsr.h"
 
@@ -33,29 +35,13 @@ HRESULT WorkerThread::execute(IDataObject* obj, const wchar_t* destDir)
 
 DWORD WorkerThread::thread(WorkerThread* This)
 {
-    __try
+    OleHolder oleHolder;
+
+    if (SUCCEEDED(oleHolder.result()))
     {
-        HRESULT hr = OleInitialize(NULL);
-        __try
-        {
-            if (SUCCEEDED(hr))
-            {
-                hr = This->run();
-            }
-        }
-        __finally
-        {
-            delete This;
-
-            OleUninitialize();
-        }
-
+        This->run();
     }
-    __except(UnhandledExceptionFilter(GetExceptionInformation()))
-    {
-        ExitThread(GetExceptionCode());
-    }
-
+    delete This;
     return 0;
 }
 

@@ -2,7 +2,6 @@
  * @file dragging.h
  * Contains declaration of Dragging class
  *
- * $Id$
  */
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DNDPRPR_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DNDPRPR_H__

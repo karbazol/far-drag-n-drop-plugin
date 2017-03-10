@@ -2,7 +2,6 @@
  * @file mycrt.c
  * The file contains a subset of crt routines used by the plugin.
  *
- * $Id$
  */
 
 #include <stdlib.h>
@@ -13,18 +12,7 @@
 
 static HANDLE getMyHeap()
 {
-    ULONG  HeapFragValue = 2;
-    static HANDLE heap = 0;
-    if (!heap)
-    {
-        heap = HeapCreate(HEAP_GENERATE_EXCEPTIONS, 1024*1024, 0);
-        HeapSetInformation(heap,
-                       HeapCompatibilityInformation,
-                       &HeapFragValue,
-                       sizeof(HeapFragValue));
-    }
-
-    return heap;
+    return GetProcessHeap();
 }
 
 #if _MSC_VER >= 1400
@@ -55,11 +43,11 @@ void* realloc(void* p, size_t size)
 {
     if (p)
     {
-        return HeapReAlloc(getMyHeap(), HEAP_GENERATE_EXCEPTIONS, p, size);
+        return HeapReAlloc(getMyHeap(), 0, p, size);
     }
     else
     {
-        return HeapAlloc(getMyHeap(), HEAP_GENERATE_EXCEPTIONS, size);
+        return HeapAlloc(getMyHeap(), 0, size);
     }
 //    return CoTaskMemRealloc(p, size);
 }
@@ -75,18 +63,12 @@ void __cdecl _purecall(
 #undef RtlMoveMemory
 #endif
 
-#ifdef RtlFillMemory
-#undef RtlFillMemory
-#endif
-
 void WINAPI RtlMoveMemory ( void *, const void *, size_t count );
-void WINAPI RtlFillMemory ( void *, size_t, unsigned char );
 
 #ifdef memmove
 #undef memmove
 #endif
 
-#if !defined(_M_X64) || _MSC_VER >= 1900
 void * __cdecl memmove (
         void * dst,
         const void * src,
@@ -102,24 +84,46 @@ void * __cdecl memmove (
     return ret;
 }
 
-#pragma function(memset) // not intrinsic
-void * __cdecl memset(
+#ifdef memcpy
+#undef memcpy
+#endif
+
+#pragma function(memcpy)
+void * __cdecl memcpy (
         void * dst,
-        int c,
+        const void * src,
         size_t count
         )
 {
-    RtlFillMemory(dst, count, c);
-    return dst;
+    void * ret = dst;
+
+    {
+        RtlMoveMemory(dst, src, count);
+    }
+
+    return ret;
 }
+
+#ifdef RtlFillMemory
+#undef RtlFillMemory
 #endif
 
-#ifndef _M_X64
-int main()
-{
-    return 0;
-}
+void WINAPI RtlFillMemory ( void *, size_t, unsigned char );
+
+#ifdef memset
+#undef memset
 #endif
+
+#pragma function(memset)
+void * __cdecl memset (
+        void * dst,
+        int ch,
+        size_t count
+        )
+{
+    RtlFillMemory(dst, count, ch);
+    return dst;
+}
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // _DEBUG

@@ -2,18 +2,18 @@
  * @file dataobj.cpp
  * The contains implementation of DataObject class
  *
- * $Id$
  */
 
 #include <shlobj.h>
 #include <guiddef.h>
-#include "utils.h"
-#include "myunknown.h"
+#include <myshptr.h>
+#include <myunknown.h>
+#include <shutils.h>
+#include <utils.h>
+
 #include "dataobj.h"
 #include "enumfmt.h"
 #include "datacont.h"
-#include "shutils.h"
-#include "myshptr.h"
 
 /**
  * Custom data object used during dragging operation.
@@ -197,6 +197,11 @@ HRESULT createDataObject(const DataContainer& data, IDataObject** dataObject, bo
         return getShellUIObject(data, IID_IDataObject, reinterpret_cast<void**>(dataObject));
 
     *dataObject = new DataObject(data);
+
+    if (!*dataObject)
+    {
+        return E_OUTOFMEMORY;
+    }
 
     (*dataObject)->AddRef();
 

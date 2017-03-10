@@ -2,19 +2,18 @@
  * @file: toolwnd.cpp
  * The file contains implementation of ToolWindow class.
  *
- * $Id$
  */
 
+#include <utils.h>
+#include <dndmsgs.h>
+#include <hldrapi.h>
+
 #include "far.h"
-#include "utils.h"
 #include "toolwnd.h"
 #include "winthrd.h"
 #include "mainthrd.h"
-#include "hldrapi.h"
 #include "configure.hpp"
 #include "dragbmp.h"
-#include "dndmsgs.h"
-#include "hldrapi.h"
 #include "dropprcs.h"
 #include "dataobj.h"
 
@@ -57,11 +56,7 @@ void ToolWindow::onCreate()
     {
         holderApi->windowsCreated(parent(), hwnd());
 
-        Config* config = Config::instance();
-        if (config && config->allowDrop())
-        {
-            holderApi->setHook(true);
-        }
+        holderApi->setHook(true);
     }
 }
 
@@ -395,19 +390,22 @@ LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
 #endif
             TRACE("Dragging starting\n");
             DWORD effects=0;
-#ifdef _DEBUG
-            HRESULT hr =
-#endif
-            DoDragDrop(_data, this, DROPEFFECT_COPY, &effects);
-#ifdef _DEBUG
+            HRESULT hr = DoDragDrop(_data, this, DROPEFFECT_COPY, &effects);
             DUMPERROR(hr);
-#endif
             TRACE("Dragging ended\n");
+            if (hr == DRAGDROP_S_DROP)
+            {
+                MainThread::instance()->callIt([](void*)
+                        {
+                            FarClearSelectionActivePanel(0, FarGetActivePanelItems(true).size());
+                            return (void*)nullptr;
+                        }, nullptr);
+            }
         }
 
         MainThread::instance()->setDragging(false);
 
-        _data = NULL;
+        _data = nullptr;
     }
     else
     {
@@ -422,7 +420,7 @@ LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
 
 void ToolWindow::onDestroy()
 {
-    _dropHelper = NULL;
+    _dropHelper = nullptr;
 
     RevokeDragDrop(hwnd());
     HolderApi::instance()->windowsDestroy(hwnd());
@@ -454,7 +452,7 @@ bool ToolWindow::show()
 
 bool ToolWindow::hide()
 {
-    return ShowWindow(hwnd(), SW_HIDE)?true:false;
+    return !!ShowWindow(hwnd(), SW_HIDE);
 }
 
 HRESULT ToolWindow::DragEnter(IDataObject* obj, DWORD keyState, POINTL pt, DWORD* effect)

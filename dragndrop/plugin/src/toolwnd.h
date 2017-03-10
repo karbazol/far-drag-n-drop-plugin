@@ -2,16 +2,17 @@
  * @file toolwnd.h
  * Contains declaration for ToolWindow class
  *
- * $Id$
+ * $Id: toolwnd.h 77 2011-10-22 20:25:46Z Karbazol $
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__TOOLWND_H__
 #define __KARBAZOL_DRAGNDROP_2_0__TOOLWND_H__
 
 #include <shlobj.h>
-#include "mywnd.h"
-#include "myshptr.h"
-#include "myunknown.h"
+#include <mywnd.h>
+#include <myshptr.h>
+#include <myunknown.h>
+
 #include "datacont.h"
 
 /**

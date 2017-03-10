@@ -1,9 +1,11 @@
 #include <shlwapi.h>
-#include "utils.h"
+
+#include <myshptr.h>
+#include <shutils.h>
+#include <utils.h>
+
 #include "fldsprcs.h"
 #include "fldsitrt.h"
-#include "shutils.h"
-#include "myshptr.h"
 
 HRESULT FileDescriptorProcessor::operator()(IDataObject* obj, DWORD*)
 {

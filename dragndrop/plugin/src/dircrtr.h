@@ -2,12 +2,11 @@
  * @file dircrtr.h
  * The file contains declaration of DirectoryCreator class.
  *
- * $Id$
  */
 #ifndef __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__
 #define __KARBAZOL_DRGNDROP_2_0__DIRCRTR_H__
 
-#include "mystring.h"
+#include <mystring.h>
 
 /**
  * Class to create directories

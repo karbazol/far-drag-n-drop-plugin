@@ -6,7 +6,7 @@
 #define __KARABAZOL_DRAGNDROP_2_0__FARITEM_H__
 
 #include <windows.h>
-#include "growarry.h"
+#include <growarry.h>
 
 /**
  * Array of window handles

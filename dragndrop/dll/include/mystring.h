@@ -2,7 +2,6 @@
  * @file mystring.h
  * The file contains declaration of classes used to represent string data.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__MYSTRING_H__
@@ -158,35 +157,31 @@ StringType substring(const StringType& s, size_t offset,
 template<class StringType>
 StringType wrapString(const StringType& s, size_t maxChars, size_t tabLen=8)
 {
-    tabLen; /** @todo Tabs should be counted too. */
+    tabLen;
     if (!s || StringType::Traits::strlen(s) <= maxChars)
         return s;
 
-    StringType res(s);
+    GrowOnlyArray<StringType> lines;
+    wrapString(s, maxChars, lines, tabLen);
 
-    size_t pos = 0;
-    size_t candidate = 0;
-    size_t begin = 0;
-    StringType::CharType* p = res;
-
-    while (p[pos])
+    size_t resultLength = lines.size() - 1; // Number of LFs
+    size_t i;
+    for (i = 0; i < lines.size(); ++i)
     {
-        if (p[pos] <= 32)
-        {
-            candidate = pos;
-        }
-
-        if (pos - begin > maxChars)
-        {
-            if (candidate > begin)
-            {
-                p[candidate] = *StringType::Traits::lf;
-                begin = candidate+1;
-            }
-        }
-
-        pos++;
+        resultLength += StringType::Traits::strlen(lines[i]);
     }
+    StringType res;
+    res.length(resultLength);
+
+    StringType::CharType* p = res;
+    for (i = 0; i < lines.size(); ++i)
+    {
+        size_t len = StringType::Traits::strlen(lines[i]);
+        memmove(p, lines[i], len*sizeof(*p));
+        p += len;
+        *p++ = *StringType::Traits::lf;
+    }
+    p[-1] = 0;
 
     return res;
 }
@@ -211,11 +206,6 @@ void wrapString(const StringType& s, size_t maxChars,
 
     for (pos = 0; p[pos]; pos++)
     {
-        if (p[pos] <= 32)
-        {
-            candidate = pos;
-        }
-
         if (pos - begin > maxChars)
         {
             if (candidate > begin)
@@ -223,6 +213,11 @@ void wrapString(const StringType& s, size_t maxChars,
                 lines.append(substring(s, begin, candidate - begin));
                 begin = candidate + 1;
             }
+        }
+
+        if (p[pos] == 32)
+        {
+            candidate = pos;
         }
     }
 

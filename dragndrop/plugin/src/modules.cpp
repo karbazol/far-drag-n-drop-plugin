@@ -2,12 +2,12 @@
  * @file modules.cpp
  * Contains implementation of modules walker classes.
  *
- * $Id$
  */
+
+#include <utils.h>
 
 #include "modules.hpp"
 #include "protect.h"
-#include "utils.h"
 
 /**
  * @brief MemProtect wrappers

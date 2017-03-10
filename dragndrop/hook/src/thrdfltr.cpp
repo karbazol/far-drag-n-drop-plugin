@@ -1,7 +1,8 @@
+#include <utils.h>
+#include <hldrapi.h>
+#include <dndcmnct.h>
+
 #include "thrdfltr.h"
-#include "hldrapi.h"
-#include "utils.h"
-#include "dndcmnct.h"
 
 void ThreadFilter::handle(MSG& msg)
 {
@@ -56,6 +57,8 @@ void ThreadFilter::checkDndUnderMouse(HWND msgHwnd)
 
     if (res == msgHwnd)
     {
+        // Cursor is over the window that recieves input.
+        // No need to check further
         return;
     }
 

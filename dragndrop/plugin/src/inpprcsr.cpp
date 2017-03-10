@@ -2,13 +2,14 @@
  * @file inpprcsr.cpp
  * The file contains implementation of InputProcessor class.
  *
- * $Id$
  */
 
 #include <windows.h>
-#include "utils.h"
+
+#include <utils.h>
+#include <dll.h>
+
 #include "inpprcsr.h"
-#include "dll.h"
 #include "dragging.h"
 #include "mainthrd.h"
 #include "configure.hpp"
@@ -191,7 +192,13 @@ bool InputProcessor::checkMouseAndShowPopupMenu(INPUT_RECORD& record)
             _left = 0;
         }
 
-        if (record.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED)
+        // If we are not going to show the pop-up menu don't change dwButtonState.
+        if (!Config::instance()->showMenu()) 
+        {
+            return false;
+        }
+
+        if (record.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED)                                       
         {
             _right++;
             if (!_left)
@@ -227,7 +234,10 @@ bool InputProcessor::checkKeyBoard(INPUT_RECORD& record)
     Config* config = Config::instance();
     if (config && (record.Event.MouseEvent.dwControlKeyState & config->checkKey())
             != config->checkKey())
+    {
+        TRACE("CheckKeyBoard return true for %d\n", record.Event.MouseEvent.dwControlKeyState);
         return true;
+    }
     return false;
 }
 
@@ -251,7 +261,7 @@ bool InputProcessor::checkMouseButtons(INPUT_RECORD& record)
 
 bool InputProcessor::checkEvent(INPUT_RECORD& record)
 {
-    if (record.EventType != MOUSE_EVENT && record.EventType != KEY_EVENT)
+    if (record.EventType != MOUSE_EVENT /*&& record.EventType != KEY_EVENT*/)
         return true;
     return false;
 }
@@ -335,20 +345,22 @@ static BOOL ProcessDirectInput(HANDLE console, PINPUT_RECORD buffer,
         DWORD buffLength, LPDWORD readCount,
         bool isUnicode, bool removeFromInput)
 {
+    BOOL res;
     if (removeFromInput)
     {
         if (isUnicode)
-            return ReadConsoleInputW(console, buffer, buffLength, readCount);
+            res = ReadConsoleInputW(console, buffer, buffLength, readCount);
         else
-            return ReadConsoleInputA(console, buffer, buffLength, readCount);
+            res = ReadConsoleInputA(console, buffer, buffLength, readCount);
     }
     else
     {
         if (isUnicode)
-            return PeekConsoleInputW(console, buffer, buffLength, readCount);
+            res = PeekConsoleInputW(console, buffer, buffLength, readCount);
         else
-            return PeekConsoleInputA(console, buffer, buffLength, readCount);
+            res = PeekConsoleInputA(console, buffer, buffLength, readCount);
     }
+    return res;
 }
 
 /**

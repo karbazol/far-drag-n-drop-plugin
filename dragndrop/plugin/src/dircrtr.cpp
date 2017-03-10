@@ -1,4 +1,3 @@
-// $Id$
 #include <windows.h>
 #include "dircrtr.h"
 

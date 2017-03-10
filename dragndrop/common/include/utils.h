@@ -2,7 +2,6 @@
  * @file utils.h
  * Contains declarations of misc utils.
  * 
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__UTILS_H__

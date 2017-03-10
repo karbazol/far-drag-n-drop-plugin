@@ -2,11 +2,10 @@
  * @file myunknown.cpp
  * The file contains implementation for Unknown class.
  *
- * $Id$
  */
 
-#include "myunknown.h"
-#include "utils.h"
+#include <myunknown.h>
+#include <utils.h>
 
 /**
  * Returns pointers to supported interfaces. 

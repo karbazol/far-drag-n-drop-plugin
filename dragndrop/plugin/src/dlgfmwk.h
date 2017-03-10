@@ -2,14 +2,14 @@
  * @file dlgfmwk.h
  * Contains declaration of RunningDialogs class.
  *
- * $Id$
  */
 
 #ifndef __KARBAZOL_DRAGNDROP_2_0__DLGFMWK_H__
 #define __KARBAZOL_DRAGNDROP_2_0__DLGFMWK_H__
 
+#include <ddlock.h>
+
 #include "fardlg.h"
-#include "ddlock.h"
 
 class DialogEntry;
 class ActiveDialog;
@@ -25,9 +25,9 @@ public:
     struct Message
     {
         HANDLE h;
-        FAR_WPARAM_TYPE message;
-        FAR_WPARAM_TYPE param1;
-        FAR_LPARAM_TYPE param2;
+        intptr_t message;
+        intptr_t param1;
+        void* param2;
         Message(): h(0), message(0), param1(0), param2(0){}
     };
 private:
@@ -38,10 +38,10 @@ private:
     RunningDialogs();
     ~RunningDialogs();
     static void kill(RunningDialogs* p);
-    FAR_RETURN_TYPE processPostedSetText(HANDLE dlg, FAR_WPARAM_TYPE id, const wchar_t* s);
+    intptr_t processPostedSetText(HANDLE dlg, intptr_t id, const wchar_t* s);
     void processPostedDlgMessages(FarDialog* dlg);
     FarDialog* getDialog(HANDLE handle);
-    FAR_RETURN_TYPE processPostedMessage(HANDLE dlg, FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param0, FAR_LPARAM_TYPE param1);
+    intptr_t processPostedMessage(HANDLE dlg, intptr_t msg, intptr_t param0, void* param1);
 public:
     static RunningDialogs* instance();
 
@@ -50,14 +50,14 @@ public:
     bool lockDialog(FarDialog* dlg);
     void unlockDialog(FarDialog* dlg);
 
-    FAR_RETURN_TYPE sendSafeMessage(HANDLE handle, FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param0, FAR_LPARAM_TYPE param1);
+    intptr_t sendSafeMessage(HANDLE handle, intptr_t msg, intptr_t param0, void* param1);
 
-    FAR_RETURN_TYPE sendMessage(FarDialog* dlg, FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param0, FAR_LPARAM_TYPE param1);
-    void postMessage(FarDialog* dlg, FAR_WPARAM_TYPE msg, FAR_WPARAM_TYPE param0, FAR_LPARAM_TYPE param1);
+    intptr_t sendMessage(FarDialog* dlg, intptr_t msg, intptr_t param0, void* param1);
+    void postMessage(FarDialog* dlg, intptr_t msg, intptr_t param0, void* param1);
 
     void notifyDialog(FarDialog* dlg, bool shown);
 
-    FAR_RETURN_TYPE processMessages(Message* msg);
+    LONG_PTR processMessages(Message* msg);
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__DLGFMWK_H__

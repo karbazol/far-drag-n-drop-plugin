@@ -2,14 +2,14 @@
  * @file mystring.cpp
  * Contains code for MyString classes
  *
- * $Id$
  */
 
 #include <windows.h>
 #include <shlwapi.h>
-#include "mystring.h"
-#include "dll.h"
-#include "ddlock.h"
+
+#include <ddlock.h>
+#include <dll.h>
+#include <mystring.h>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
