@@ -27,12 +27,6 @@ struct ConfigDlgItems
     InitDialogItem radioRightCtl;
     InitDialogItem radioRightAlt;
 
-    InitDialogItem sepPanels;
-    InitDialogItem edtPixelsPassed;
-    InitDialogItem txtPixelsPassed0;
-    InitDialogItem txtPixelsPassed1;
-
-    InitDialogItem sepOptions;
     InitDialogItem checkUseShellCopy;
     InitDialogItem checkShowMenu;
 
@@ -170,25 +164,20 @@ public:
 
 ConfigDlgItems ConfigDlg::_items =
 {
-    /* 00 */{DI_DOUBLEBOX,3,1,46,14,0,0,0,0,(wchar_t*)MConfigTitle},
+    /* 00 */{DI_DOUBLEBOX,3,1,46,10,0,0,0,0,(wchar_t*)MConfigTitle},
     /* 01 */{DI_CHECKBOX,5,2,0,0,0,0,0,0,(wchar_t *)MUseKeyToStartDND},
     /* 02 */{DI_RADIOBUTTON,5,3,0,0,0,0,(unsigned int)DIF_GROUP|DIF_DISABLE,0,(wchar_t *)MLeftCtl},
     /* 03 */{DI_RADIOBUTTON,5,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MLeftAlt},
     /* 04 */{DI_RADIOBUTTON,5,5,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MShift},
     /* 05 */{DI_RADIOBUTTON,22,3,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MRightCtl},
     /* 06 */{DI_RADIOBUTTON,22,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MRightAlt},
-    {DI_TEXT,5,6,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MPanels},
-        /* 08 */{DI_EDIT,5,7,7,0,0,0,0,0,L"0"},
-        /* 09 */{DI_TEXT,9,7,37,0,0,0,0,0,(wchar_t *)MPixelsPassed},
-        /* 10 */{DI_TEXT,9,8,37,0,0,0,0,0,(wchar_t *)MPixelsPassed2},
-    {DI_TEXT,5,9,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MOptions},
-    {DI_CHECKBOX,5,10,0,0,0,0,0,0,(wchar_t *)MUseShellCopy},
-    {DI_CHECKBOX,5,11,0,0,0,0,0,0,(wchar_t *)MShowMenu},
+    {DI_CHECKBOX,5,6,0,0,0,0,0,0,(wchar_t *)MUseShellCopy},
+    {DI_CHECKBOX,5,7,0,0,0,0,0,0,(wchar_t *)MShowMenu},
 
     // ------- Buttons -------
-    {DI_TEXT,5,12,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,L""},
-    {DI_BUTTON,0,13,0,0,0,0,(unsigned int)DIF_CENTERGROUP,1,(wchar_t *)MOK},
-    {DI_BUTTON,0,13,0,0,0,0,(unsigned int)DIF_CENTERGROUP,0,(wchar_t *)MCancel}
+    {DI_TEXT,5,8,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,L""},
+    {DI_BUTTON,0,9,0,0,0,0,(unsigned int)DIF_CENTERGROUP,1,(wchar_t *)MOK},
+    {DI_BUTTON,0,9,0,0,0,0,(unsigned int)DIF_CENTERGROUP,0,(wchar_t *)MCancel}
 };
 
 /**
