@@ -3,12 +3,13 @@
 
 DirectoryCreator::DirectoryCreator(const wchar_t* dir): _root(dir)
 {
-    _root += L"\\";
-
-    for (wchar_t* p = _root; *p; p++)
+    wchar_t* p;
+    for (p = _root; *p; p++)
     {
         if (*p == L'/') *p = L'\\';
     }
+    if (p != _root && p[-1] != L'\\')
+        _root += L"\\";
 }
 
 bool DirectoryCreator::ensureDirectory(const wchar_t* subdir, unsigned int attr) const
