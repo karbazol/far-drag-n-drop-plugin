@@ -18,7 +18,9 @@ SetOptionDefault('CONFIG', 'release')
 SetOptionDefault('CPPDEFINES', [])
 
 # The plugin uses unicode inside. When MBCS is used it is specified explicitly
-SetOptionDefault('CPPDEFINES', ['UNICODE', '_UNICODE'])
+SetOptionDefault('CPPDEFINES', ['UNICODE', '_UNICODE'
+##        , 'ENABLE_TRACE' # Uncomment this line to enable logging in Release config
+])
 
 SetOptionDefault('INSTALL_ROOT', '#install')
 SetOptionDefault('INSTALL_BIN', '${INSTALL_ROOT}/${CONFIG}/drgndrop/')
