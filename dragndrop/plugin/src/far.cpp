@@ -11,6 +11,9 @@
 #include <utils.h>
 #include <dll.h>
 #include <mystring.h>
+#ifndef PRODUCT_VERSION
+#include <version.h>
+#endif
 
 #include "ddlng.h"
 

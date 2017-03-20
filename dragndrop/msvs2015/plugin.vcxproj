@@ -99,7 +99,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>TARGET_ARCH_x86;WIN32;_DEBUG;IAsyncOperation=IDataObjectAsyncCapability;IID_IAsyncOperation=IID_IDataObjectAsyncCapability;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);PRODUCT_VERSION=2,0,0,80</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TARGET_ARCH_x86;WIN32;_DEBUG;IAsyncOperation=IDataObjectAsyncCapability;IID_IAsyncOperation=IID_IDataObjectAsyncCapability;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>generated;..\common\include;..\dll\include;..\hook\include;..\..\farheaders</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
@@ -120,7 +120,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>TARGET_ARCH_x86_64;_DEBUG;_WINDOWS;_USRDLL;IAsyncOperation=IDataObjectAsyncCapability;IID_IAsyncOperation=IID_IDataObjectAsyncCapability;%(PreprocessorDefinitions);PRODUCT_VERSION=2,0,0,80</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TARGET_ARCH_x86_64;_DEBUG;_WINDOWS;_USRDLL;IAsyncOperation=IDataObjectAsyncCapability;IID_IAsyncOperation=IID_IDataObjectAsyncCapability;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>generated;..\common\include;..\dll\include;..\hook\include;..\..\farheaders</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
@@ -143,7 +143,7 @@
       <Optimization>MinSpace</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;TARGET_ARCH_x86;NDEBUG;_WINDOWS;_USRDLL;IAsyncOperation=IDataObjectAsyncCapability;IID_IAsyncOperation=IID_IDataObjectAsyncCapability;%(PreprocessorDefinitions);PRODUCT_VERSION=2,0,0,80</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;TARGET_ARCH_x86;NDEBUG;_WINDOWS;_USRDLL;IAsyncOperation=IDataObjectAsyncCapability;IID_IAsyncOperation=IID_IDataObjectAsyncCapability;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>generated;..\common\include;..\dll\include;..\hook\include;..\..\farheaders</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ExceptionHandling>false</ExceptionHandling>
@@ -179,7 +179,7 @@
       <Optimization>MinSpace</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>TARGET_ARCH_x86_64;NDEBUG;_WINDOWS;_USRDLL;IAsyncOperation=IDataObjectAsyncCapability;IID_IAsyncOperation=IID_IDataObjectAsyncCapability;%(PreprocessorDefinitions);PRODUCT_VERSION=2,0,0,80</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TARGET_ARCH_x86_64;NDEBUG;_WINDOWS;_USRDLL;IAsyncOperation=IDataObjectAsyncCapability;IID_IAsyncOperation=IID_IDataObjectAsyncCapability;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>generated;..\common\include;..\dll\include;..\hook\include;..\..\farheaders</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ExceptionHandling>false</ExceptionHandling>

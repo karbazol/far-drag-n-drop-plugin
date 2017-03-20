@@ -35,30 +35,30 @@ def lngBuilder(target, source, env):
         # Override encoding with one from env
         templ.ENCODING = env.get('ENCODING', templ.ENCODING)
         assert target[index].name == templ.HEADER_NAME
-        header = open(target[index].abspath, "w", encoding = 'mbcs')
+        header = open(target[index].abspath, "w")
         index += 1
-        print >> header, templ.HEADER
-        print >> header, "enum {"
+        header.write('\n'.join(templ.HEADER.splitlines()) + '\n\n')
+        header.write("enum {\n")
         lngs = []
         for name, lng, desc in templ.LANGUAGES:
             assert target[index].name == name
             file = open(target[index].abspath, "w", encoding = templ.ENCODING)
             if templ.ENCODING.lower() == 'utf-8':
                 os.write(file.fileno(), '\xef\xbb\xbf')
-            print >> file, u".Language=%s,%s\n" % (lng, desc)
+            file.write(u".Language=%s,%s\n\n" % (lng, desc))
             lngs.append(file)
             index += 1
 
         for item in templ.ITEMS:
             i = 0
-            print >> header, u"\t%s," % item[i]
+            header.write(u"\t%s,\n" % item[i])
             for lng in lngs:
                 i += 1
-                print >> lng, u'"%s"' % item[i]
+                lng.write(u'"%s"\n' % item[i])
         for lng in lngs:
             lng.close()
-        print >> header, "\t};"
-        print >> header, templ.FOOTER
+        header.write("\t};\n")
+        header.write('\n'.join(templ.FOOTER.splitlines()) + '\n\n')
         header.close()
 
     return None

@@ -9,7 +9,36 @@ from parts import *
 SetOptionDefault('COMPANY_NAME', 'Eugene Leskinen')
 SetOptionDefault('PRODUCT_NAME', 'Drag & drop plug-in for FAR manage')
 SetOptionDefault('LEGAL_COPYRIGHT', '2005-2017 Eugene Leskinen')
-SetOptionDefault('PRODUCT_VERSION_STRING', '2.0.0.80')
+SetOptionDefault('PRODUCT_VERSION_STRING', '3.0.81.4700')
+
+# Need to generate version.h file to be used by MSVC projects:
+VERSION_H_TEMPLATE="""
+#define PRODUCT_VERSION $PRODUCT_VERSION
+#define PRODUCT_VERSION_STRING "$PRODUCT_VERSION_STRING"
+#define FILE_VERSION PRODUCT_VERSION
+#define FILE_VERSION_STRING PRODUCT_VERSION_STRING
+
+#define COMPANY_NAME "$COMPANY_NAME"
+#define PRODUCT_NAME "$PRODUCT_NAME"
+#define LEGAL_COPYRIGHT "$LEGAL_COPYRIGHT"
+/* file automagically generated */
+"""
+
+def version_h_action(target, source, env):
+    with open(str(target[0]), "w") as target_file:
+        target_file.write(env.subst("$VERSION_H_TEMPLATE") + '\n')
+
+Builder(
+    action=Action(
+        version_h_action,
+        cmdstr='Generating $TARGET',
+        varlist=['PRODUCT_VERSION', 'PRODUCT_VERSION_STRING',
+                 'COMPANY_NAME', 'PRODUCT_NAME', 'LEGAL_COPYRIGHT',
+                 'VERSION_H_TEMPLATE']
+        )
+    )(DefaultEnvironment(), 'msvs2015/generated/version.h', [],
+        VERSION_H_TEMPLATE=VERSION_H_TEMPLATE)
+Alias('build::', Dir('msvs2015/generated'))
 
 # Enable smart logging
 SetOptionDefault('LOGGER', '$TEXT_LOGGER')
@@ -63,6 +92,7 @@ Part(
     parts_file='texts/texts.parts',
     platform_independent=True,
     package_group='plugin',
+    ADDITIONAL_DDLNG='#msvs2015/generated/ddlng.h'
     )
 Part(
     alias='tut',
