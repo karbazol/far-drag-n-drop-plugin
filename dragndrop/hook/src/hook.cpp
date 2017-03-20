@@ -120,10 +120,18 @@ class HookImpl: public Hook
 
     static HookImpl* instance()
     {
-        static HookImpl* p = 0;
+        static HookImpl * volatile p = 0;
         if (!p)
         {
-            p = new HookImpl();
+            HookImpl* newHookImpl = new HookImpl();
+            HookImpl* result = reinterpret_cast<HookImpl*>(
+                    InterlockedCompareExchangePointer(reinterpret_cast<volatile PVOID*>(&p), newHookImpl, 0));
+            if (result)
+            {
+                delete newHookImpl;
+                return result;
+            }
+
             if (p)
             {
                 p->_tlsId = TlsAlloc();
