@@ -348,7 +348,7 @@ PluginPanelItemsW FarGetPanelItems(bool active, bool selected)
         HANDLE h = active?PANEL_ACTIVE:PANEL_PASSIVE;
         FILE_CONTROL_COMMANDS command = selected?FCTL_GETSELECTEDPANELITEM:FCTL_GETPANELITEM;
 
-        PanelInfo pi;
+        PanelInfo pi = {sizeof(pi)};
 
         if (theFar.PanelControl(h, FCTL_GETPANELINFO, 0, &pi))
         {

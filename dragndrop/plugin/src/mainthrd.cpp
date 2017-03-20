@@ -209,7 +209,7 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
     pt.x = pt.x * ci.srWindow.Right / rect.right;
     pt.y = pt.y * (ci.srWindow.Bottom - ci.srWindow.Top + 1) / rect.bottom;
 
-    PanelInfo info;
+    PanelInfo info = {sizeof(info)};
     if (FarGetActivePanelInfo(info))
     {
         if (pt.x > info.PanelRect.left && pt.x < info.PanelRect.right &&

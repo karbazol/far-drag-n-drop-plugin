@@ -75,7 +75,7 @@ bool Dragging::isReadyForDragging()
     if (!FarGetWindowInfo(wi) || wi.Type != WTYPE_PANELS)
         return false;
 
-    PanelInfo info;
+    PanelInfo info = {sizeof(info)};
     if (!FarGetActivePanelInfo(info) || info.PluginHandle && !(info.Flags & PFLAGS_REALNAMES))
         return false;
 
@@ -110,7 +110,7 @@ bool Dragging::start()
         return false;
     }
 
-    PanelInfo info;
+    PanelInfo info = {sizeof(info)};
     if (!FarGetActivePanelInfo(info) || info.PluginHandle && !(info.Flags & PFLAGS_REALNAMES))
     {
         return false;
