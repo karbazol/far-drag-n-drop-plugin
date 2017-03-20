@@ -212,7 +212,6 @@
     <ClInclude Include="..\plugin\src\datacont.h" />
     <ClInclude Include="..\plugin\src\dataobj.h" />
     <ClInclude Include="..\plugin\src\dircrtr.h" />
-    <ClInclude Include="..\plugin\src\dlgfmwk.h" />
     <ClInclude Include="..\plugin\src\dndguids.h" />
     <ClInclude Include="..\plugin\src\dragbmp.h" />
     <ClInclude Include="..\plugin\src\dragging.h" />
@@ -244,7 +243,6 @@
     <ClCompile Include="..\plugin\src\datacont.cpp" />
     <ClCompile Include="..\plugin\src\dataobj.cpp" />
     <ClCompile Include="..\plugin\src\dircrtr.cpp" />
-    <ClCompile Include="..\plugin\src\dlgfmwk.cpp" />
     <ClCompile Include="..\plugin\src\dndguids.c" />
     <ClCompile Include="..\plugin\src\dragbmp.cpp" />
     <ClCompile Include="..\plugin\src\dragging.cpp" />
