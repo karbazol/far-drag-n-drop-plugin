@@ -8,6 +8,10 @@ if not env.get('UNICODE'):
 env.Lng([], 'dndlng.py')
 env.SdkInclude('ddlng.h')
 env.InstallBin('dndrus.lng')
+try:
+    t = env.CCopyAs(env['ADDITIONAL_DDLNG'], 'ddlng.h')
+except KeyError:
+    pass
 env.InstallBin('dndeng.lng')
 
 # vim: set et ts=4 sw=4 ai ft=python :
