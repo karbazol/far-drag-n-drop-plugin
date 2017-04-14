@@ -313,7 +313,7 @@ bool CopyDialog::onNextEntry(const int /*reason*/, const FileListEntry& e)
     size.LowPart  = e.data().nFileSizeLow;
     size.HighPart = e.data().nFileSizeHigh;
 
-    if (FILE_ATTRIBUTE_DIRECTORY != (e.data().dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    if (e.type() == FileListEntry::File
             && !appendFile(size.QuadPart, false))
         return false;
 

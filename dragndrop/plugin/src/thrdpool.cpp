@@ -11,7 +11,7 @@ public:
         delete p;
     }
 
-    HRESULT newThread(IDataObject* obj, const wchar_t* destDir)
+    HRESULT newThread(IDataObject* obj, const wchar_t* destDir, DWORD action)
     {
         WorkerThread* thread = new WorkerThread();
 
@@ -20,7 +20,7 @@ public:
             return E_OUTOFMEMORY;
         }
 
-        return thread->execute(obj, destDir);
+        return thread->execute(obj, destDir, action);
     }
 
     void shutDown()

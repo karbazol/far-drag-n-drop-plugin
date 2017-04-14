@@ -24,13 +24,14 @@ private:
     MyStringW _dir;
     IStream* _stream;
     ShPtr<IDataObject> _obj;
+    DWORD _action;
     static DWORD WINAPI thread(WorkerThread* This);
     HRESULT run();
     HRESULT unpack();
 public:
-    WorkerThread(): _dir(), _stream(0), _obj(){}
+    WorkerThread(): _dir(), _stream(0), _obj(), _action(DROPEFFECT_NONE) {}
     ~WorkerThread(){}
-    HRESULT execute(IDataObject* obj, const wchar_t* destDir);
+    HRESULT execute(IDataObject* obj, const wchar_t* destDir, DWORD action);
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__WRKRTHRD_H__

@@ -274,6 +274,24 @@ ITEMS = [
         "MRetry",
         u"Повторить",
         "&Retry"
+    ),
+
+    (
+        "MCopyVerb",
+        u"Копировать",
+        "Copy"
+    ),
+
+    (
+        "MMoveVerb",
+        u"Переместить",
+        "Move"
+    ),
+
+    (
+        "MLinkVerb",
+        u"Создать ярлык",
+        "Link"
     )
 ]
 

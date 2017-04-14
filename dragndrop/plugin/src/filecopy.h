@@ -50,16 +50,18 @@ private:
     static DWORD CALLBACK winCallBack(LARGE_INTEGER totalSize, LARGE_INTEGER transferred,
             LARGE_INTEGER streamSize, LARGE_INTEGER streamBytesTransferred,
             DWORD streamNumber, DWORD dwCallBackReason, HANDLE hSourcefile,
-            HANDLE hDestinationFile, FileCopier* This);
+            HANDLE hDestinationFile, PVOID param);
     bool doCopy();
+    bool doMove();
 public:
     /**
      * @param[in] src points to the name of source file.
      * @param[in] dest points to the name of destenation file.
      * @param[in] p is optional and points to instance of FileCopyNotify to receive
      *           notifications during file copy/move operation.
+     * @param[in] move is true for move operation, false for copy operation
      */
-    FileCopier(const wchar_t* src, const wchar_t* dest, FileCopyNotify* p = NULL);
+    FileCopier(const wchar_t* src, const wchar_t* dest, FileCopyNotify* p = NULL, bool move = false);
     ~FileCopier();
 
     /**

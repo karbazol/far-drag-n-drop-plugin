@@ -26,6 +26,8 @@ private:
     ShPtr<IDropTargetHelper> _dropHelper;
     ShPtr<IContextMenu2> _menu2;
     ShPtr<IContextMenu3> _menu3;
+    DWORD _possibleDropActions;
+    DWORD _dropKeyState;
     int _mouseCounter;
     void keyStateToEffect(DWORD keyState, DWORD& effect);
 protected:

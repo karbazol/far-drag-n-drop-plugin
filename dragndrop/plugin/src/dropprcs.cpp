@@ -56,26 +56,29 @@ HRESULT DropProcessor::processDrop(IDataObject* obj, DWORD* effect, const wchar_
     return E_INVALIDARG;
 }
 
-HRESULT DropProcessor::canProcess(IDataObject* _data)
+DWORD DropProcessor::canProcess(IDataObject* _data)
 {
-    CLIPFORMAT _supported[] =
+    struct {
+        CLIPFORMAT _format;
+        DWORD _actions;
+    } _supported[] =
     {
-        CF_HDROP,
-        CF_FILEDESCRIPTORW,
-        CF_FILEDESCRIPTORA,
+        {CF_HDROP, DROPEFFECT_COPY | DROPEFFECT_MOVE | DROPEFFECT_LINK},
+        {CF_FILEDESCRIPTORW, DROPEFFECT_COPY | DROPEFFECT_MOVE},
+        {CF_FILEDESCRIPTORA, DROPEFFECT_COPY | DROPEFFECT_MOVE},
     };
 
     size_t i;
     for (i = 0; i < LENGTH(_supported); i++)
     {
-        FORMATETC fmt = {_supported[i], NULL, DVASPECT_CONTENT, (LONG)-1, (DWORD)-1};
+        FORMATETC fmt = {_supported[i]._format, NULL, DVASPECT_CONTENT, (LONG)-1, (DWORD)-1};
         if (SUCCEEDED(_data->QueryGetData(&fmt)))
-            return S_OK;
+            return _supported[i]._actions;
     }
-    return S_FALSE;
+    return DROPEFFECT_NONE;
 }
 
-HRESULT DropProcessor::handleAsync(IDataObject* obj, DWORD* /*effect*/, const wchar_t* destDir)
+HRESULT DropProcessor::handleAsync(IDataObject* obj, DWORD* effect, const wchar_t* destDir)
 {
     HRESULT hr;
 
@@ -99,7 +102,7 @@ HRESULT DropProcessor::handleAsync(IDataObject* obj, DWORD* /*effect*/, const wc
         return E_OUTOFMEMORY;
     }
 
-    hr = threadPool->newThread(obj, destDir);
+    hr = threadPool->newThread(obj, destDir, *effect);
 
     return hr;
 }

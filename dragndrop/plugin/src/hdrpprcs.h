@@ -12,11 +12,13 @@ class HdropProcessor: public FormatProcessor
 {
 private:
     HdropProcessor(): FormatProcessor(){}
-    HRESULT shellCopyHDrop(MyStringW& files);
-    HRESULT farCopyHDrop(MyStringW& files);
+    HRESULT shellCopyOrMoveHDrop(MyStringW& files, bool move);
+    HRESULT farCopyOrMoveHDropRecursively(MyStringW& files, bool move);
+    HRESULT farMoveHDrop(MyStringW& files);
+    HRESULT shellLinkHDrop(MyStringW& files);
     bool initStringInfo(MyStringW& s, HGLOBAL hDrop);
     HRESULT processDir(const FileListEntry& e);
-    HRESULT processFile(const FileListEntry& e, CopyDialog* dialog);
+    HRESULT processFile(const FileListEntry& e, CopyDialog* dialog, bool move);
 public:
     HRESULT operator()(IDataObject*, DWORD*);
     static inline FormatProcessor* create(){return new HdropProcessor();}
