@@ -8,6 +8,46 @@
 #include <utils.h>
 
 #ifdef _DEBUG
+/**
+ * Assert macro support function
+ */
+void DbgAssert(const char* pCondition,const char* pFileName, int iLine)
+{
+    char szInfo[4096]; // 4096 is the max buffer wsprintf can accept
+    wsprintfA(szInfo, "%s \nAt line %d of %s\nContinue? (Cancel to debug)",
+        pCondition, iLine, pFileName);
+    INT MsgId = MessageBoxA(NULL,szInfo,"ASSERT Failed",
+        MB_SYSTEMMODAL |
+        MB_ICONHAND |
+        MB_YESNOCANCEL |
+        MB_SETFOREGROUND);
+    switch (MsgId)
+    {
+    case IDNO:              /* Kill the application */
+
+        FatalAppExitA(FALSE, "Application terminated");
+        break;
+
+    case IDCANCEL:          /* Break into the debugger */
+        {
+            __try
+            {
+                DebugBreak();
+            }
+            __except(UnhandledExceptionFilter(GetExceptionInformation()))
+            {
+            }
+        }
+        break;
+
+    case IDYES:             /* Ignore assertion continue execution */
+        break;
+    }
+}
+#endif
+
+
+#if defined(_DEBUG)||defined(ENABLE_TRACE)
 static char debugProcessName[4096]={0};
 static char* processName=0;
 static char debugModuleName[4096]={0};
@@ -153,43 +193,6 @@ void DbgTrace(const char* lpszFormat,...)
             p->pBuff = p->buff0 + lstrlenA(p->buff0);
             pN = StrChrA(p->buff0, '\n');
         }
-    }
-}
-
-/**
- * Assert macro support function
- */
-void DbgAssert(const char* pCondition,const char* pFileName, int iLine)
-{
-    char szInfo[4096]; // 4096 is the max buffer wsprintf can accept
-    wsprintfA(szInfo, "%s \nAt line %d of %s\nContinue? (Cancel to debug)",
-        pCondition, iLine, pFileName);
-    INT MsgId = MessageBoxA(NULL,szInfo,"ASSERT Failed",
-        MB_SYSTEMMODAL |
-        MB_ICONHAND |
-        MB_YESNOCANCEL |
-        MB_SETFOREGROUND);
-    switch (MsgId)
-    {
-    case IDNO:              /* Kill the application */
-
-        FatalAppExitA(FALSE, "Application terminated");
-        break;
-
-    case IDCANCEL:          /* Break into the debugger */
-        {
-            __try
-            {
-                DebugBreak();
-            }
-            __except(UnhandledExceptionFilter(GetExceptionInformation()))
-            {
-            }
-        }
-        break;
-
-    case IDYES:             /* Ignore assertion continue execution */
-        break;
     }
 }
 

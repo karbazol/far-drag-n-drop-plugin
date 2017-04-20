@@ -13,9 +13,12 @@ env.Append(
     CPPPATH=['#/../common_${A_OR_U}', '.', 'src'],
     CXXFLAGS=['/EHsc', '/GR'],
     CPPDEFINES=['_FAR_USE_FARFINDDATA'],
-#    LIBS=['shell32', 'user32', 'ole32', 'gdi32', 'shlwapi', 'advapi32',
-#        'kernel32', 'uuid'],
     )
+
+env.Replace(
+        CXXFLAGS=[x for x in env.subst_list('$CXXFLAGS')[0] if not x in ['/EHs-', '/EHc-', '/GR-']] + ['/EHsc', '/GR'],
+        LINKFLAGS=[x for x in env.subst_list('$LINKFLAGS')[0] if str(x).lower() != '/nodefaultlib'],
+        LIBEXS=[])
 
 env.UnitTest('configure_test', ['tests/configure_test.cpp', 'src/configure.cpp', 'tests/configure_stubs.cpp'], make_pdb = True)
 

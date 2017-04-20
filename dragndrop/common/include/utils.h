@@ -25,8 +25,27 @@ void* getEveryOneDescriptor();
 void freeEveryOneDescriptor(void*);
 
 #ifdef _DEBUG
-void DbgTrace(const char*,...);
 void DbgAssert(const char* pCondition,const char* pFileName, int iLine);
+#ifndef ASSERT
+
+/**
+ * Plug-in's defination of assertion macro.
+ */
+#define ASSERT(_x_) \
+    if (!(_x_))         \
+        DbgAssert(#_x_,__FILE__,__LINE__)
+#endif
+
+#else
+
+#ifndef ASSERT
+#define ASSERT __noop
+#endif
+
+#endif
+
+#if defined(_DEBUG)||defined(ENABLE_TRACE)
+void DbgTrace(const char*,...);
 void InitDbgTrace();
 void FreeDbgThreadBuff();
 void FreeDbgTrace();
@@ -39,16 +58,6 @@ void DumpIid(const char* fileName, int line, const char* function, const void* g
  * Dumps a specified string to the debug output. See DbgTrace for parameters.
  */
 #define TRACE DbgTrace
-#ifndef ASSERT
-
-/**
- * Plug-in's defination of assertion macro.
- */
-#define ASSERT(_x_) \
-    if (!(_x_))         \
-        DbgAssert(#_x_,__FILE__,__LINE__)
-#endif
-
 /**
  * Macro to dump a thread last error
  */
@@ -77,9 +86,6 @@ void DumpIid(const char* fileName, int line, const char* function, const void* g
 #define FreeDbgThreadBuff __noop
 #define FreeDbgTrace __noop
 #define TRACE __noop
-#ifndef ASSERT
-#define ASSERT __noop
-#endif
 #define LASTERROR __noop
 #define DUMPERROR __noop
 #define TRACECBFMT __noop
