@@ -192,8 +192,8 @@ bool InputProcessor::checkMouseAndShowPopupMenu(INPUT_RECORD& record)
             _left = 0;
         }
 
-        // If we are not going to show the pop-up menu don't change dwButtonState.
-        if (!Config::instance()->showMenu()) 
+        // If we are not going to do anything with right mouse button don't change dwButtonState.
+        if (!Config::instance()->showMenu() && !Config::instance()->allowRMBDrag())
         {
             return false;
         }
@@ -211,7 +211,7 @@ bool InputProcessor::checkMouseAndShowPopupMenu(INPUT_RECORD& record)
         {
             if (_right)
             {
-                Dragging::instance()->showPopupMenu();
+                Dragging::instance()->showPopupMenu(); // checks for Config::showMenu() inside
             }
             _right = 0;
         }
