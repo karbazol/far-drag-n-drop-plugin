@@ -325,10 +325,10 @@ HRESULT DataObject::EnumFormatEtc (
     case DATADIR_GET:
         {
             TRACE("Getting enum for DATADIR_GET\n");
-            static FORMATETC fmt[] =
+            FORMATETC fmt[] =
             {
                 {CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL},
-                {CF_SHELLIDLIST, NULL, DVASPECT_CONTENT, -1 , TYMED_HGLOBAL},
+                {CF_SHELLIDLIST, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL},
             };
             *ppenumFormatEtc =
                 static_cast<IEnumFORMATETC*>(new EnumFORMATETC(fmt, LENGTH(fmt),

@@ -46,6 +46,9 @@ enum {
 	MCopyError,
 	MCopyOverwrite,
 	MRetry,
+	MCopyVerb,
+	MMoveVerb,
+	MLinkVerb,
 	};
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__DDLNG_H__

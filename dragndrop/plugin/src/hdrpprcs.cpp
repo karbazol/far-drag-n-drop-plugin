@@ -71,8 +71,7 @@ HRESULT HdropProcessor::operator()(IDataObject* obj, DWORD* effect)
 
 HRESULT HdropProcessor::farCopyOrMoveHDropRecursively(MyStringW& files, bool move)
 {
-    /** @todo customize strings in dialog for copy/move operations */
-    CopyDialog* dlg = new CopyDialog();
+    CopyDialog* dlg = new CopyDialog(move);
     if (!dlg)
     {
         return E_OUTOFMEMORY;
