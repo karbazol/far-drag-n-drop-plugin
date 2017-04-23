@@ -192,8 +192,8 @@ bool InputProcessor::checkMouseAndShowPopupMenu(INPUT_RECORD& record)
             _left = 0;
         }
 
-        // If we are not going to show the pop-up menu don't change dwButtonState.
-        if (!Config::instance()->showMenu()) 
+        // If we are not going to do anything with right mouse button don't change dwButtonState.
+        if (!Config::instance()->showMenu() && !Config::instance()->allowRMBDrag())
         {
             return false;
         }
@@ -211,7 +211,7 @@ bool InputProcessor::checkMouseAndShowPopupMenu(INPUT_RECORD& record)
         {
             if (_right)
             {
-                Dragging::instance()->showPopupMenu();
+                Dragging::instance()->showPopupMenu(); // checks for Config::showMenu() inside
             }
             _right = 0;
         }
@@ -269,14 +269,8 @@ bool InputProcessor::checkEvent(INPUT_RECORD& record)
 bool InputProcessor::isMouseWithinRect(int left, int top, int right, int buttom) const
 {
     ASSERT(_buffSize && _buffer->EventType == MOUSE_EVENT);
-
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-	short delta = csbi.dwSize.Y-(csbi.srWindow.Bottom-csbi.srWindow.Top+1);
-
-
     int x = _buffer->Event.MouseEvent.dwMousePosition.X;
-    int y = _buffer->Event.MouseEvent.dwMousePosition.Y - delta;
+    int y = _buffer->Event.MouseEvent.dwMousePosition.Y;
 
     return x < right && x > left && y < buttom && y > top;
 }

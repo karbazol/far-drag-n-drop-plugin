@@ -3,9 +3,10 @@
 #include "wrkrthrd.h"
 #include "fmtprcsr.h"
 
-HRESULT WorkerThread::execute(IDataObject* obj, const wchar_t* destDir)
+HRESULT WorkerThread::execute(IDataObject* obj, const wchar_t* destDir, DWORD action)
 {
     _dir = destDir;
+    _action = action;
 
     HRESULT hr = CoMarshalInterThreadInterfaceInStream(IID_IDataObject, obj, &_stream);
 
@@ -51,22 +52,22 @@ HRESULT WorkerThread::run()
     if (FAILED(hr))
         return hr;
 
-    DWORD effect = DROPEFFECT_NONE;
     FormatProcessor* process = FormatProcessor::create(_obj, _dir);
     if (process)
     {
-        hr = (*process)(_obj, &effect);
+        hr = (*process)(_obj, &_action);
         delete process;
     }
     else
     {
         hr = E_FAIL;
+        _action = DROPEFFECT_NONE;
     }
 
     ShPtr<IAsyncOperation> op;
     if (SUCCEEDED(_obj->QueryInterface(IID_IAsyncOperation, (void**)&op)))
     {
-        op->EndOperation(hr, NULL, effect);
+        op->EndOperation(hr, NULL, _action);
     }
 
     return hr;

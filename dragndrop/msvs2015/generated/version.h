@@ -4,6 +4,6 @@
 #define FILE_VERSION_STRING PRODUCT_VERSION_STRING
 
 #define COMPANY_NAME "Eugene Leskinen"
-#define PRODUCT_NAME "Drag & drop plug-in for FAR manage"
+#define PRODUCT_NAME "Drag & drop plug-in for FAR manager"
 #define LEGAL_COPYRIGHT "2005-2017 Eugene Leskinen"
 /* file automagically generated */

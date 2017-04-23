@@ -320,8 +320,8 @@ intptr_t FarDialog::switchCheckBox(intptr_t id, intptr_t state)
     }
     else
     {
-        intptr_t ret = (items()[id].Selected & 0x3);
-        items()[id].Selected |= state;
+        intptr_t ret = items()[id].Selected;
+        items()[id].Selected = state;
 
         return ret;
     }
@@ -389,6 +389,8 @@ static void InitDialogItems(
         PItem->Y2=PInit->Y2;
         PItem->Selected=PInit->Selected;
         PItem->Flags=PInit->Flags;
+        if (PInit->DefaultButton)
+            PItem->Flags |= DIF_DEFAULTBUTTON;
         if ((uintptr_t)PInit->Data < 2000)
         {
            PItem->Data = GetMsg((int)(uintptr_t)PInit->Data);

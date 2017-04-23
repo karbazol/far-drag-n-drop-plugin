@@ -26,9 +26,10 @@ struct ThreadPool
      *
      * @param[in] obj points to IDataObject with dropped data.
      * @param[in] destDir specifies a directory where to put the data.
+     * @param[in] action is one of DROPEFFECT_{COPY,MOVE,LINK} that specifies what to do with the data.
      * @return S_OK on success or the error code on failure.
      */
-    virtual HRESULT newThread(IDataObject* obj, const wchar_t* destDir) = 0;
+    virtual HRESULT newThread(IDataObject* obj, const wchar_t* destDir, DWORD action) = 0;
 
     /**
      * Shuts the thread pool down.

@@ -35,7 +35,7 @@ private:
 public:
     static DropProcessor* instance();
     HRESULT processDrop(IDataObject*, DWORD* effect, const wchar_t* destDir);
-    HRESULT canProcess(IDataObject*);
+    DWORD canProcess(IDataObject*);
 };
 
 #endif // __KARBAZOL_DRAGNDROP_2_0__DROPPRCS_H__

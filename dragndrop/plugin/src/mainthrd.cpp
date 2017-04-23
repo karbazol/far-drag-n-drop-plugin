@@ -206,8 +206,8 @@ bool MainThread::onGetDirFromScreenPoint(POINT&pt, MyStringW& dir)
     CONSOLE_SCREEN_BUFFER_INFO ci;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ci);
 
-    pt.x = pt.x * ci.srWindow.Right / rect.right;
-    pt.y = pt.y * (ci.srWindow.Bottom - ci.srWindow.Top + 1) / rect.bottom;
+    pt.x = pt.x * (ci.srWindow.Right - ci.srWindow.Left + 1) / rect.right + ci.srWindow.Left;
+    pt.y = pt.y * (ci.srWindow.Bottom - ci.srWindow.Top + 1) / rect.bottom + ci.srWindow.Top;
 
     PanelInfo info = {sizeof(info)};
     if (FarGetActivePanelInfo(info))

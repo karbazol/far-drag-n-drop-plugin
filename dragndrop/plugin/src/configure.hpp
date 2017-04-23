@@ -16,11 +16,13 @@ private:
     static const wchar_t* _checkKeyName;
     static const wchar_t* _shellCopyName;
     static const wchar_t* _showMenuName;
+    static const wchar_t* _allowRMBDragName;
     static const wchar_t* _useShellObjectName;
 private:
     unsigned int _checkKey;
     bool _shellCopy;
     bool _showMenu;
+    bool _allowRMBDrag; // RMB = right mouse button
     bool _useShellObject;
     // Disable copy constructor
     Config(const Config&);
@@ -35,6 +37,8 @@ public:
     void shellCopy(bool value);
     inline bool showMenu() const {return _showMenu;}
     void showMenu(bool value);
+    inline bool allowRMBDrag() const {return _allowRMBDrag;}
+    void allowRMBDrag(bool value);
     inline bool useShellObject() const {return _useShellObject;}
     void useShellObject(bool value);
 };

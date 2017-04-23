@@ -71,7 +71,7 @@ protected:
     bool onInit();
     bool onClose(intptr_t id);
 public:
-    CopyDialog();
+    CopyDialog(bool move);
     ~CopyDialog(){}
 
     uintptr_t addRef() {return FarDialog::addRef();}

@@ -110,7 +110,8 @@ HGLOBAL DataContainer::createHDrop()
     {
         lstrcpy(p, _dir);
         p += lstrlen(p);
-        *p++ = L'\\';
+        if (p[-1] != L'\\')
+            *p++ = L'\\';
         lstrcpy(p, _files[i]);
         p += lstrlen(p) + 1;
     }

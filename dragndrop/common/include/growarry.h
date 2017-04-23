@@ -28,6 +28,7 @@ private:
 
             if (!newValues)
             {
+                _capacity -= 16;
                 return false;
             }
 
@@ -86,25 +87,19 @@ public:
             if (_values)
             {
                 delete [] _values;
+            }
 
-                _values = new T[_capacity];
+            _values = new T[_capacity];
 
-                if (!_values)
-                {
-                    _capacity = _count = 0;
-                    return *this;
-                }
+            if (!_values)
+            {
+                _capacity = _count = 0;
+                return *this;
             }
         }
 
         if (!r._values)
         {
-            if (_values)
-            {
-                delete [] _values;
-                _values = 0;
-            }
-
             _count = 0;
             return *this;
         }
