@@ -27,11 +27,11 @@
 #define HOLDER_MUTEX L"Karbazol_dragndrop_hook_holder_mutex" TARGET_ARCH
 #define HOLDER_OTHER_MUTEX L"Karbazol_dragndrop_hook_holder_mutex" OTHER_ARCH
 #define HOLDER_LEFT_EVENT L"Karbazol_dragndrop_hook_holder_left_event" TARGET_ARCH
-#define HOLDER_OTHER_LEFT_EVENT L"Karbazol_dragndrop_hook_holder_left_event" OTHER__ARCH
+#define HOLDER_OTHER_LEFT_EVENT L"Karbazol_dragndrop_hook_holder_left_event" OTHER_ARCH
 #define HOLDER_RIGHT_EVENT L"Karbazol_dragndrop_hook_holder_right_event" TARGET_ARCH
-#define HOLDER_OTHER_RIGHT_EVENT L"Karbazol_dragndrop_hook_holder_right_event" OTHER__ARCH
-#define HOLDER_EXECUTABLE L"holder_" TARGET_ARCH L".exe"
-#define HOLDER_OTHER_EXECUTABLE L"holder_" OTHER_ARCH L".exe"
+#define HOLDER_OTHER_RIGHT_EVENT L"Karbazol_dragndrop_hook_holder_right_event" OTHER_ARCH
+#define HOLDER_EXECUTABLE L"holder_" TARGET_ARCH L".dnd"
+#define HOLDER_OTHER_EXECUTABLE L"holder_" OTHER_ARCH L".dnd"
 
 // Holder window will answer either
 

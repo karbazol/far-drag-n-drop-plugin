@@ -48,6 +48,15 @@ struct MyStringTraits
 
 void myStringLock();
 void myStringUnlock();
+/*
+    When the dll is unloaded, Dll::Main calls all finalizers in order reverse to registration order.
+    MyString::~MyString requires lockString to be alive.
+    If some finalizer destructs something containing MyString,
+    that finalizer must be registered after finalizer for lockString;
+    if it does not happen implicitly with using lockString before that finalizer is registered,
+    it must be done explicitly via initializeStringLock().
+*/
+void initializeStringLock();
 
 /**
  * Utility class to wrap locking/unlocking of string inter-thread guard.
@@ -349,10 +358,9 @@ public:
     MyString(): data(0){}
     MyString(const CharType* p): data(0)
     {
+        lockString l;
         if (p)
         {
-            lockString l;
-
             data = allocData(p);
         }
     }
@@ -409,7 +417,7 @@ public:
                     freeData();
                     data = newData(size);
                 }
-                else // data->refCount == 0;
+                else // data->refCount == 1;
                 {
                     if (size > data->allocated)
                     {
@@ -548,7 +556,6 @@ public:
 
     void length(size_t value)
     {
-
         uniqueData();
 
         if (!data)

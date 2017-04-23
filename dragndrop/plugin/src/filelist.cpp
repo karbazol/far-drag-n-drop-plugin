@@ -67,12 +67,12 @@ public:
     }
 };
 
-FileListEntry::FileListEntry(): _srcpath(), _subpath(0)
+FileListEntry::FileListEntry(): _srcpath(), _subpath(0), _type(InvalidType)
 {
 }
 
 FileListEntry::FileListEntry(const FileListEntry& e):
-    _srcpath(e._srcpath), _subpath(e._subpath), _data(e._data)
+    _srcpath(e._srcpath), _subpath(e._subpath), _data(e._data), _type(e._type)
 {
 }
 
@@ -81,12 +81,13 @@ FileListEntry& FileListEntry::operator=(const FileListEntry& e)
     _srcpath = e._srcpath;
     _subpath = e._subpath;
     _data = e._data;
+    _type = e._type;
 
     return *this;
 }
 
 FileListEntry::FileListEntry(const MyStringW& cmnDir, const wchar_t* subpath,
-            const WIN32_FIND_DATA& data): _srcpath(cmnDir), _data(data)
+            const WIN32_FIND_DATA& data, EType type): _srcpath(cmnDir), _data(data), _type(type)
 {
     if (!_srcpath)
     {
@@ -209,16 +210,22 @@ bool FileList::processEntry(const wchar_t* file)
 
     splitAndAbsPath(entry, prefix, basename);
 
-    FileListEntry e(prefix, basename, fd);
-    if (!appendEntry(e))
-        return false;
-
     if (FILE_ATTRIBUTE_DIRECTORY == (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
     {
-        return processDir(prefix, e);
+        FileListEntry e(prefix, basename, fd, FileListEntry::EnterDirectory);
+        if (!appendEntry(e))
+            return false;
+        bool ret = processDir(prefix, e);
+        FileListEntry e2(prefix, basename, fd, FileListEntry::LeaveDirectory);
+        if (!appendEntry(e2))
+            return false;
+        return ret;
     }
-
-    return true;
+    else
+    {
+        FileListEntry e(prefix, basename, fd, FileListEntry::File);
+        return appendEntry(e);
+    }
 }
 
 bool FileList::processDir(const wchar_t* prefix, const FileListEntry& e)
@@ -239,16 +246,30 @@ bool FileList::processDir(const wchar_t* prefix, const FileListEntry& e)
             MyStringW subpath = e.subpath();
             subpath /= fd.cFileName;
 
-            FileListEntry entry(prefix, subpath, fd);
-            if (!appendEntry(entry))
-            {
-                res = false;
-                break;
-            }
             if (FILE_ATTRIBUTE_DIRECTORY ==
-                    (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+                (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
             {
-                processDir(prefix, entry);
+                FileListEntry entry(prefix, subpath, fd, FileListEntry::EnterDirectory);
+                if (!appendEntry(entry))
+                {
+                    res = false;
+                    break;
+                }
+                res = processDir(prefix, entry);
+                FileListEntry e2(prefix, subpath, fd, FileListEntry::LeaveDirectory);
+                if (!appendEntry(e2))
+                    res = false;
+                if (!res)
+                    break;
+            }
+            else
+            {
+                FileListEntry entry(prefix, subpath, fd, FileListEntry::File);
+                if (!appendEntry(entry))
+                {
+                    res = false;
+                    break;
+                }
             }
         }
     }

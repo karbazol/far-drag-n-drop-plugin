@@ -33,11 +33,16 @@ const GUID& CopyDialog::Id() const
     return copyDialogGuid;
 }
 
-CopyDialog::CopyDialog(): FarDialog(), _items(copyDialogItemsTemplate),
+CopyDialog::CopyDialog(bool move): FarDialog(), _items(copyDialogItemsTemplate),
     _totalProcessedSize(0), _totalSize(0), _currentProcessedSize(0),
     _currentSize(0), _filesToProcess(0),
     _filesProcessed(-1), _fileListProcessed(0), _timeStart(0)
 {
+    if (move)
+    {
+        _items.frame.Data = (wchar_t*)MMove;
+        _items.label0.Data = (wchar_t*)MMovingTheFile;
+    }
 }
 
 bool CopyDialog::onInit()
@@ -312,7 +317,7 @@ bool CopyDialog::onNextEntry(const int /*reason*/, const FileListEntry& e)
     size.LowPart  = e.data().nFileSizeLow;
     size.HighPart = e.data().nFileSizeHigh;
 
-    if (FILE_ATTRIBUTE_DIRECTORY != (e.data().dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    if (e.type() == FileListEntry::File
             && !appendFile(size.QuadPart, false))
         return false;
 

@@ -27,14 +27,13 @@ struct ConfigDlgItems
     InitDialogItem radioRightCtl;
     InitDialogItem radioRightAlt;
 
-    InitDialogItem sepPanels;
-    InitDialogItem edtPixelsPassed;
-    InitDialogItem txtPixelsPassed0;
-    InitDialogItem txtPixelsPassed1;
+    InitDialogItem sepRMB;
+    InitDialogItem radioRMBIgnore;
+    InitDialogItem radioRMBMenu;
+    InitDialogItem radioRMBDrag;
 
     InitDialogItem sepOptions;
     InitDialogItem checkUseShellCopy;
-    InitDialogItem checkShowMenu;
 
     InitDialogItem sepButtons;
     InitDialogItem btnOk;
@@ -177,13 +176,12 @@ ConfigDlgItems ConfigDlg::_items =
     /* 04 */{DI_RADIOBUTTON,5,5,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MShift},
     /* 05 */{DI_RADIOBUTTON,22,3,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MRightCtl},
     /* 06 */{DI_RADIOBUTTON,22,4,0,0,0,0,(unsigned int)DIF_DISABLE,0,(wchar_t *)MRightAlt},
-    {DI_TEXT,5,6,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MPanels},
-        /* 08 */{DI_EDIT,5,7,7,0,0,0,0,0,L"0"},
-        /* 09 */{DI_TEXT,9,7,37,0,0,0,0,0,(wchar_t *)MPixelsPassed},
-        /* 10 */{DI_TEXT,9,8,37,0,0,0,0,0,(wchar_t *)MPixelsPassed2},
-    {DI_TEXT,5,9,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR|DIF_CENTERGROUP,0,(wchar_t*)MOptions},
-    {DI_CHECKBOX,5,10,0,0,0,0,0,0,(wchar_t *)MUseShellCopy},
-    {DI_CHECKBOX,5,11,0,0,0,0,0,0,(wchar_t *)MShowMenu},
+    {DI_TEXT,5,6,0,0,0,0,(unsigned int)DIF_BOXCOLOR | DIF_SEPARATOR,0,L"" },
+    {DI_RADIOBUTTON,5,7,0,0,0,0,(unsigned int)DIF_GROUP,0,(wchar_t*)MRMBIgnore},
+    {DI_RADIOBUTTON,5,8,0,0,0,0,0,0,(wchar_t*)MShowMenu},
+    {DI_RADIOBUTTON,5,9,0,0,0,0,0,0,(wchar_t*)MRMBDrag},
+    {DI_TEXT,5,10,0,0,0,0,(unsigned int)DIF_BOXCOLOR | DIF_SEPARATOR,0,L"" },
+    {DI_CHECKBOX,5,11,0,0,0,0,0,0,(wchar_t *)MUseShellCopy},
 
     // ------- Buttons -------
     {DI_TEXT,5,12,0,0,0,0,(unsigned int)DIF_BOXCOLOR|DIF_SEPARATOR,0,L""},
@@ -205,8 +203,9 @@ int doConfigure(int /*Number*/)
         dlg.enableUseKeyToStartDnd(config->checkKey());
         dlg.switchCheckBox(getMyItemId(checkUseShellCopy),
                 config->shellCopy());
-        dlg.switchCheckBox(getMyItemId(checkShowMenu),
-                config->showMenu());
+        dlg.switchCheckBox(getMyItemId(radioRMBMenu), config->showMenu());
+        dlg.switchCheckBox(getMyItemId(radioRMBDrag), config->allowRMBDrag());
+        dlg.switchCheckBox(getMyItemId(radioRMBIgnore), !config->showMenu() && !config->allowRMBDrag());
 
         switch (dlg.show(true))
         {
@@ -226,7 +225,8 @@ int doConfigure(int /*Number*/)
             config->checkKey(0);
         }
         config->shellCopy(dlg.checked(getMyItemId(checkUseShellCopy)));
-        config->showMenu(dlg.checked(getMyItemId(checkShowMenu)));
+        config->showMenu(dlg.checked(getMyItemId(radioRMBMenu)));
+        config->allowRMBDrag(dlg.checked(getMyItemId(radioRMBDrag)));
 
         return TRUE;
     }
@@ -234,18 +234,20 @@ int doConfigure(int /*Number*/)
     return FALSE;
 }
 
-Config::Config():_checkKey(0), _shellCopy(true), _showMenu(false),
+Config::Config():_checkKey(0), _shellCopy(true), _showMenu(false), _allowRMBDrag(false),
     _useShellObject(false)
 {
     _checkKey = FarReadRegistry(_checkKeyName, _checkKey);
     _shellCopy = !!FarReadRegistry(_shellCopyName, _shellCopy);
     _showMenu = !!FarReadRegistry(_showMenuName, _showMenu);
+    _allowRMBDrag = !!FarReadRegistry(_allowRMBDragName, _allowRMBDrag);
     _useShellObject = !!FarReadRegistry(_useShellObjectName, _useShellObject);
 }
 
 const wchar_t* Config::_checkKeyName = L"CheckKey";
 const wchar_t* Config::_shellCopyName = L"UseShellCopy";
 const wchar_t* Config::_showMenuName = L"ShowUserMenu";
+const wchar_t* Config::_allowRMBDragName = L"AllowRMBDrag";
 const wchar_t* Config::_useShellObjectName = L"UseShellObject";
 
 Config* Config::instance()
@@ -309,6 +311,16 @@ void Config::useShellObject(bool value)
         _useShellObject = value;
 
         FarWriteRegistry(_useShellObjectName, _useShellObject);
+    }
+}
+
+void Config::allowRMBDrag(bool value)
+{
+    if (value != _allowRMBDrag)
+    {
+        _allowRMBDrag = value;
+
+        FarWriteRegistry(_allowRMBDragName, _allowRMBDrag);
     }
 }
 

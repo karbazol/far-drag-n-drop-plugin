@@ -69,6 +69,8 @@ static void checkConman()
  */
 void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
 {
+    initializeStringLock();
+
     checkConman();
 
     if (!patchImports())
@@ -221,15 +223,32 @@ bool FarGetWindowInfo(struct WindowInfo& wi)
 }
 
 /**
+* Gets Panel info from the Far.
+*/
+static bool FarGetPanelInfo(HANDLE hPanel, struct PanelInfo& pi)
+{
+    if (!theFar.PanelControl)
+        return false;
+    if (!theFar.PanelControl(hPanel, FCTL_GETPANELINFO, 0, &pi))
+        return false;
+    SMALL_RECT farRect;
+    if (!theFar.AdvControl || !theFar.AdvControl(&pluginGuid, ACTL_GETFARRECT, 0, &farRect)) {
+        farRect.Left = 0;
+        farRect.Top = 0;
+    }
+    pi.PanelRect.left += farRect.Left;
+    pi.PanelRect.top += farRect.Top;
+    pi.PanelRect.right += farRect.Left;
+    pi.PanelRect.bottom += farRect.Top;
+    return true;
+}
+
+/**
  * Gets Active Panel info from the Far.
  */
 bool FarGetActivePanelInfo(struct PanelInfo& pi)
 {
-    if (theFar.PanelControl)
-    {
-        return theFar.PanelControl(PANEL_ACTIVE, FCTL_GETPANELINFO, 0, &pi)?true:false;
-    }
-    return false;
+    return FarGetPanelInfo(PANEL_ACTIVE, pi);
 }
 
 static PluginPanelItemW& copy(PluginPanelItemW& pw, const PluginPanelItem& pi)
@@ -270,9 +289,7 @@ static PluginPanelItemW& copy(PluginPanelItemW& pw, const PluginPanelItem& pi)
 
 bool FarGetPassivePanelInfo(PanelInfo& pi)
 {
-    if (theFar.PanelControl)
-        return theFar.PanelControl(PANEL_PASSIVE, FCTL_GETPANELINFO, 0, &pi)?true:false;
-    return false;
+    return FarGetPanelInfo(PANEL_PASSIVE, pi);
 }
 
 static MyStringW FarGetPanelDirectory(bool activePanel)
@@ -324,9 +341,6 @@ static bool FarGetPanelItem(HANDLE panel, FILE_CONTROL_COMMANDS command, size_t 
         static_cast<size_t>(size),
         reinterpret_cast<PluginPanelItem*>(malloc(size))
     };
-
-    PluginPanelItem* tmp = reinterpret_cast<PluginPanelItem*>(
-            malloc(size));
 
     if (!getItem.Item)
     {

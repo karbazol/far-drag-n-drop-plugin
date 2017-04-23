@@ -9,6 +9,7 @@
 #include <hldrapi.h>
 
 #include "far.h"
+#include "ddlng.h"
 #include "toolwnd.h"
 #include "winthrd.h"
 #include "mainthrd.h"
@@ -16,6 +17,7 @@
 #include "dragbmp.h"
 #include "dropprcs.h"
 #include "dataobj.h"
+#include "shutils.h"
 
 void ToolWindow::beforeCreation(DWORD& /*style*/, DWORD& /*styleEx*/)
 {
@@ -350,6 +352,32 @@ LRESULT ToolWindow::onMenuMessage(UINT msg, WPARAM wParam, LPARAM lParam)
     }
     return msg == WM_INITMENUPOPUP ? TRUE : FALSE;
 }
+
+static void setPreferredDropEffect(IDataObject* dropSource, DWORD effect)
+{
+    FORMATETC format = {CF_PREFERREDDROPEFFECT, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+    STGMEDIUM medium = {TYMED_HGLOBAL, nullptr, nullptr};
+    medium.hGlobal = GlobalAlloc(GMEM_FIXED, sizeof(DWORD));
+    if (!medium.hGlobal)
+        return;
+    *reinterpret_cast<DWORD*>(medium.hGlobal) = effect;
+    dropSource->SetData(&format, &medium, TRUE);
+}
+
+static BOOL isAsyncOperationGoing(IDataObject* dropSource)
+{
+    IAsyncOperation* async = nullptr;
+    HRESULT result = dropSource->QueryInterface(&async);
+    if (FAILED(result))
+        return FALSE;
+    BOOL inOperation = FALSE;
+    result = async->InOperation(&inOperation);
+    async->Release();
+    if (FAILED(result))
+        return FALSE;
+    return inOperation;
+}
+
 LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
 {
     if (_mouseCounter++ < 1)
@@ -388,13 +416,16 @@ LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
                 helper->InitializeFromBitmap(&img, _data);
             }
 #endif
+            setPreferredDropEffect(_data, DROPEFFECT_COPY);
             TRACE("Dragging starting\n");
             DWORD effects=0;
-            HRESULT hr = DoDragDrop(_data, this, DROPEFFECT_COPY, &effects);
+            HRESULT hr = DoDragDrop(_data, this, DROPEFFECT_COPY|DROPEFFECT_MOVE|DROPEFFECT_LINK, &effects);
             DUMPERROR(hr);
             TRACE("Dragging ended\n");
             if (hr == DRAGDROP_S_DROP)
             {
+                if (!isAsyncOperationGoing(_data) && effects == DROPEFFECT_MOVE)
+                    deleteFilesFromDataObj(_data);
                 MainThread::instance()->callIt([](void*)
                         {
                             FarClearSelectionActivePanel(0, FarGetActivePanelItems(true).size());
@@ -464,17 +495,18 @@ HRESULT ToolWindow::DragEnter(IDataObject* obj, DWORD keyState, POINTL pt, DWORD
         _dropHelper->DragEnter(hwnd(), obj, (POINT*)&pt, *effect);
     }
 
-    if (DropProcessor::instance()->canProcess(obj) != S_OK)
-        *effect = DROPEFFECT_NONE;
+    _possibleDropActions = DropProcessor::instance()->canProcess(obj);
 
     return DragOver(keyState, pt, effect);
 }
 
 HRESULT ToolWindow::DragOver(DWORD keyState, POINTL pt, DWORD* effect)
 {
+    _dropKeyState = keyState;
     if (IsBadWritePtr(effect, sizeof(*effect)))
         return E_POINTER;
 
+    *effect &= _possibleDropActions;
     if (*effect != DROPEFFECT_NONE)
     {
         // We can handle it
@@ -503,13 +535,52 @@ HRESULT ToolWindow::DragLeave()
     return S_OK;
 }
 
-HRESULT ToolWindow::Drop(IDataObject* obj, DWORD keyState, POINTL ptl, DWORD* effect)
+HRESULT ToolWindow::Drop(IDataObject* obj, DWORD /*keyState*/, POINTL ptl, DWORD* effect)
 {
     TRACE("Drop occured\n");
     _dropData = NULL;
     if (_dropHelper)
     {
-        _dropHelper->Drop(obj, (POINT*)&ptl, *effect);
+        // do it here to avoid interference between dragging icon and TrackPopupMenu
+        _dropHelper->Drop(obj, (POINT*)&ptl, DROPEFFECT_NONE);
+    }
+    *effect &= _possibleDropActions;
+    if (*effect != DROPEFFECT_NONE)
+    {
+        // we can't rely on keyState passed as an arg, because MK_LBUTTON+MK_RBUTTON are already cleared here
+        // use state saved in DragEnter/DragOver
+        if (_dropKeyState & MK_RBUTTON)
+        {
+            HMENU hMenu = CreatePopupMenu();
+            if (!hMenu)
+                return E_FAIL;
+            bool appendOk = true;
+            if (*effect & DROPEFFECT_COPY)
+                appendOk = appendOk && AppendMenu(hMenu, MF_STRING, DROPEFFECT_COPY, GetMsg(MCopyVerb));
+            if (*effect & DROPEFFECT_MOVE)
+                appendOk = appendOk && AppendMenu(hMenu, MF_STRING, DROPEFFECT_MOVE, GetMsg(MMoveVerb));
+            if (*effect & DROPEFFECT_LINK)
+                appendOk = appendOk && AppendMenu(hMenu, MF_STRING, DROPEFFECT_LINK, GetMsg(MLinkVerb));
+            appendOk = appendOk && AppendMenu(hMenu, MF_SEPARATOR, -1, nullptr);
+            appendOk = appendOk && AppendMenu(hMenu, MF_STRING, DROPEFFECT_NONE, GetMsg(MCancel));
+            if (!appendOk)
+            {
+                DestroyMenu(hMenu);
+                return E_FAIL;
+            }
+            DWORD defaultEffect = *effect;
+            keyStateToEffect(_dropKeyState, defaultEffect);
+            SetMenuDefaultItem(hMenu, defaultEffect, FALSE);
+            DWORD selectedEffect = TrackPopupMenu(hMenu, TPM_RETURNCMD, ptl.x, ptl.y, 0, hwnd(), nullptr);
+            DestroyMenu(hMenu);
+            if (selectedEffect != DROPEFFECT_COPY && selectedEffect != DROPEFFECT_MOVE && selectedEffect != DROPEFFECT_LINK)
+                selectedEffect = DROPEFFECT_NONE;
+            *effect = selectedEffect;
+        }
+        else
+        {
+            keyStateToEffect(_dropKeyState, *effect);
+        }
     }
 
     if (*effect == DROPEFFECT_NONE)
@@ -528,8 +599,6 @@ HRESULT ToolWindow::Drop(IDataObject* obj, DWORD keyState, POINTL ptl, DWORD* ef
         return S_OK;
     }
 
-    keyStateToEffect(keyState, *effect);
-
     hide();
 
     DropProcessor* dropProcessor = DropProcessor::instance();
@@ -546,9 +615,33 @@ HRESULT ToolWindow::Drop(IDataObject* obj, DWORD keyState, POINTL ptl, DWORD* ef
     return hr;
 }
 
-void ToolWindow::keyStateToEffect(DWORD /*keyState*/, DWORD& /*effect*/)
+void ToolWindow::keyStateToEffect(DWORD keyState, DWORD& effect)
 {
-    /** @todo Handle differrent scenarios: move/copy/link. bug #6 */
+    switch (keyState & (MK_SHIFT | MK_CONTROL | MK_ALT))
+    {
+    case MK_SHIFT:
+        if (effect & DROPEFFECT_MOVE)
+            effect = DROPEFFECT_MOVE;
+        break;
+    case MK_CONTROL:
+        if (effect & DROPEFFECT_COPY)
+            effect = DROPEFFECT_COPY;
+        break;
+    case MK_SHIFT | MK_CONTROL:
+    case MK_ALT:
+        if (effect & DROPEFFECT_LINK)
+            effect = DROPEFFECT_LINK;
+        break;
+    }
+    // if no control keys are pressed, prefer copy > move > link
+    if (effect & DROPEFFECT_COPY)
+        effect = DROPEFFECT_COPY;
+    else if (effect & DROPEFFECT_MOVE)
+        effect = DROPEFFECT_MOVE;
+    else if (effect & DROPEFFECT_LINK)
+        effect = DROPEFFECT_LINK;
+    else
+        effect = DROPEFFECT_NONE;
 }
 
 // vim: set et ts=4 ai :

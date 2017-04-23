@@ -274,6 +274,37 @@ ITEMS = [
         "MRetry",
         u"Повторить",
         "&Retry"
+    ),
+
+    (
+        "MCopyVerb",
+        u"Копировать",
+        "Copy"
+    ),
+
+    (
+        "MMoveVerb",
+        u"Переместить",
+        "Move"
+    ),
+
+    (
+        "MLinkVerb",
+        u"Создать ярлык",
+        "Link"
+    ),
+
+    (
+        "MRMBIgnore",
+        u"Передавать правую кнопку в Far",
+        "Pass right click to Far"
+    ),
+
+    (
+        "MRMBDrag",
+        u"Разрешить Drag правой кнопкой",
+        "Allow drag with right mouse button"
     )
+
 ]
 

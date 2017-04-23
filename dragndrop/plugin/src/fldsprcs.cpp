@@ -9,6 +9,12 @@
 
 HRESULT FileDescriptorProcessor::operator()(IDataObject* obj, DWORD*)
 {
+    /*
+        Drop action can be either DROPEFFECT_COPY or DROPEFFECT_MOVE.
+        Since the only thing we can do with FILEDESCRIPTORs is reading data,
+        the only way to implement DROPEFFECT_MOVE is to copy data
+        and let the drop source remove wherever those come from.
+    */
     HRESULT hr;
 
     FileDescriptorIterator f;

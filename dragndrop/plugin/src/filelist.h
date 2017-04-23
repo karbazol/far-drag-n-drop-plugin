@@ -19,20 +19,30 @@
  */
 class FileListEntry
 {
+public:
+    enum EType
+    {
+        InvalidType,
+        File,
+        EnterDirectory,
+        LeaveDirectory,
+    };
 private:
     MyStringW _srcpath;
     size_t _subpath;
     WIN32_FIND_DATA _data;
+    EType _type;
 public:
     FileListEntry();
     FileListEntry(const FileListEntry& e);
     FileListEntry(const MyStringW& cmnDir, const wchar_t* subpath, 
-            const WIN32_FIND_DATA& data);
+            const WIN32_FIND_DATA& data, EType type);
     ~FileListEntry(){_subpath = 0;}
     FileListEntry& operator=(const FileListEntry& e);
     inline const wchar_t* srcpath() const {return _srcpath;}
     const wchar_t* subpath() const;
     inline const WIN32_FIND_DATA& data() const {return _data;}
+    inline EType type() const {return _type;}
 };
 
 /**
