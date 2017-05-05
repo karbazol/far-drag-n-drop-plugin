@@ -7,6 +7,7 @@
 #include <utils.h>
 #include <dndmsgs.h>
 #include <hldrapi.h>
+#include <VersionHelpers.h>
 
 #include "far.h"
 #include "ddlng.h"
@@ -187,6 +188,10 @@ LRESULT ToolWindow::prepareForDragging(const DataContainer& data)
 #endif
 
     _data = 0;
+    _theDragFile.length(0);
+    if (data.fileCount() == 1)
+        _theDragFile = data.dir() / data.files()[0];
+
     Config* config = Config::instance();
     HolderApi* holderApi = HolderApi::instance();
     if (!config || !holderApi)
@@ -401,21 +406,26 @@ LRESULT ToolWindow::onMouse(UINT /*msg*/, WPARAM wParam, LPARAM /*lParam*/)
         if ( _data != NULL )
         {
             MainThread::instance()->setDragging(true);
-#if 0
-            /** @todo Implement support for nice picture during drag */
             ShPtr<IDragSourceHelper> helper;
-            DragBitmap theBmp;
             if (_dropHelper && SUCCEEDED(_dropHelper->QueryInterface(IID_IDragSourceHelper, (void**)&helper)))
             {
-                SHDRAGIMAGE img;
-                theBmp.getSize(img.sizeDragImage);
-                img.ptOffset.x = img.ptOffset.y = 0;
-                img.hbmpDragImage = theBmp.handle();
-                img.crColorKey = RGB(0,0,255);
-
-                helper->InitializeFromBitmap(&img, _data);
+                if (IsWindowsVistaOrGreater())
+                {
+                    // on Vista+, just let the shell generate drag image;
+                    // manual XP-style processing works here too,
+                    // but shell handles multiple-files situation better,
+                    // and for single-file the result is closer to standard
+                    helper->InitializeFromWindow(NULL, NULL, _data);
+                }
+                else
+                {
+                    // on XP, InitializeFromWindow() does not generate anything by itself,
+                    // so create the image manually
+                    SHDRAGIMAGE img;
+                    if (generateDragImage(_theDragFile, img))
+                        helper->InitializeFromBitmap(&img, _data);
+                }
             }
-#endif
             setPreferredDropEffect(_data, DROPEFFECT_COPY);
             TRACE("Dragging starting\n");
             DWORD effects=0;
