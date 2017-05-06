@@ -29,6 +29,7 @@ private:
     DWORD _possibleDropActions;
     DWORD _dropKeyState;
     int _mouseCounter;
+    MyStringW _theDragFile; // empty if several files are dragged
     void keyStateToEffect(DWORD keyState, DWORD& effect);
 protected:
     LRESULT handle(UINT msg, WPARAM wParam, LPARAM lParam);

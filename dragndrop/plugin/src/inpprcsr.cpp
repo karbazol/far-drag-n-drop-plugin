@@ -204,7 +204,7 @@ bool InputProcessor::checkMouseAndShowPopupMenu(INPUT_RECORD& record)
             if (!_left)
             {
                 record.Event.MouseEvent.dwButtonState &= ~RIGHTMOST_BUTTON_PRESSED;
-                record.Event.MouseEvent.dwButtonState |= FROM_LEFT_1ST_BUTTON_PRESSED;
+                //record.Event.MouseEvent.dwButtonState |= FROM_LEFT_1ST_BUTTON_PRESSED;
             }
         }
         else
@@ -253,7 +253,8 @@ bool InputProcessor::checkMouseButtons(INPUT_RECORD& record)
         return true;
     }
 
-    if (_left > 1 || _right > 1)
+    Config* config = Config::instance();
+    if (_left > 1 || _right > 1 && config && config->allowRMBDrag())
         return false;
 
     return true;
