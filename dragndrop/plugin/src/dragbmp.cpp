@@ -142,6 +142,16 @@ bool generateDragImage(const MyStringW& theDragFile, SHDRAGIMAGE& img)
     }
     else
     {
+        /*
+            For multiple files, reuse the generic icon from shell32 dialog
+            displaying properties of multiple files.
+            It is not documented and not exposed to programs directly,
+            but can be reached as icon #133 in shell32.dll.
+            MS can theoretically change this, but given that
+            a) it is the same in XP, Win7, Win10, and
+            b) we have an alternative code for Vista+ and all future systems,
+            this is unlikely to cause any trouble for us.
+        */
         // we use static binding to shell32!SHGetFileInfo anyway,
         // so we don't need to worry about shell32 presence
         HMODULE hShell32 = GetModuleHandle(TEXT("shell32.dll"));
