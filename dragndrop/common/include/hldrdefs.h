@@ -30,8 +30,8 @@
 #define HOLDER_OTHER_LEFT_EVENT L"Karbazol_dragndrop_hook_holder_left_event" OTHER_ARCH
 #define HOLDER_RIGHT_EVENT L"Karbazol_dragndrop_hook_holder_right_event" TARGET_ARCH
 #define HOLDER_OTHER_RIGHT_EVENT L"Karbazol_dragndrop_hook_holder_right_event" OTHER_ARCH
-#define HOLDER_EXECUTABLE L"holder_" TARGET_ARCH L".dnd"
-#define HOLDER_OTHER_EXECUTABLE L"holder_" OTHER_ARCH L".dnd"
+#define HOLDER_EXECUTABLE L"holder_" TARGET_ARCH L".exe"
+#define HOLDER_OTHER_EXECUTABLE L"holder_" OTHER_ARCH L".exe"
 
 // Holder window will answer either
 
