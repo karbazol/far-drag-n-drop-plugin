@@ -137,10 +137,20 @@ public:
 
 class ShellIDList
 {
+#if _MSC_VER >= 1900
     ITEMIDLIST* _folderIL = nullptr;
     ShPtr<IShellFolder> _folder;
     ITEMIDLIST** _files = nullptr;
     UINT _numFiles = 0;
+#else
+    ITEMIDLIST* _folderIL;
+    ShPtr<IShellFolder> _folder;
+    ITEMIDLIST** _files;
+    UINT _numFiles;
+public:
+    ShellIDList(): _folderIL(nullptr), _folder(), _files(nullptr), _numFiles(0)
+    {}
+#endif
 public:
     ~ShellIDList()
     {

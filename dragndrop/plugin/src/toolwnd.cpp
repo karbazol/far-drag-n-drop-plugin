@@ -7,7 +7,16 @@
 #include <utils.h>
 #include <dndmsgs.h>
 #include <hldrapi.h>
+#if _MSC_VER >= 1900
 #include <VersionHelpers.h>
+#else
+bool IsWindowsVistaOrGreater()
+{
+    OSVERSIONINFO versionInfo = {sizeof(versionInfo)};
+    GetVersionEx(&versionInfo);
+    return versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT && versionInfo.dwMajorVersion >= 6;
+}
+#endif
 
 #include "far.h"
 #include "ddlng.h"
