@@ -26,7 +26,7 @@ config.VersionRange("7-*",
                         CPPDEFINES=['DEBUG', r'TARGET_ARCH=L\"${TARGET_ARCH}\"',
                             'TARGET_ARCH_${TARGET_ARCH}'],
                         PDB=['${TARGETS[0]}.pdb'],
-                        LINKFLAGS=['/INCREMENTAL:NO', '/SUBSYSTEM:WINDOWS,5.02']
+                        LINKFLAGS=['/INCREMENTAL:NO', '/SUBSYSTEM:WINDOWS,${TARGET_ARCH=="x86" and 5.01 or 5.02}']
                         )
                     )
 

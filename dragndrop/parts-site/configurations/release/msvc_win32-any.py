@@ -33,7 +33,8 @@ config.VersionRange("7-*",
                             '/nodefaultlib',
                             '/INCREMENTAL:NO',
                             '/OPT:REF,ICF=4', # Put only used functions to the resulting binary
-                            '/SUBSYSTEM:WINDOWS,5.02' # Target for at least Windows Server 2003
+                            # Target for at least Windows XP or Windows Server 2003
+                            '/SUBSYSTEM:WINDOWS,${TARGET_ARCH=="x86" and 5.01 or 5.02}'
                             ],
                         LIBEXS=['libcmt', 'libcpmt', 'libcpmt1'],
                         PDB=['${TARGETS[0]}.pdb']
