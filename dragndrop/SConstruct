@@ -8,8 +8,9 @@ from parts import *
 # Set up version information
 SetOptionDefault('COMPANY_NAME', 'Eugene Leskinen')
 SetOptionDefault('PRODUCT_NAME', 'Drag & drop plug-in for FAR manager')
-SetOptionDefault('LEGAL_COPYRIGHT', '2005-2017 Eugene Leskinen et al.')
-SetOptionDefault('PRODUCT_VERSION_STRING', '3.0.84.4700')
+SetOptionDefault('LEGAL_COPYRIGHT', '2005-2018 Eugene Leskinen et al.')
+SetOptionDefault('FAR_MINIMAL_BUILD_SUPPORTED', '4700')
+SetOptionDefault('PRODUCT_VERSION_STRING', '3.0.85.$FAR_MINIMAL_BUILD_SUPPORTED')
 
 # Need to generate version.h file to be used by MSVC projects:
 VERSION_H_TEMPLATE="""
