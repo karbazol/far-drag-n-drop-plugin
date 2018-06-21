@@ -33,7 +33,8 @@ def lngBuilder(target, source, env):
     for src in source:
         templ = LngTemplate(src)
         # Override encoding with one from env
-        templ.ENCODING = env.get('ENCODING', templ.ENCODING)
+        if not templ.ENCODING:
+            templ.ENCODING = env.get('ENCODING', None)
         assert target[index].name == templ.HEADER_NAME
         header = open(target[index].abspath, "w")
         index += 1
@@ -45,16 +46,16 @@ def lngBuilder(target, source, env):
             file = open(target[index].abspath, "w", encoding = templ.ENCODING)
             if templ.ENCODING.lower() == 'utf-8':
                 os.write(file.fileno(), '\xef\xbb\xbf')
-            file.write(u".Language=%s,%s\n\n" % (lng, desc))
+            file.write(unicode(".Language=%s,%s\n\n") % (lng, desc))
             lngs.append(file)
             index += 1
 
         for item in templ.ITEMS:
             i = 0
-            header.write(u"\t%s,\n" % item[i])
+            header.write(unicode("\t%s,\n") % item[i])
             for lng in lngs:
                 i += 1
-                lng.write(u'"%s"\n' % item[i])
+                lng.write(unicode('"%s"\n') % item[i])
         for lng in lngs:
             lng.close()
         header.write("\t};\n")
@@ -62,6 +63,7 @@ def lngBuilder(target, source, env):
         header.close()
 
     return None
+
 
 api.register.add_builder(
     'Lng',
