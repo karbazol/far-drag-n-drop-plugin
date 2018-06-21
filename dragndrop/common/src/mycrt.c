@@ -69,6 +69,7 @@ void WINAPI RtlMoveMemory ( void *, const void *, size_t count );
 #undef memmove
 #endif
 
+#pragma function(memmove)
 void * __cdecl memmove (
         void * dst,
         const void * src,
