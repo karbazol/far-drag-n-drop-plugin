@@ -20,7 +20,7 @@ After you have download and installed Python you can install SCons by running co
 ```
 easy_install SCons
 ```
-Version 2.5.1 worked for me.
+Version 3.1.2 worked for me.
 
 The plug-ins code is built using MSVC 2015 at least. You need to install it.
 
