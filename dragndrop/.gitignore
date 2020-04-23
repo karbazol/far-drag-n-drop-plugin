@@ -1,7 +1,9 @@
 _build
 _sdks
+_sdk
 _unit_tests
 .*.swp
+.parts.cache
 .sconf_temp
 .sconsign.dblite
 *.log
@@ -11,4 +13,4 @@ install
 logs
 message.txt
 tags
-
+drgndrop.zip
