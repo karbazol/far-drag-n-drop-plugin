@@ -2,7 +2,7 @@
 SCons tool build instructions
 '''
 import sys
-sys.path[:0] = ['sconsparts']
+sys.path[:0] = ['sconsparts/src']
 from parts import *
 
 # Set up version information

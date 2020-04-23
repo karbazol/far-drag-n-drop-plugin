@@ -9,7 +9,7 @@ def getSvnRevision(env):
         d = xml.parseString(so)
         buildstr = d.getElementsByTagName('entry')[0].getAttribute('revision')
         return int(buildstr)
-    except Exception, e:
+    except Exception:
         return -1
 
 api.register.add_variable('_getSvnRevision', getSvnRevision, '')

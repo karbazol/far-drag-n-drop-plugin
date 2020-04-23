@@ -13,7 +13,9 @@ class LngTemplate:
         self.FOOTER = ""
         self.ITEMS = []
 
-        execfile(node.srcnode().abspath, {}, self.__dict__)
+        with open(node.srcnode().abspath, "rb") as src_file:
+            code = compile(src_file.read(), node.srcnode().abspath, "exec")
+        exec(code, {}, self.__dict__)
 
 def lngEmitter(target, source, env):
     if len(source) < 1:
@@ -45,17 +47,17 @@ def lngBuilder(target, source, env):
             assert target[index].name == name
             file = open(target[index].abspath, "w", encoding = templ.ENCODING)
             if templ.ENCODING.lower() == 'utf-8':
-                os.write(file.fileno(), '\xef\xbb\xbf')
-            file.write(unicode(".Language=%s,%s\n\n") % (lng, desc))
+                os.write(file.fileno(), bytes((0xef, 0xbb, 0xbf)))
+            file.write(".Language=%s,%s\n\n" % (lng, desc))
             lngs.append(file)
             index += 1
 
         for item in templ.ITEMS:
             i = 0
-            header.write(unicode("\t%s,\n") % item[i])
+            header.write("\t%s,\n" % item[i])
             for lng in lngs:
                 i += 1
-                lng.write(unicode('"%s"\n') % item[i])
+                lng.write('"%s"\n' % item[i])
         for lng in lngs:
             lng.close()
         header.write("\t};\n")

@@ -40,7 +40,7 @@ def action(target, source, env):
         for entry in files:
             try:
                 shutil.copy(entry.abspath, node.dir.abspath)
-            except BaseException, e:
+            except BaseException as e:
                 api.output.warning_msgf("error: {0}", e, stackframe=env.MetaTagValue(node, 'stackframe', 'DirInstall', default=None))
         with open(node.abspath, "w") as output:
             output.write('\n'.join([x.abspath for x in files]))
