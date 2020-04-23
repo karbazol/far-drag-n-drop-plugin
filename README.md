@@ -15,8 +15,7 @@ to make sure you have downloaded [Parts](https://bitbucket.org/SConsparts/parts)
 To control build process I use [SCons](https://bitbucket.org/SCons/SCons) a software
 construction tool which can be treated as advanced 'Make' utility.
 It is written in Python and allows you to build software for different platforms in a single run.
-To run SCons you need Python 2.7 to be installed on your machine. 
-I use [ActivePython 2.7](http://www.activestate.com/activepython/downloads).
+To run SCons you need Python 3.8.1 to be installed on your machine. 
 After you have download and installed Python you can install SCons by running command:
 ```
 easy_install SCons
