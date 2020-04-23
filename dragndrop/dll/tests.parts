@@ -13,7 +13,8 @@ env.Append(
 
 env.Replace(
         CXXFLAGS=[x for x in env.subst_list('$CXXFLAGS')[0] if not x in ['/EHs-', '/EHc-', '/GR-']] + ['/EHsc', '/GR'],
-        LINKFLAGS=[x for x in env.subst_list('$LINKFLAGS')[0] if str(x).lower() != '/nodefaultlib'],
+        LINKFLAGS=[x for x in env.subst_list('$LINKFLAGS')[0] if str(x).lower() != '/nodefaultlib'
+            and not str(x).startswith('/SUBSYSTEM')] + ['/SUBSYSTEM:CONSOLE,${TARGET_ARCH=="x86" and 5.01 or 5.02}'],
         LIBEXS=[])
 
 env.UnitTest('mystring_test', [
