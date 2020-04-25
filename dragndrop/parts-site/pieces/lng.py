@@ -47,7 +47,7 @@ def lngBuilder(target, source, env):
             assert target[index].name == name
             file = open(target[index].abspath, "w", encoding = templ.ENCODING)
             if templ.ENCODING.lower() == 'utf-8':
-                os.write(file.fileno(), bytes((0xef, 0xbb, 0xbf)))
+                os.write(file.fileno(), b'\xef\xbb\xbf')
             file.write(".Language=%s,%s\n\n" % (lng, desc))
             lngs.append(file)
             index += 1
