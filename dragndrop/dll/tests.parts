@@ -4,6 +4,8 @@ env.PartName(env.subst('tests_${TARGET_ARCH}'))
 
 env.DependsOn([
         Component('dll.headers'),
+        Component('common.headers'),
+        Component('tut'),
         Component(env.subst('common.code_${TARGET_ARCH}')),
         ])
 

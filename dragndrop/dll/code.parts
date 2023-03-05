@@ -2,7 +2,7 @@ Import('*')
 
 env.PartName(env.subst('code_${TARGET_ARCH}'))
 
-env.DependsOn([Component('dll.headers')])
+env.DependsOn([Component('common.headers'), Component('dll.headers')])
 
 source = [env.SharedObject('src/' + x) for x in (
     'dll.cpp',

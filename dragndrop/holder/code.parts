@@ -3,8 +3,11 @@ Import('*')
 env.PartName(env.subst('code_${TARGET_ARCH}'))
 
 env.DependsOn([
+        Component(env.subst('dll.headers')),
+        Component(env.subst('hook.headers')),
         Component(env.subst('hook.code_${TARGET_ARCH}')),
         Component(env.subst('common.headers')),
+        Component(env.subst('common.code_${TARGET_ARCH}')),
         ])
 
 env.Append(

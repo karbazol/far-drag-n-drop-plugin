@@ -5,6 +5,7 @@ env.PartName(env.subst('tests_${TARGET_ARCH}'))
 env.DependsOn([
         Component('tut'),
         Component('texts'),
+        Component('common.headers'),
         Component(env.subst('dll.headers')),
 #        Component(env.subst('hook.code_${TARGET_ARCH}')),
         ])

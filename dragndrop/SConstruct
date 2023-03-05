@@ -1,6 +1,9 @@
 '''
 SCons tool build instructions
 '''
+import os
+if not os.environ['comspec'].endswith('cmd.exe'):
+    os.environ['COMSPEC'] = "%SystemRoot%\\System32\\cmd.exe"
 import sys
 sys.path[:0] = ['sconsparts/src']
 from parts import *

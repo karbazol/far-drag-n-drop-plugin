@@ -46,9 +46,7 @@ def action(target, source, env):
             output.write('\n'.join([x.abspath for x in files]))
 
 class GroupName(SCons.Node.Python.Value):
-    @property
-    def name(self):
-        return str(self)
+    pass
 
 api.register.add_builder(
     'DirInstall',
