@@ -14,3 +14,5 @@ logs
 message.txt
 tags
 drgndrop.zip
+**/*.vcxproj.user
+**/tags
