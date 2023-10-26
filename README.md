@@ -6,18 +6,20 @@
 
 ## Building the plug-in ##
 
-Before you build the plug-in run 
+Before you build the plug-in run
 ```
 git submodule update --init
+git submodule update --recursive
 ```
 to make sure you have downloaded [Parts](https://bitbucket.org/SConsparts/parts) and [Tut framework](https://github.com/mrzechonek/tut-framework.git) to the repository.
 
 To control build process I use [SCons](https://bitbucket.org/SCons/SCons) a software
 construction tool which can be treated as advanced 'Make' utility.
 It is written in Python and allows you to build software for different platforms in a single run.
-To run SCons you need Python 3.8.1 to be installed on your machine. 
+To run SCons you need Python 3.8.1 to be installed on your machine.
 After you have download and installed Python you can install SCons by running command:
 ```
+easy_install parts
 easy_install SCons
 ```
 Version 3.1.2 worked for me.
@@ -28,7 +30,6 @@ After you have set up the environment go to `dragndrop` directory and run comman
 ```
 SCons CONFIG=release build::
 ```
-
 You can specify `-j N` option where N is number of CPUs installed on your machine. The option will make SCons build the plug-in in multiple threads.
 
 # MSVC 2015 only Compilation
